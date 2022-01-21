@@ -1,8 +1,8 @@
-# CRIMAC-Raw-To-Sv-TS
+# CRIMAC-Raw-To-Sv(f)-TS(f)
 Python code illustrating the current basic steps for handling broadband echosounder data from raw data (exemplified using the EK80-family data) to Sv(f) and TS(f).
+Example data (one ping of broadband data) is included, and can be processed using:
 
-<<<kommer>>>
-
+A script to read a EK80 raw data file for processing of one ping is also provided.
 readpyecholabPing.py provides a mean to read an EK80 raw data file (using low-level code from pyEcholab), select a single ping from a spesific frequency and store the data in a jason data-file.
 
 Usage: python readpyecholabPing --channel 1 --pingNo 10 --inputFile C:/Users/a32685/Documents/Projects/2020_CRIMAC/CRIMACHackEx/cal-babak-D20201120-T080856.raw --outputFile 'data.json'
