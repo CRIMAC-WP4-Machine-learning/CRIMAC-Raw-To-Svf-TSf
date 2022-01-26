@@ -7,7 +7,7 @@ The example raw data can be processed to frequency dependent Sv and TS (to be im
 
 The majority of the calculations are performed in EK80Calculation.py found under \Core 
 
-**example_Svf.py**
+## example_Svf.py
 
 example_Svf.py processes the raw data to Sv(f) and can be run using
 
@@ -21,7 +21,8 @@ The script also produces three plots
 2. Sv(f) in depth bins between r0 and r1
 3. Sv(f) over the entire depth layer
 
-**example_TSf.py**
+## example_TSf.py
+
 To be implemented
 
 
