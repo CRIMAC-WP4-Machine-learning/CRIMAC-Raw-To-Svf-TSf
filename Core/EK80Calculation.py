@@ -300,8 +300,8 @@ class EK80Calculation(EK80DataContainer):
         y_pc_star = 0.5 * (y_pc[0, :] + y_pc[3, :])
         y_pc_port = 0.5 * (y_pc[1, :] + y_pc[2, :])
 
-        y_alon = np.atan2(np.real(y_pc_fore), np.imag(np.conj(y_pc_aft))) * 180 / np.pi
-        y_athw = np.atan2(np.real(y_pc_star), np.imag(np.conj(y_pc_port))) * 180 / np.pi
+        y_alon = np.arctan2(np.real(y_pc_fore), np.imag(np.conj(y_pc_aft))) * 180 / np.pi
+        y_athw = np.arctan2(np.real(y_pc_star), np.imag(np.conj(y_pc_port))) * 180 / np.pi
 
         return y_alon, y_athw
 
