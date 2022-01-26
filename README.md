@@ -1,20 +1,27 @@
 # CRIMAC-Raw-To-Sv(f)-TS(f)
 Python code illustrating the current basic steps for handling broadband echosounder data from raw data (exemplified using the EK80-family data) to Sv(f) and TS(f).
-Example data (one ping of broadband data) is included, and can be processed using:
 
-A script to read a EK80 raw data file for processing of one ping is also provided.
-readpyecholabPing.py provides a mean to read an EK80 raw data file (using low-level code from pyEcholab), select a single ping from a spesific frequency and store the data in a jason data-file.
+Example broadband data consisting of complex raw data from one ping callected with the EK80 is included and stored in json format following the structure of a raw file. The example data is located in \Examples
 
-Usage: python readpyecholabPing --channel 1 --pingNo 10 --inputFile C:/Users/a32685/Documents/Projects/2020_CRIMAC/CRIMACHackEx/cal-babak-D20201120-T080856.raw --outputFile 'data.json'
+The example raw data can be processed to frequency dependent Sv and TS (to be implemented) using example scripts located in \Examples.
 
-Input arguments are 1: Channel(/frequency) to choose 2: Ping number to choose 3: Input path and filename 4: Output filename
+The majority of the calculations are performed in EK80Calculation.py found under \Core 
 
-For help use: python readpyecholabPing.py -h
+**example_Svf.py**
+example_Svf.py processes the raw data to Sv(f) and can be run using
 
-This script uses pyEcholab which needs to be installed in order to use EK80 data in the examples
+python example_Svf.py --file ..\Data\pyEcholabEK80data.json --r0 10 --r1 30
 
-git clone https://github.com/CI-CMG/pyEcholab.git
-cd pyEcholab
-git checkout RHT-EK80
-python setup.py install
-To only run EK80 reader follwoing packges must also be installed: a. pip install lxml b. pip install future c. pip install pytz
+where the values given after --r0 and --r1 is the range in meters from the transducer. In the example above Sv(f) is calculated over depth range 10 to 30m.
+Note that the actual values used for range depends on the length of the Hann window used, the code uses number of samples corresponding to twice the pulse duration.
+
+The script also produces three plots
+1. An echogram showing range, acoustic frequency and Sv, overlayed Sv as a function of range
+2. Sv(f) in depth bins between r0 and r1
+3. Sv(f) over the entire depth layer
+
+**example_TSf.py**
+To be implemented
+
+
+
