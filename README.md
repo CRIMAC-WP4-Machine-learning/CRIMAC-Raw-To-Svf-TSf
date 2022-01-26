@@ -9,6 +9,12 @@ The majority of the calculations are performed in EK80Calculation.py found under
 
 Requirements to run the code are given in requirements_win.txt
 
+## example_sendPulse.py
+
+example_sendPulse.py generate and plots an ideal enveloped transmit pulse and is run with:
+
+python example_sendPulse.py --file ..\Data\pyEcholabEK80data.json
+
 ## example_Svf.py
 
 example_Svf.py processes the raw data to Sv(f) and can be run using
