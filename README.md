@@ -7,6 +7,8 @@ The example raw data can be processed to frequency dependent Sv and TS (to be im
 
 The majority of the calculations are performed in EK80Calculation.py found under \Core 
 
+Requirements to run the code are given in requirements_win.txt
+
 ## example_Svf.py
 
 example_Svf.py processes the raw data to Sv(f) and can be run using
