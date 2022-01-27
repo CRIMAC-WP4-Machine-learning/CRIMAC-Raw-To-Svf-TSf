@@ -160,14 +160,25 @@ A basic echosounder system consists of a transducer, a transceiver, and a comput
 \includegraphics[width=16cm]{Fig_ek_sys}
 \caption{\label{fi:ek_sys}Signal and data flow in the \ek{} system. An echosounder ping starts with the definition of a transmit signal (upper left) and ends with file storage (lower middle) and display and analysis (lower right). Note that all signals are complex-valued time-series.}
 \end{figure}
+
 \subsection{Signal generation}
 
-The controlling computer program generates a short-duration digital transmit signal (a ping), $\ytx(\samplesymt)$, that is converted to an analogue electric signal, $\ytxe(\timesym)$, by the transceiver and applied to the transducer to generate the transmitted acoustic signal $\ytxa(\timesym)$ (Fig. \ref{fi:ek_sys}) where $\samplesymt$ is a sample index in the discrete time domain and $\timesym$ is time for the analog signal. Any returning acoustic signal, $\yrxa(\timesym)$, is received by each transducer sector, $\channelsym$, and converted to an analog electric signal, $\yrxe(\timesym,\channelsym)$, in the transducer and received by corresponding receiver channels, $\channelsym$, in the transceiver. For a split-aperture echosounder system, there are typically three or four channels in the system (a minimum of three are necessary for estimating the angle of arriving echoes). Here, we focus on a four-channel system.
+The controlling computer program generates a short-duration digital transmit signal (a ping), $\ytx(\samplesymt)$, where $\samplesymt$ is a sample index in the discrete time domain. Typical BB pulses are linear upsweep pulses windowed by an envelope function. In the EK80 a linear sweep enveloped by a Hann function is implemented (Fig.~\ref{fi:ytx}. This is found in the class \verb|Core.EK80Calculation.generateIdealWindowedSendPulse|, where the parameters 'f0', 'f1', tau, fs and slope are the initial frequency, the final frequency, the pulse duration, the sampling rate, and the proportion of the signal that is tapered in each end, respectively. A slope of 0 and .5 indicates no tapering and tapering across the whole signal, respectively.
+
+To generate the signal
+
+The generated signal $\ytxe(\timesym)$ is converted to an analogue electric signal and amplified by the transceiver to obtain analogue signal $\ytxe(\timesym)$. The analogue and amplified signal is passed on to the transducer to generate the transmitted acoustic signal $\ytxA(\timesym)$ in the water column, where $\timesym$ is the time for the (analog) signal. For a split-aperture echosounder system, there are typically three or four channels to allow estimation of the angle of arriving echoes, and the signal is typically transmitted with equal power across the channels.
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_ytx}
 \caption{\label{fi:ytx} Ideal and enveloped send pulse between 34kHz to 45kHz with a slope of 0.057, as implemented in the EK80. The orange curve illustrate the effect of setting the slope to 0.5.}
 \end{figure}
+
+\subsection{Signal reception}
+
+ (Fig. \ref{fi:ek_sys}) 
+
+The returning acoustic signal, $\yrxa(\timesym)$, is received by each transducer sector, $\channelsym$, and converted to an analog electric signal, $\yrxe(\timesym,\channelsym)$, in the transducer and received by corresponding receiver channels, $\channelsym$, in the transceiver.
 
 The received electric signal, $\yrxe(\timesym,\channelsym)$, from each channel, $\channelsym$, is pre-amplified, filtered by an analog anti-aliasing filter, and digitized in the transceiver at a frequency of $\fs$, creating the digital signal, $\yrxorg(\samplesymt,\channelsym)$.
 
