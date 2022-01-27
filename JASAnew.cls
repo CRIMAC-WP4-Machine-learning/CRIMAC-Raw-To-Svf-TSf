@@ -91,8 +91,8 @@ Written by Amy Hendrickson, amyh@texnology.com, http://www.texnology.com
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Make sure authors are using RevTeX4-1
- \IfFileExists{revtex4-1.cls}{
-    \def\@revtex@cls{revtex4-1}
+ \IfFileExists{revtex4-2.cls}{
+    \def\@revtex@cls{revtex4-2}
   }{
 \typeout{^^J^^J Please update your system to include
 revtex4-1.cls^^J^^J}\stop
@@ -179,7 +179,7 @@ revtex4-1.cls^^J^^J}\stop
 %%%%%%%%%%%%%
 %% Passing options to revtex while loading:
   \ifmanuscript %% preprint style
-        \LoadClass[onecolumn, amsmath, amssymb, preprint, aip,floatfix]{revtex4-1}    
+        \LoadClass[onecolumn, amsmath, amssymb, preprint, aip,floatfix]{revtex4-2}    
   \else % reprint style
 %% no track changes allowed in Reprint style
 \iftrack
@@ -187,7 +187,7 @@ revtex4-1.cls^^J^^J}\stop
 \typeout{^^J^^J Invalid Option! Track Changes not allowed in Reprint Style!^^J^^J}
 \stop
 \fi
-       \LoadClass[twocolumn, amsmath, amssymb,reprint,aip,floatfix]{revtex4-1}    
+       \LoadClass[twocolumn, amsmath, amssymb,reprint,aip,floatfix]{revtex4-2}    
   \fi
 
 
