@@ -1,0 +1,821 @@
+\documentclass[preprint,12pt,TurnOnLineNumbers]{JASAnew}
+
+\pdfoutput=1
+\hyphenation{echo-sounders}
+\renewcommand{\figurename}{Figure}
+
+\newcommand{\ek}{Simrad EK80}
+
+\newcommand{\timesym}{t}
+\newcommand{\freqsym}{f}
+\newcommand{\samplesymt}{n}
+\newcommand{\samplesymf}{m}
+\newcommand{\genidxsym}{i}
+
+\newcommand{\channelsym}{u}
+\newcommand{\nchannels}{N_{\textrm{u}}}
+
+\newcommand{\stagesym}{v}
+\newcommand{\nstages}{N_{\textrm{v}}}
+
+\newcommand{\fs}{f_{\textrm{s}}}
+\newcommand{\fsdec}{f_{\textrm{s,dec}}}
+\newcommand{\fstart}{f_{\textrm{start}}}
+\newcommand{\fstop}{f_{\textrm{stop}}}
+\newcommand{\fc}{f_{\textrm{c}}}
+\newcommand{\fn}{f_{\textrm{n}}}
+
+
+\newcommand{\zrxe}{z_{\textrm{rx,e}}}
+\newcommand{\ztde}{z_{\textrm{td,e}}}
+
+\newcommand{\ptxe}{p_{\textrm{tx,e}}}
+\newcommand{\prxe}{p_{\textrm{rx,e}}}
+
+\newcommand{\ntd}{n_{\textrm{td}}}
+\newcommand{\tnom}{\tau}
+\newcommand{\teff}{\tau_{\textrm{eff}}}
+
+
+\newcommand{\ytxe}{y_{\textrm{tx,e}}}
+\newcommand{\ytxa}{y_{\textrm{tx,a}}}
+\newcommand{\yrxa}{y_{\textrm{rx,a}}}
+\newcommand{\yrxe}{y_{\textrm{rx,e}}}
+
+\newcommand{\ytx}{y_{\textrm{tx}}}
+\newcommand{\ytxnorm}{\tilde{y}_{\textrm{tx}}}
+\newcommand{\ytxfd}{y_{\textrm{tx,f,d}}}
+\newcommand{\yrx}{y_{\textrm{rx}}}
+\newcommand{\yrxorg}{y_{\textrm{rx,org}}}
+\newcommand{\ymf}{y_{\textrm{mf}}}
+
+\newcommand{\ytd}{y_{\textrm{td}}}
+
+\newcommand{\ypc}{y_{\textrm{pc}}}
+\newcommand{\ypctarget}{y_{\textrm{pc,t}}}
+\newcommand{\ypcspread}{y_{\textrm{pc,s}}}
+\newcommand{\ymfauto}{y_{\textrm{mf,auto}}}
+\newcommand{\ymfautored}{y_{\textrm{mf,auto,red}}}
+
+\newcommand{\ptxauto}{p_{\textrm{tx,auto}}}
+
+\newcommand{\ypctargetf}{Y_{\textrm{pc,t}}}
+\newcommand{\ypctargetnormf}{\tilde{Y}_{\textrm{pc,t}}}
+\newcommand{\ypcvolumef}{Y_{\textrm{pc,v}}}
+\newcommand{\ypcvolumenormf}{\tilde{Y}_{\textrm{pc,v}}}
+
+\newcommand{\ymfautof}{Y_{\textrm{mf,auto}}}
+\newcommand{\ymfautoredf}{Y_{\textrm{mf,auto,red}}}
+
+\newcommand{\prxetf}{P_{\textrm{rx,e,t}}}
+\newcommand{\prxevf}{P_{\textrm{rx,e,v}}}
+
+
+\newcommand{\fstage}{k}
+\newcommand{\decfac}{D}
+\newcommand{\lfl}{L_{\textrm{fl}}}
+\newcommand{\hfl}{h_{\textrm{fl}}}
+\newcommand{\hannw}{w}
+\newcommand{\hannwnorm}{\tilde{\hannw}}
+\newcommand{\nw}{N_{\hannw}}
+\newcommand{\hannwpart}{\gamma}
+\newcommand{\tslide}{t_w} 
+
+\newcommand{\bs}{\sigma_{\textrm{bs}}}
+\newcommand{\mysp}{S_p}
+\newcommand{\ts}{\textrm{TS}}
+\newcommand{\sv}{S_{\textrm{v}}}
+
+\newcommand{\range}{r}
+\newcommand{\rangeref}{r_0}
+\newcommand{\athw}{\phi}
+\newcommand{\along}{\theta}
+\newcommand{\gain}{g}
+\newcommand{\gainzero}{g_0}
+\newcommand{\eqang}{\psi}
+
+\newcommand{\rtarget}{r_{\textrm{target}}}
+\newcommand{\alongtarget}{\theta_{\textrm{target}}}
+\newcommand{\athwtarget}{\phi_{\textrm{target}}}
+
+
+\newcommand{\wlen}{\lambda}
+\newcommand{\cw}{c}
+\newcommand{\absorp}{\alpha}
+
+\newcommand{\dft}{\textrm{DFT}}
+\newcommand{\ndft}{{N_{\textrm{DFT}}}}
+\newcommand{\ndftw}{_{\nw}}
+\newcommand{\atan}{\textrm{arctan2}}
+\newcommand{\anglefalong}{\gamma_\along}
+\newcommand{\anglefathw}{\gamma_\athw}
+
+\newcommand{\sigmabs}{\sigma_{\textrm{bs}}}
+
+\begin{document}
+
+\title[]{Quantitative processing of broadband data as implemented in a scientific splitbeam echosounder}
+
+\author{Lars Nonboe Andersen}
+\email{lars.nonboe.andersen@kongsberg.com}
+\affiliation{Kongsberg Maritime AS, Strandpromenaden 50, 3191, Horten, Norway}
+
+\author{Dezhang Chu}
+\affiliation{Fishery Resource Analysis and Monitoring Division, Northwest Fisheries Science Center, National Marine Fisheries Service, National Oceanic and Atmospheric Administration, 2725 Montlake Blvd. E. Seattle, WA, 98112, USA}
+
+\author{Harald Heimvoll}
+\affiliation{Kongsberg Maritime AS, Strandpromenaden 50, 3191, Horten, Norway}
+
+\author{Rolf Korneliussen}
+\author{Gavin J. Macaulay}
+\author{Egil Ona}
+\affiliation{Ecosystem Acoustics, Institute of Marine Research, Bergen, 5001, Norway}
+
+\begin{abstract}
+The use of quantitative broadband echosounders for biological studies and surveys offers considerable advantages over narrowband echosounders. These include improved spectral-based target identification and significantly increased ability to resolve individual targets. Biological studies and surveys typically require accurate measures of backscatter strength and we present here a systematic and comprehensive explanation of how to derive quantitative estimates of target strength and volume backscattering, as a function of frequency from broadband echosounder signals.
+
+\end{abstract}
+
+\maketitle
+
+
+\section{Introduction}
+
+Management of fisheries resources typically requires knowledge of age and abundance structure over many years. For numerous fish species and stocks, abundance estimates can be obtained by spatially extensive surveys using quantitative echosounder systems, which measure the backscatter from fish \citep{Simmonds2005Fisheries}. An important property of scientific echosounders used for fisheries surveys is accurate measurement of the backscatter amplitude - this is of lesser importance for other echosounder applications, such as bathymetry, presence/absence of objects, and spatial properties of objects. Conventional echosounders generate an acoustic pulse with a narrow bandwidth (several kHz at most) and when several are operated simultaneously at widely spaced frequencies (such as 18, 38, 70, 120, 200, and 333 kHz) can help to categorize the backscatter into species or target categories. This is termed the multi-frequency approach \citep{Korneliussen2002operational, holliday1980}.
+
+The application of acoustic pulses with a wide and continuous frequency range (broadband pulses) to fisheries applications is an obvious enhancement. Broadband pulses provide better frequency resolution and coverage than multi-frequency systems, i.e., a continuous frequency coverage over a wide frequency band, and with appropriate processing can provide significantly better along-beam resolution and a higher signal to noise ratio than narrowband pulses \citep{Chu1998Application, ehrenbergFMSlideChirp2000}. These benefits can lead to improved backscatter categorisation \citep{Traykovski1998Effect, Stanton2012Resonance, Korneliussen2016Acoustic, korneliussen2018} and hence more accurate abundance estimates.
+
+There have been several scientific broadband echosounder systems developed for laboratory use \citep{Conti2003Wide-bandwidth, Forland2014Scattering, chu1992}, some prototype or custom-made systems \citep{Zakharia1989Wide-band, Zakharia1996Wideband, Simmonds1996Species, Foote2005Measuring, Imaizumi2009Detection, Briseno-Avena2015ZOOPS, Barr2002Target} and some commercially available systems \citep{Gordon1998FishMASS, Zedel2003Acoustic, Stanton2010New, ehrenbergFMSlideChirp2000, dennyBroadbandAcousticFish1998}. None of these systems have achieved widespread use in quantitative fisheries surveys presumably because the commercially-available systems have lacked one or more of the features that are very useful for an operational quantitative fisheries survey echosounder. These comprise (a) a large dynamic range receiver that does not saturate in normal conditions; (b) operating frequencies that are useful for detecting fish at several hundred metres range (between approximately 20 and 200 kHz); (c) split-aperture for detection of angle of arrival of echoes from individual organisms and calibration spheres; (d) capability to perform in-situ calibrations of the amplitude response; (e) a relatively easy transition from existing survey echosounders; (f) useful at typical ship survey speeds (e.g., 5 m s \textsuperscript{-1}). A recent addition to the set of commercially-available broadband echosounders is the Simrad EK80, which meets all of these features.
+
+The purpose of this paper is to present a systematic and comprehensive explanation of how to derive quantitative broadband data from recorded broadband signals. Without loss of generality, we use the \ek\ as an example since it is currently the most commonly used broadband echosounder in the fisheries acoustics field. By presenting the design goals, implementation details, and recommended procedures and processing required to obtain quantitative broadband data, the authors hope to encourage and facilitate the realistic use of broadband signals in fisheries acoustics.
+
+Our presentation uses nomenclature and approaches that are commonly used for narrowband echosounder systems, which were derived from radar processing \citep{cook1967}. In particular, the expressions for target strength ($\ts$) and volume backscattering strength ($\sv$) \citep{MacLennan2002consistent} are presented in a similar manner for broadband signals as for narrowband signals.
+
+\section{Signal flow and initial processing}
+
+\subsection{System overview}
+A basic echosounder system consists of a transducer, a transceiver, and a computer program that controls the operation of the transceiver and records received signals. During transmission the program defines the signals which are created as electric signals in the transceiver, converted to acoustic signals by the transducer and transmitted into the water. The acoustic signals propagate through the water, are reflected or scattered by objects in the water, and propagate back to the transducer. During reception the transducer converts the received acoustic signals to electric signals, which are received, pre-amplified, filtered, digitized, and processed in the transceiver, and then transferred to the controlling program for further data processing and storage (Fig. \ref{fi:ek_sys}). Many types of transmit signals are feasible - this paper considers only the transmission of linear frequency modulated signals (also known as linear chirps).
+
+\begin{figure}
+\includegraphics[width=16cm]{Figure1}
+\caption{\label{fi:ek_sys}Signal and data flow in the \ek{} system. An echosounder ping starts with the definition of a transmit signal (upper left) and ends with file storage (lower middle) and display and analysis (lower right). Note that all signals are complex-valued time-series.}
+\end{figure}
+\subsection{Internal signal processing}
+
+The controlling computer program generates a short-duration digital transmit signal (a ping), $\ytx(\samplesymt)$, that is converted to an analogue electric signal, $\ytxe(\timesym)$, by the transceiver and applied to the transducer to generate the transmitted acoustic signal $\ytxa(\timesym)$ (Fig. \ref{fi:ek_sys}) where $\samplesymt$ is a sample index in the discrete time domain and $\timesym$ is time for the analog signal. Any returning acoustic signal, $\yrxa(\timesym)$, is received by each transducer sector, $\channelsym$, and converted to an analog electric signal, $\yrxe(\timesym,\channelsym)$, in the transducer and received by corresponding receiver channels, $\channelsym$, in the transceiver. For a split-aperture echosounder system, there are typically three or four channels in the system (a minimum of three are necessary for estimating the angle of arriving echoes). Here, we focus on a four-channel system.
+
+The received electric signal, $\yrxe(\timesym,\channelsym)$, from each channel, $\channelsym$, is pre-amplified, filtered by an analog anti-aliasing filter, and digitized in the transceiver at a frequency of $\fs$, creating the digital signal, $\yrxorg(\samplesymt,\channelsym)$.
+
+To remove noise and reduce the quantity of data, the sampled signal from each channel is filtered and decimated in multiple stages, $\stagesym$, using complex bandpass filters, $\hfl(\genidxsym,\stagesym)$, and decimation factors, $\decfac(\stagesym)$. The individual filter coefficients for each filter and decimation stage are indexed by $i$. The output signal from each channel, $\channelsym$, from each filter and decimation stage, $\stagesym$, is then given by:
+%
+\begin{equation}
+\label{eq:yrx}
+\yrx(\samplesymt,\channelsym,\stagesym) = \left( \yrx(\samplesymt,\channelsym,\stagesym-1) * \hfl(\genidxsym,\stagesym) \right)_{\downarrow \decfac(\stagesym)}, 
+\stagesym = 1,\ldots,\nstages,
+\end{equation}
+%
+where $\yrx(\samplesymt,\channelsym,0)$ is set to $\yrxorg(\samplesymt,\channelsym)$, being the signal before decimation, $*$ indicates convolution and $\nstages$ is the total number of filter stages. The output signal from the final filter and decimation stage, $\yrx(\samplesymt,\channelsym,\nstages)$, is shortened to $\yrx(\samplesymt,\channelsym)$ for convenience. For the output signal, $\yrx(\samplesymt,\channelsym)$, the decimated sampling rate, $\fsdec$, is given by:
+%
+\begin{equation}
+\label{eq:fsdec}
+\fsdec = \fs\prod_{\stagesym=1}^{\nstages} \frac{1}{\decfac(\stagesym)}.
+\end{equation}
+%
+The characteristics of the bandpass filter and decimation factors are chosen with regard to the desired operating bandwidth, noise suppression levels, impulse response duration, and other common filter characteristics, with the aim of maintaining sufficient information in the data. The filtered and decimated complex samples from each transducer channel, $\yrx(\samplesymt,\channelsym)$, are considered raw data and are recorded together with additional data such as from position and motion sensors and system configuration data in raw data files for display and analysis by processing software.
+
+\subsection{Pulse compression}
+To increase signal-to-noise ratio and resolution along the acoustic beam a matched filter may be applied to the raw data samples \citep{turin1960}. This technique is also known as pulse compression \citep{klauder1960}. One approach for a matched filter is to use a normalized version of the ideal transmit signal as the replicate signal, filtered and decimated using the same filters and decimation factors as applied in Eq. \ref{eq:yrx}. The normalized ideal transmit signal, $\ytxnorm(\samplesymt)$, is given by:
+%
+\begin{equation}
+\label{eq:ytxnorm}
+\ytxnorm(\samplesymt) = \frac{\ytx(\samplesymt)}{\textrm{max}(\ytx(\samplesymt))}\end{equation}
+%
+where $\textrm{max}$ is the maximum value of $\ytx(\samplesymt)$. The filtered and decimated output signal, $\ytxnorm(\samplesymt,\stagesym)$, from each filter stage, $\stagesym$, using the normalized ideal transmit signal, $\ytxnorm(\samplesymt)$, as the input signal, is given by:
+%
+\begin{equation}
+\label{eq:FilterStagesTX}
+\ytxnorm(\samplesymt,\stagesym) = \left( \ytxnorm(\samplesymt,\stagesym-1) * \hfl(\genidxsym,\stagesym) \right)_{\downarrow \decfac(\stagesym)}, 
+\stagesym = 1,\ldots,\nstages,
+\end{equation}
+%
+where $\ytxnorm(\samplesymt,0)$ is set to $\ytxnorm(\samplesymt)$ and $\downarrow$ indicates decimation by the factor $\decfac(\stagesym)$. The output signal from the final filter and decimation stage, $\ytxnorm(\samplesymt,\nstages)$, is used as the matched filter and is denoted as $\ymf(\samplesymt)$.
+
+To perform pulse compression the received signal, $\yrx(\samplesymt,\channelsym)$, is convolved with a complex conjugated and time-reversed version of the matched filter signal with the matched filter signal, and here also normalized with the $l^2$-norm of the matched filter to maintain received signal power. The pulse compressed signal, $\ypc(\samplesymt,\channelsym)$, then becomes
+\begin{equation}
+\label{eq:PulseComp}
+\ypc(\samplesymt,\channelsym) = \frac{\yrx(\samplesymt,\channelsym)*\ymf^*(-\samplesymt)}{||\ymf||^2_2},
+\end{equation}
+%
+where $||\ymf||$ indicates the $l^2$-norm of $\ymf$, also known as the Euclidean norm. The received power samples are then used to estimate target strength and volume backscattering strength. For estimating received power samples, the mean signal, $\ypc(\samplesymt)$, over all transducer sectors, $\nchannels$, will be used:
+%
+\begin{equation}
+\label{eq:SumSig}
+\ypc(\samplesymt) = \frac{1}{\nchannels} \sum_{\channelsym = 1}^{\nchannels} \ypc(\samplesymt,\channelsym).
+\end{equation}
+%
+Compensation of echo strength for position in the acoustic beam requires an estimate of the echo arrival angle. This is obtained using the split-aperture method \citep{burdic1991}, which for broadband pules can be implemented with the angle values contained in the complex-valued $\ypc(\samplesymt)$ data, in combination with knowledge of transducer sector geometry. The principle is demonstrated with a transducer that is divided into four quadrants (Fig. \ref{fi:trd_quad}). In this example the summed signals from four halves (1+2, 2+3, 3+4, 4+1) are calculated as:
+\begin{eqnarray}
+\label{eq:SumHalves}
+y_{\textrm{pc,fore}}(\samplesymt) & = & \frac{1}{2} \left( \ypc(\samplesymt,3)+\ypc(\samplesymt,4) \right),\\
+y_{\textrm{pc,aft}}(\samplesymt) & = & \frac{1}{2} \left( \ypc(\samplesymt,1)+\ypc(\samplesymt,2) \right),\\
+y_{\textrm{pc,star}}(\samplesymt) & = & \frac{1}{2} \left( \ypc(\samplesymt,1)+\ypc(\samplesymt,4) \right),\\
+y_{\textrm{pc,port}}(\samplesymt) & = & \frac{1}{2} \left( \ypc(\samplesymt,2)+\ypc(\samplesymt,3) \right),
+\end{eqnarray}
+%
+where fore, aft, star(board), and port indicate the relevant transducer halves.
+\begin{figure}
+\includegraphics{Figure2}
+\caption{\label{fi:trd_quad}Transducer divided into four quadrants. The labels are directions often used when a transducer is mounted on a ship.}
+\end{figure}
+%
+\subsection{Auto correlation function}
+The auto correlation function of the matched filter signal, $\ymfauto(\samplesymt)$, that will be used in a later processing step is defined as:
+\begin{equation}
+\label{eq:TXAuto}
+\ymfauto(\samplesymt) = \frac{\ymf(\samplesymt)*\ymf^*(-\samplesymt)}{||\ymf||^2_2}.
+\end{equation}
+
+\subsection{Power and angle samples}
+The transceiver measures voltage over a load, $\zrxe$, connected in series with the transducer impedance, $\ztde$. When calculating various acoustic properties a system gain parameter will be used which assumes a matched receiver load. The total received power, $\prxe(\samplesymt)$, from all transducer sectors for a matched receiver load (Fig. \ref{fi:impedances}) is given by: 
+\begin{equation}
+\label{eq:prx}
+\prxe(\samplesymt) = \nchannels\left( \frac{|\ypc(\samplesymt)|}{2\sqrt{2}} \right)^2 \left( \frac{|\zrxe+\ztde|}{\zrxe} \right)^2 \frac{1}{|\ztde|}.
+\end{equation}
+
+Forward/aft and port/starboard phase angles of target echoes are estimated by combining the transducer half signals thus: 
+%
+\begin{eqnarray}
+\label{eq:phase1}
+y_\along(\samplesymt) & = & y_{\textrm{pc,fore}}(\samplesymt) y_{\textrm{pc,aft}}^*(\samplesymt), \\
+y_\athw(\samplesymt) & = & y_{\textrm{pc,star}}(\samplesymt) y_{\textrm{pc,port}}^*(\samplesymt),
+\end{eqnarray}
+%
+where $y_\along(\samplesymt)$ is the electrical angle along the minor axis of the transducer (positive in the forward direction when ship-mounted) and $y_\athw(\samplesymt)$ the electrical angle along the major axis of the transducer (positive to starboard when ship-mounted), where complex signals are represented in the form $e^{j 2\pi \freqsym \timesym}$, where $j = \sqrt{-1}$. The physical echo arrival angles ($\along$ and $\athw$) are then given by:
+%
+\begin{eqnarray}
+\label{eq:phase2}
+\along(\samplesymt) & = & \arcsin\left( \frac{\atan\left( \Im(y_\along(\samplesymt)), \Re(y_\along(\samplesymt) \right)}{\anglefalong}\right) \\
+\athw(\samplesymt) & = & \arcsin\left( \frac{\atan\left( \Im(y_\athw(\samplesymt)), \Re(y_\athw(\samplesymt) \right)}{\anglefathw}\right).
+\end{eqnarray}
+%
+where $\anglefalong$ and $\anglefathw$ are constants that convert from phase angles to physical echo arrival angles and are derived from the transducer geometry and $\fc$ the centre frequency of the chirp pulse \citep{ehrenberg1979}. The inverse sine is indicated by $\arcsin$, the four quadrant inverse tangent which returns values in the interval $[-\pi, \pi]$ inclusive is indicated by $\atan$, the real part of a complex number by $\Re$ and the imaginary part by $\Im$. As a mnemonic, the horizontal line in the symbol used for the forward/aft direction, $\along$, represents the pivot axis for the alongship angles and the near-vertical line in the $\athw$ symbol indicates the pivot axis for port/starboard angles.
+%
+\begin{figure}
+\includegraphics[width=\reprintcolumnwidth]{Figure3}
+\caption{\label{fi:impedances}Equivalent circuit diagram of transducer/transceiver with system impedances.}
+\end{figure}
+
+\section{Target strength}
+
+Echoes from single targets are often characterised by their $\ts$, which is related to the differential backscattering cross section, $\bs$, via
+%
+\begin{equation}
+\label{eq:TS_bs}
+\ts = 10\log_{10}\left(\frac{\bs}{\rangeref^2}\right),
+\end{equation}
+%
+where $\log_{10}$ is the logarithm with base 10 and $\rangeref$ is 1 m.
+
+The power-budget equation (i.e., sonar equation) for a single target \citep[Formulation D, ][]{lunde2016} at frequency $\freqsym$ is:
+%
+\begin{equation}
+\label{eq:TS}
+\ts(\freqsym) = 10\log_{10}(\prxetf(\freqsym)) + 40\log_{10}(\range) + 2\absorp(\freqsym) \range 
+- 10\log_{10}\left( \frac{\ptxe \wlen^2 \gain^2(\along,\athw,\freqsym)}{16\pi^2} \right),
+\end{equation}
+%
+where $\prxetf(\freqsym)$ is the Fourier transform of the received electric power in a matched load for a signal from a single target at frequency $\freqsym$, $\range$ is the range to the target, $\absorp$ the acoustic absorption at frequency $f$, $\ptxe$ the transmitted electric power, $\wlen$ the acoustic wavelength, and $\gain$ the transducer gain along the main acoustic axis, incorporating beam compensation based on the estimated target bearing, $(\along,\athw)$.
+
+The point scattering strength, $\mysp(\samplesymt)$, is estimated by applying Eq. \ref{eq:TS} to the received digitized power samples using the on-axis gain value with $f$ set to the centre frequency of the broadband pulse, $\fc$: 
+\begin{equation}
+\label{eq:Sp}
+\mysp(\samplesymt) = 10\log_{10}(\prxe(\samplesymt)) + 40\log_{10}(\range(\samplesymt)) 
++ 2\absorp(\fc) \range(\samplesymt) - 10\log_{10}\left( \frac{\ptxe \wlen^2(\fc) \gainzero^2(\fc)}{16\pi^2} \right),
+\end{equation}
+%
+noting that $\mysp(\samplesymt)$ is an average over frequency of all echoes from single or multiple targets received at sample $\samplesymt$.
+
+Based on the point scattering strength samples and the phase angle samples, single targets can be detected, and range and bearing to the single targets can be estimated.
+
+From the pulse compressed data, $\ypc(\samplesymt)$, the samples before and after the peak echo level corresponding to an echo from a single target are extracted to obtain the signal, $\ypctarget(\samplesymt)$, noting that the number of samples before the peak can differ from those after the peak. From the autocorrelation function of the matched filter signal, $\ymfauto(\samplesymt)$, the equivalent samples around the peak are extracted to create the reduced autocorrelation signal of the matched filter signal, $\ymfautored(\samplesymt)$. Depending on the target scattering characteristics and the distance to any adjacent single targets, the number of samples around the peak echo level in $\ypctarget(\samplesymt)$ that contain the majority of the echo energy can be more or less than the total number of samples around the peak of $\ymfauto(\samplesymt)$. If the number of samples around the target is more than the total number of samples around the peak of $\ymfauto(\samplesymt)$ all samples around the peak of $\ymfauto(\samplesymt)$ are used. If the number of samples around the target is less than the total number of samples around the peak of $\ymfauto(\samplesymt)$, this lower number is used to create a reduced autocorrelation signal, $\ymfautored(\samplesymt)$.
+
+The discrete Fourier transforms of the target signal, $\ypctargetf(\samplesymf)$, and the reduced auto correlation signal, $\ymfautoredf(\samplesymf)$, are given by:
+\begin{eqnarray}
+\label{eq:DFT_Target_Auto}
+\ypctargetf(\samplesymf) & = & \dft_\ndft(\ypctarget(\samplesymt)),\\
+\ymfautoredf(\samplesymf) & = & \dft_\ndft(\ymfautored(\samplesymt)),
+\end{eqnarray}
+where $\dft$ indicates the Fourier transform of length $\ndft$ and $\samplesymf$ the sample index in the frequency domain.
+The nomalized discrete Fourier transform of the target signal, $\ypctargetnormf(\samplesymf)$, is then calculated by: 
+%
+\begin{equation}
+\label{eq:DFT_Target_Auto_Norm}
+\ypctargetnormf(\samplesymf) = \frac{\ypctargetf(\samplesymf)} {\ymfautoredf(\samplesymf)}.
+\end{equation}
+%
+Assuming, as a first approximation, that the impedances of the transceiver and transducer are independent of frequency, the received power into a matched load, $\prxetf(\samplesymf)$, is then estimated by:
+\begin{equation}
+\label{eq:prx_FFT_target}
+\prxetf(\samplesymf) = \nchannels\left( \frac{|\ypctargetnormf(\samplesymf)|}{2\sqrt{2}} \right)^2 
+\left( \frac{|\zrxe+\ztde|}{|\zrxe|}\right)^2 \frac{1}{|\ztde|}, % All channels (*4), matched load (/2), and effective values (/sqrt(2))
+\end{equation}
+%
+noting that any variation of impedance with frequency will be reflected in the $\gainzero$ obtained from the calibration process.
+
+Target strength can then be estimated using Eq. \ref{eq:TS}, but with $\freqsym$ replaced by the discrete index of frequency, $\samplesymf$:
+\begin{equation}
+\label{eq:TS_f}
+\ts(\samplesymf) = 10\log_{10}(\prxetf(\samplesymf)) + 40\log_{10}(\range) + 2\absorp(\samplesymf)\range 
+- 10\log_{10}\left( \frac{\ptxe \wlen_\samplesymf^2 \gain^2(\along,\athw,\samplesymf)}{16\pi^2} \right).
+\end{equation}
+
+\section{Volume backscattering strength}
+
+Echoes from multiple scatterers can be quantified using volume backscattering strength, $\sv$, being the density of backscattering cross sections, and is given by:
+%
+\begin{equation}
+\label{eq:sv}
+\sv  =  10\log_{10}\frac{\sum\bs}{V}.
+\end{equation}
+%
+where $V$ is the volume occupied by the scattering targets. The power-budget equation for multiple targets is then:
+%
+\begin{equation}
+\label{eq:sv_f}
+\sv(\freqsym) = 10\log_{10}(\prxevf(\freqsym)) + 20\log_{10}(\range) + 2\absorp(\freqsym)\range 
+- 10\log_{10}\left( \frac{\ptxe \wlen^2 \cw \tslide \eqang(\freqsym) \gainzero^2(\freqsym)}{32\pi^2} \right), 
+\end{equation}
+%
+where $\prxevf(\freqsym)$ is the received electric power in a matched load for the signal from a volume at frequency $\freqsym$, $\cw$ the sound speed, and $\tslide$ the duration of the time window, excluding the zero-padded portion if applied, used for evaluating the frequency spectrum. Note that $\range$ is the range to the centre of the range volume covered by $\tslide$, and the two-way equivalent beam angle, $\eqang$, is a function of frequency that is derived from an empirical estimate of $\eqang$ at the nominal frequency, $\fn$:
+\begin{equation}
+\label{eq:PsiFc}
+\eqang(f) = \eqang(\fn)\left(\frac{\fn}{f}\right)^2.
+\end{equation}
+
+Volume backscattering samples compressed over the operational frequency band are estimated by applying Eq. \ref{eq:sv_f} to the received digitized power samples using the on-axis gain value with $f$ set to the centre frequency of the broadband pulse, $\fc$:
+\begin{equation}
+\label{eq:Sv}
+\sv(\samplesymt)  =  10\log_{10}(\prxe(\samplesymt)) + 20\log_{10}(\range(\samplesymt)) + 2\absorp(\fc)\range(\samplesymt) 
+- 10\log_{10}\left( \frac{\ptxe \wlen^2(\fc) \cw \teff \eqang(\fc) \gainzero^2(\fc)}{32\pi^2} \right),
+\end{equation}
+noting that $\sv(\samplesymt)$ is an average over frequency of all echoes received at sample $\samplesymt$. In this case, the time window, $\tslide$, is the effective pulse duration, $\teff$, resulting from pulse compression. The effective pulse duration is defined as the pulse duration at transmit power $\ptxe$ which produces the same energy as the actual transmitted pulse, and is estimated from digitized data via:
+%
+\begin{eqnarray}
+\label{eq:TauEff}
+\ptxauto(\samplesymt) & = & |\ymfauto(\samplesymt)|^2,\\
+\teff & = & \frac{\sum \ptxauto(\samplesymt)}{\textrm{max}(\ptxauto(\samplesymt))\fsdec},
+\end{eqnarray}
+where $\ptxauto$ is the square of the absolute value of the matched filter autocorrelation function, and the summation is calculated over a duration of twice the nominal pulse duration, $2\tnom$. For an ideal system, i.e., no tapering at the rising and trailing edges of the transmitted signal, the effective pulse duration is the same as the transmit pulse duration.
+
+To estimate $\sv$ as a function of frequency a Fourier transform is used, repeatedly applied via a sliding window in range. However, the duration of this sliding window can be so long that the difference in spherical spreading loss compensation ($r^2$, implemented as the $20\log_{10}(\range)$ term in Eq. \ref{eq:Sv}) from the beginning of the window to the end can be significant, particularly for short range measurements. Thus, compensation for spreading loss is performed before applying the discrete Fourier transform. Absorption loss compensation is also range dependent (and frequency dependent), but since absorption loss compensation is insignificant for typical operating frequencies at short ranges and the difference in absorption loss compensation between the beginning and the end of the sliding window is insignificant at longer ranges, compensation for absorption loss is performed after applying the discrete Fourier transform.
+
+Compensation of spherical spreading loss requires compensation of received power by a factor of $r^2$, and hence compensation of amplitude by a factor of $\range$:
+%
+\begin{equation}
+\label{eq:spreadcomp}
+\ypcspread(\samplesymt) = \ypc(\samplesymt)\range(\samplesymt).
+\end{equation}
+%
+where $\ypcspread(\samplesymt)$ is the pulse compressed signal compensated for spherical spreading. A discrete Fourier transform is performed on the range compensated pulse compressed sample data using a normalized sliding Hanning window, $\hannw(\genidxsym)$. The duration, $\tslide$, of the sliding window is chosen as a compromise between along-beam range resolution and frequency resolution. We suggest that it be at least twice the pulse duration and for computational efficiency reasons should result in a number of samples, $\nw$, which is a power of 2.
+
+The normalised Hanning window, $\hannwnorm$, is given by: 
+%
+\begin{equation}
+\label{eq:hannw}
+\hannwnorm(\genidxsym) = \frac{\hannw(\genidxsym)}{\left( \frac{||\hannw||_2}{\sqrt{\nw}} \right)}, i = \frac{-\nw}{2}, \ldots, \frac{\nw}{2}
+\end{equation}
+%
+and the discrete Fourier transform of the windowed data, $\ypcvolumef(\samplesymf)$, is then obtained from:
+%
+\begin{equation}
+\label{eq:FFT_volume}
+\ypcvolumef(\samplesymf) = \dft_\ndft 
+\left( \hannwnorm(\genidxsym) \left(\ypcspread (\genidxsym+\samplesymt) \left[ u(\genidxsym + \frac{\nw}{2}) - u(\genidxsym - \frac{\nw}{2}) \right] \right) \right),
+\end{equation}
+%
+where $u(\genidxsym)$ is the step function and $\samplesymt$ is the sample data index for the centre of the sliding window. The discrete Fourier transform of the auto correlation function of the matched filter signal, $\ymfautof(\samplesymf)$, also needs to be evaluated at the same frequencies:
+%
+\begin{equation}
+\label{eq:FFT_TX_Auto}
+\ymfautof(\samplesymf)  =  \dft_\ndft (\ymfauto(\samplesymt)).
+\end{equation}
+%
+The normalized discrete Fourier transform of the windowed data, $\ypcvolumenormf(\samplesymf)$, is then given by:
+%
+\begin{equation}
+\label{eq:FFT_volume_norm}
+\ypcvolumenormf(\samplesymf) = \frac{\ypcvolumef(\samplesymf)}{\ymfautof(\samplesymf)},
+\end{equation}
+%
+and received power into a matched load, $\prxevf(\samplesymf)$, is estimated from:
+%
+\begin{equation}
+\label{eq:prx_FFT_volume}
+\prxevf(\samplesymf) = \nchannels \left( \frac{|\ypcvolumenormf(\samplesymf)|}{2\sqrt{2}} \right)^2 \left( \frac{|\zrxe+\ztde|}{|\zrxe|}\right)^2 \\
+\frac{1}{|\ztde|}. % All channels (*4), matched load (/2), and effective values (/sqrt(2))
+\end{equation}
+%
+Finally, the discretized estimate of $\sv(\freqsym)$, $\sv(\samplesymf)$, is given by:
+%
+\begin{equation}
+\label{eq:Sv_FFT}
+\sv(\samplesymf) = 10\log_{10}(\prxevf(\samplesymf)) + 2\absorp(\samplesymf) \range \\
+- 10\log_{10}\left( \frac{\ptxe \wlen^2 \cw \tslide \eqang(\samplesymf) \gainzero^2(\samplesymf) }{32\pi^2} \right).
+\end{equation}
+
+\section{Illustrative examples}
+
+A frequency modulated pulse scattered by a metallic sphere will exhibit frequencies at which very little energy is returned due to destructive interference \citep{stanton2008}. This is visible in the $\ts$ (Fig. \ref{fi:ts_example}a, \ref{fi:ts_example}b) and agrees well with theoretical estimates of the backscatter from spheres \citep{maclennan1981}. The amplitude of the backscatter signal also clearly shows these nulls (Fig. \ref{fi:ts_example}c), which are readily visible here due to the use of a linear chirp where time through the pulse corresponds to specific frequencies. The marked increase in range resolution is apparent once pulse compression has been applied (Fig. \ref{fi:ts_example}d), as are the temporal effects of the pulse compression operation.
+
+A metallic sphere is a rather simple and ideal scatterer and we also present $\sv$ from a school of Atlantic mackerel (\textit{Scomber scombrus}) (Fig. \ref{fi:sv_example}a). The trend for increasing $\sv$ with frequency is well-known \citep{korneliussen2010} and is consistent with the trend observed in this example. In contrast to data from isolated scatterers, such as metallic spheres, the benefit of pulse compression on the backscatter from an object that generates many overlapping echoes is not immediately obvious (Fig. \ref{fi:sv_example}b, \ref{fi:sv_example}c), although in regions where the fish density decreases (e.g., top left of the school), single target echoes become visible.
+
+\begin{figure}
+\includegraphics[width=16cm]{Figure4}
+\caption{\label{fi:ts_example}(color online) Target strength of 57.2 mm (a) and 22.0 mm (b) diameter tungsten carbide (with 6\% cobalt binder) calibration spheres, theoretical (solid line) and measured and derived using Eq. (\ref{eq:TS_f}) (dotted line). Echogram of non pulse compressed backscatter [dB re 1 W] (c) and pulse compressed backscatter [dB re 1 $\textrm{m}^2$] (d) from 57.2 mm (lower band) and 22.0 mm (upper band) diameter tungsten carbide spheres using a 2.048 ms duration linear frequency modulated pulse (160--260 kHz). The range from the spheres to the transducer varied during the time period shown.}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=16cm]{Figure5}
+\caption{\label{fi:sv_example}(color online) (a): Mean frequency response (solid line) and standard error (dashed line) from a school of Atlantic mackerel (\textit{Scomber scombrus}) from three simultaneously operating linear frequency modulated echosounder channels (90--170, 160--260, and 280--450 kHz). Echogram of backscattered power [dB re 1 W] (b) and pulse compressed $\sv$ [dB re 1 $m^{-1}$] (c) from the 160--260 kHz pulse. The school is the trapezoid-shaped object between 25 and 90 m below the surface. The echo from the seafloor is visible at 130 m depth.} \end{figure}
+
+\section{Discussion}
+Obtaining quantitative broadband data is more complicated than for narrowband echosounders, due in part to the need to account for frequency dependence in most variables and parameters, and the need for an increased understanding of digital signal processing techniques. For example, the \ek{} currently provides complex demodulated \citep{hasan1983} voltages for each transducer sector rather than derived quantities (e.g., the envelope of a pulse compressed signal and the frequency response of single targets and volumes) - these outputs must instead be calculated as proposed in this paper. This was an implementation decision made to allow for more flexible use of the echosounder data, and to ease the development of new processing methodologies. This decision has several disadvantages, such as the significantly increased data quantity and markedly higher amount of computation required to simply display an echogram. These can be ameliorated to some degree by processing the data into a more directly useful form before storage. The advantages of having access to unprocessed data were considered to out-weigh these disadvantages due to the potential benefits of more sophisticated uses of the acoustic data, especially for a tool that is only beginning to be applied to the field of fisheries acosutics.
+
+The methodology to process broadband data has been presented in a general form in the previous sections without any accord to engineering limits. However, any physical implementation introduces operational constraints. As an example, a system designed for shipboard installations with ample access to electrical and computer processing power and large data storage will typically have different operational contraints compared to a system intended for autonomous platforms where electrical power and computing resources can be severely limited. In addition, the transducer is a significant constraint on the operational parameters of an echosounder and is usually the main determinant of the usable transceiver operating parameters (such as transmit bandwidth, maximum transmit power, pulse duration, ping rate, etc).
+
+The use of broadband signals in fisheries acoustics is a developing area and we anticipate many valuable enhancements will occur in the coming years. For example, the use of $\ts(\freqsym)$ and $\sv(\freqsym)$ to improve acoustic target classification \citep{bassettBroadbandEchosounderMeasurements2018, korneliussen2018}, and the potential of the high range resolution from pulse compression to observe small-scale fish behviours \citep{skaret2020} and to detect objects adjacent to boundaries \citep{lavery2017}. The basic formulation for calculating $\ts(\freqsym)$ and $\sv(\freqsym)$ presented here provides the foundation for future enhancements.
+
+The formulation presented in this paper results in several frequency dependent parameters, such as transducer gain, two-way equivalent beam angle, and the water absorption coefficient, that are required to quantitatively estimate $\ts(\freqsym)$ and $\sv(\freqsym)$ from received broadband signals. Methods to estimate these are not within the scope of this paper, but common practise is to use the conventional sphere backscatter calibration methodology \citep{demerCalibrationAcousticInstruments2015} slightly enhanced for broadband \citep{hobaekCharacterizationTargetSpheres2013, lavery2017}. We note that these methods do not provide an operational method to estimate $\teff$ or $\eqang(\freqsym)$, especially for ship-mounted transducers, and that empirical measurements of these parameters are necessary to fully calibrate both narrowband and broadband echosounders.
+
+The processing equations and methodology presented in this paper have been implemented in version 1.12.4 and earlier of the \ek{} software.
+
+\section{Conclusion}
+
+A set of equations for calculating calibrated, frequency-dependent, target strength and volume backscatter from broadband echosounder signals have been presented, with reference to the \ek{} echosounder.
+
+\section{Data Availability Statement}
+
+The data associated with this article are available on request from the authors.
+
+%\bibliography{ek80refs}
+
+\begin{thebibliography}{39}
+\def\enquote#1{``#1,''}
+\def\plainquote#1{``#1''}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\providecommand{\dourl}[1]{\href{http://#1}{\nolinkurl{#1}}}
+\providecommand{\bibinfo}[2]{#2}
+\providecommand{\noopsort}[1]{}
+\providecommand{\switchargs}[2]{#2#1}
+  \def\eatspace #1{#1}
+\providecommand{\dodoi}[1]{doi: \href{http://dx.doi.org/#1}{\nolinkurl{#1}}}
+
+\bibitem[{Barr \emph{et~al.}(2002)Barr, Coombs, Doonan, and
+  McMillian}]{Barr2002Target}
+\bibinfo{author}{Barr, R.}, \bibinfo{author}{Coombs, R.},
+  \bibinfo{author}{Doonan, I.},  and \bibinfo{author}{McMillian, P.}
+  (\textbf{\bibinfo{year}{2002}}). \enquote{\bibinfo{title}{Target
+  identification of oreos and associated species}} \bibinfo{type}{Final
+  {{Research Report}} for the {{Ministry}} of {{Fisheries Research Project
+  OEO2000}}/{{01B}}, {{Objective}} 1} ,
+  \dourl{fs.fish.govt.nz/Page.aspx?pk=113&dk=22653}, \bibinfo{note}{(Last
+  viewed October 21, 2019)}.
+
+\bibitem[{Bassett \emph{et~al.}(2018)Bassett, De~Robertis, and
+  Wilson}]{bassettBroadbandEchosounderMeasurements2018}
+\bibinfo{author}{Bassett, C.}, \bibinfo{author}{De~Robertis, A.},  and
+  \bibinfo{author}{Wilson, C.~D.} (\textbf{\bibinfo{year}{2018}}).
+  \enquote{\bibinfo{title}{Broadband echosounder measurements of the frequency
+  response of fishes and euphausiids in the {{Gulf}} of {{Alaska}}}}
+  \bibinfo{journal}{ICES Journal of Marine Science} \textbf{75}(3),
+  \bibinfo{pages}{1131--1142}, \dodoi{10.1093/icesjms/fsx204}.
+
+\bibitem[{Briseño-Avena \emph{et~al.}(2015)Briseño-Avena, Roberts, Franks,
+  and Jaffe}]{Briseno-Avena2015ZOOPS}
+\bibinfo{author}{Briseño-Avena, C.}, \bibinfo{author}{Roberts, P. L.~D.},
+  \bibinfo{author}{Franks, P. J.~S.},  and \bibinfo{author}{Jaffe, J.~S.}
+  (\textbf{\bibinfo{year}{2015}}).
+  \enquote{\bibinfo{title}{{ZOOPS-O\textsuperscript{2}: A broadband echosounder
+  with coordinated stereo optical imaging for observing plankton in situ}}}
+  \bibinfo{journal}{Methods in Oceanography} \textbf{12},
+  \bibinfo{pages}{36--54}, \dodoi{10.1016/j.mio.2015.07.001}.
+
+\bibitem[{Burdic(1991)}]{burdic1991}
+\bibinfo{author}{Burdic, W.~S.} (\textbf{\bibinfo{year}{1991}}).
+  \emph{\bibinfo{title}{Underwater Acoustic System Analysis}}
+  (\bibinfo{publisher}{{Prentice Hall}}).
+
+\bibitem[{Chu and Stanton(1998)}]{Chu1998Application}
+\bibinfo{author}{Chu, D.},  and \bibinfo{author}{Stanton, T.}
+  (\textbf{\bibinfo{year}{1998}}). \enquote{\bibinfo{title}{{Application of
+  pulse compression techniques to broadband acoustic scattering by live
+  individual zooplankton}}} \bibinfo{journal}{The Journal of the Acoustical
+  Society of America} \textbf{104}(1), \bibinfo{pages}{39–55},
+  \dodoi{10.1121/1.424056}.
+
+\bibitem[{Chu \emph{et~al.}(1992)Chu, Stanton, and Wiebe}]{chu1992}
+\bibinfo{author}{Chu, D.}, \bibinfo{author}{Stanton, T.},  and
+  \bibinfo{author}{Wiebe, P.} (\textbf{\bibinfo{year}{1992}}).
+  \enquote{\bibinfo{title}{Frequency dependence of sound backscattering from
+  live individual zooplankton}} \bibinfo{journal}{ICES Journal of Marine
+  Science} \textbf{49}(1), \bibinfo{pages}{97--106},
+  \dodoi{10.1093/icesjms/49.1.97}.
+
+\bibitem[{Conti and Demer(2003)}]{Conti2003Wide-bandwidth}
+\bibinfo{author}{Conti, S.~G.},  and \bibinfo{author}{Demer, D.~A.}
+  (\textbf{\bibinfo{year}{2003}}). \enquote{\bibinfo{title}{{Wide-bandwidth
+  acoustical characterization of anchovy and sardine from reverberation
+  measurements in an echoic tank}}} \bibinfo{journal}{ICES Journal of Marine
+  Science} \textbf{60}(3), \bibinfo{pages}{617--624},
+  \dodoi{10.1016/S1054-3139(03)00056-0}.
+
+\bibitem[{Cook and Bernfield(1967)}]{cook1967}
+\bibinfo{author}{Cook, C.},  and \bibinfo{author}{Bernfield, M.}
+  (\textbf{\bibinfo{year}{1967}}). \emph{\bibinfo{title}{Radar {{Signals}}:
+  {{An Introduction}} to {{Theory}} and {{Application}}}}
+  (\bibinfo{publisher}{{Academic Press, Inc.}}).
+
+\bibitem[{Demer \emph{et~al.}(2015)Demer, Berger, Bernasconi, Boswell, Chu,
+  Domokos, Dunford, F\"assler, Gauthier, Hufnagle, Jech, Bouffant,
+  {Lebourges-Dhaussy}, Lurton, Macaulay, Perrot, Ryan, {Parker-Stetter},
+  Stienessen, Weber, and Williamson}]{demerCalibrationAcousticInstruments2015}
+\bibinfo{author}{Demer, D.~A.}, \bibinfo{author}{Berger, L.},
+  \bibinfo{author}{Bernasconi, M.}, \bibinfo{author}{Boswell, K.~M.},
+  \bibinfo{author}{Chu, D.}, \bibinfo{author}{Domokos, R.},
+  \bibinfo{author}{Dunford, A.~J.}, \bibinfo{author}{F\"assler, S. M.~M.},
+  \bibinfo{author}{Gauthier, S.}, \bibinfo{author}{Hufnagle, L.~T.},
+  \bibinfo{author}{Jech, J.~M.}, \bibinfo{author}{Bouffant, N.},
+  \bibinfo{author}{{Lebourges-Dhaussy}, A.}, \bibinfo{author}{Lurton, X.},
+  \bibinfo{author}{Macaulay, G.~J.}, \bibinfo{author}{Perrot, Y.},
+  \bibinfo{author}{Ryan, T.~E.}, \bibinfo{author}{{Parker-Stetter}, S.},
+  \bibinfo{author}{Stienessen, S.}, \bibinfo{author}{Weber, T.~C.},  and
+  \bibinfo{author}{Williamson, N.~J.} (\textbf{\bibinfo{year}{2015}}).
+  \enquote{\bibinfo{title}{Calibration of acoustic instruments}}
+  \bibinfo{type}{{{ICES Cooperative Research Report No}}. 326} ,
+  \dodoi{10.17895/ices.pub.5494}.
+
+\bibitem[{Denny and Simpson(1998)}]{dennyBroadbandAcousticFish1998}
+\bibinfo{author}{Denny, G.},  and \bibinfo{author}{Simpson, P.}
+  (\textbf{\bibinfo{year}{1998}}). \enquote{\bibinfo{title}{A broadband
+  acoustic fish identification system}} \bibinfo{journal}{The Journal of the
+  Acoustical Society of America} \textbf{103}(5), \bibinfo{pages}{3069--3069},
+  \dodoi{10.1121/1.422851}.
+
+\bibitem[{Ehrenberg(1979)}]{ehrenberg1979}
+\bibinfo{author}{Ehrenberg, J.~E.} (\textbf{\bibinfo{year}{1979}}).
+  \enquote{\bibinfo{title}{A comparative analysis of {\emph{in situ}} methods
+  for directly measuring the acoustic target strength of individual fish}}
+  \bibinfo{journal}{IEEE Journal of Oceanic Engineering} \textbf{4}(4),
+  \bibinfo{pages}{141--152}, \dodoi{10.1109/JOE.1979.1145434}.
+
+\bibitem[{Ehrenberg and Torkelson(2000)}]{ehrenbergFMSlideChirp2000}
+\bibinfo{author}{Ehrenberg, J.~E.},  and \bibinfo{author}{Torkelson, T.~C.}
+  (\textbf{\bibinfo{year}{2000}}). \enquote{\bibinfo{title}{{{FM}} slide
+  (chirp) signals: A technique for significantly improving the signal-to-noise
+  performance in hydroacoustics assessment systems}}
+  \bibinfo{journal}{Fisheries Research} \textbf{47}, \bibinfo{pages}{193--199},
+  \dodoi{10.1016/S0165-7836(00)00169-7}.
+
+\bibitem[{Foote \emph{et~al.}(2005)Foote, Atkins, Francis, and
+  Knutsen}]{Foote2005Measuring}
+\bibinfo{author}{Foote, K.~G.}, \bibinfo{author}{Atkins, P.~R.},
+  \bibinfo{author}{Francis, D. T.~I.},  and \bibinfo{author}{Knutsen, T.}
+  (\textbf{\bibinfo{year}{2005}}). \enquote{\bibinfo{title}{{Measuring echo
+  spectra of marine organisms over a wide bandwidth}}}
+  \bibinfo{address}{Proceedings of the International Conference on Underwater Acoustic Measurements: Technologies and Results, Heraklion, Crete}.
+
+\bibitem[{Forland \emph{et~al.}(2014)Forland, Hobæk, and
+  Korneliussen}]{Forland2014Scattering}
+\bibinfo{author}{Forland, T.~N.}, \bibinfo{author}{Hobæk, H.},  and
+  \bibinfo{author}{Korneliussen, R.~J.} (\textbf{\bibinfo{year}{2014}}).
+  \enquote{\bibinfo{title}{{Scattering properties of Atlantic mackerel over a
+  wide frequency range}}} \bibinfo{journal}{ICES Journal of Marine Science}
+  \textbf{71}(7), \bibinfo{pages}{1904--1912}, \dodoi{10.1093/icesjms/fsu045}.
+
+\bibitem[{Gordon and Zedel(1998)}]{Gordon1998FishMASS}
+\bibinfo{author}{Gordon, L.},  and \bibinfo{author}{Zedel, L.}
+  (\textbf{\bibinfo{year}{1998}}). \enquote{\bibinfo{title}{{FishMASS: what can
+  you do with a little bandwidth when you are watching fish?}}}
+  \bibinfo{journal}{IEEE Seminar Digests} \textbf{1998}(227),
+  \bibinfo{pages}{7}, \dodoi{10.1049/ic:19980186}.
+
+\bibitem[{Hasan(1983)}]{hasan1983}
+\bibinfo{author}{Hasan, T.} (\textbf{\bibinfo{year}{1983}}).
+  \enquote{\bibinfo{title}{Complex demodulation: {{Some}} theory and
+  applications}} in \emph{\bibinfo{booktitle}{Handbook of {{Statistics}}}},
+  \bibinfo{volume}{\textbf{3}} (\bibinfo{publisher}{{Elsevier}}), pp.
+  \bibinfo{pages}{125--156}, \dodoi{10.1016/S0169-7161(83)03009-6}.
+
+\bibitem[{Hob\ae{}k and
+  Forland(2013)}]{hobaekCharacterizationTargetSpheres2013}
+\bibinfo{author}{Hob\ae{}k, H.},  and \bibinfo{author}{Forland, T.~N.}
+  (\textbf{\bibinfo{year}{2013}}). \enquote{\bibinfo{title}{Characterization of
+  {{Target Spheres}} for {{Broad}}-{{Band Calibration}} of {{Acoustic
+  Systems}}}} \bibinfo{journal}{Acta Acustica united with Acustica}
+  \textbf{99}(3), \bibinfo{pages}{465--476}, \dodoi{10.3813/AAA.918627}.
+
+\bibitem[{Holliday and Pieper(1980)}]{holliday1980}
+\bibinfo{author}{Holliday, D.~V.},  and \bibinfo{author}{Pieper, R.~E.}
+  (\textbf{\bibinfo{year}{1980}}). \enquote{\bibinfo{title}{Volume scattering
+  strengths and zooplankton distributions at acoustic frequencies between 0.5
+  and 3 {{MHz}}}} \bibinfo{journal}{The Journal of the Acoustical Society of
+  America} \textbf{67}(1), \bibinfo{pages}{135--146}, \dodoi{10.1121/1.384472}.
+
+\bibitem[{Imaizumi \emph{et~al.}(2009)Imaizumi, Abe, Sawada, Matsuda, Akamatsu,
+  Suga, Wang, Nishimori, Ogawa, Matsuo, and Ito}]{Imaizumi2009Detection}
+\bibinfo{author}{Imaizumi, T.}, \bibinfo{author}{Abe, K.},
+  \bibinfo{author}{Sawada, K.}, \bibinfo{author}{Matsuda, A.},
+  \bibinfo{author}{Akamatsu, T.}, \bibinfo{author}{Suga, T.},
+  \bibinfo{author}{Wang, Y.}, \bibinfo{author}{Nishimori, Y.},
+  \bibinfo{author}{Ogawa, S.}, \bibinfo{author}{Matsuo, I.},  and
+  \bibinfo{author}{Ito, M.} (\textbf{\bibinfo{year}{2009}}).
+  \enquote{\bibinfo{title}{{Detection of in situ fish using broadband
+  split-beam system}}} \bibinfo{journal}{Institute of Electronics, Information,
+  and Communication Engineers, Tech. Rep. IEICE-US2009-36} \textbf{109}(180),
+  \bibinfo{pages}{39--42}.
+
+\bibitem[{Klauder \emph{et~al.}(1960)Klauder, Price, Darlington, and
+  Albersheim}]{klauder1960}
+\bibinfo{author}{Klauder, J.~R.}, \bibinfo{author}{Price, A.~C.},
+  \bibinfo{author}{Darlington, S.},  and \bibinfo{author}{Albersheim, W.~J.}
+  (\textbf{\bibinfo{year}{1960}}). \enquote{\bibinfo{title}{The theory and
+  design of chirp radars}} \bibinfo{journal}{The Bell System Technical Journal}
+  \textbf{39}(4), \bibinfo{pages}{745--808},
+  \dodoi{10.1002/j.1538-7305.1960.tb03942.x}.
+
+\bibitem[{Korneliussen(2010)}]{korneliussen2010}
+\bibinfo{author}{Korneliussen, R.~J.} (\textbf{\bibinfo{year}{2010}}).
+  \enquote{\bibinfo{title}{The acoustic idenification of {{Atlantic}}
+  mackerel}} \bibinfo{journal}{ICES Journal of Marine Science} \textbf{67}(8),
+  \bibinfo{pages}{1749--1758}, \dodoi{10.1093/icesjms/fsq052}.
+
+\bibitem[{Korneliussen \emph{et~al.}(2018)Korneliussen, Berger, Campanlla,
+  Dezhang, Demer, De~Robertis, Domokos, Doray, Fielding, F\"assler, Gauthier,
+  Gastauer, Horne, Hutton, Iriarte, Jech, Kloser, Lawson, {Lebourges-Dhaussy},
+  McQuinn, Pe\~na, Scoulding, Sakinan, Schaber, Taylor, and
+  Thompson}]{korneliussen2018}
+\bibinfo{author}{Korneliussen, R.~J.}, \bibinfo{author}{Berger, L.},
+  \bibinfo{author}{Campanlla, F.}, \bibinfo{author}{Dezhang, C.},
+  \bibinfo{author}{Demer, D.}, \bibinfo{author}{De~Robertis, A.},
+  \bibinfo{author}{Domokos, R.}, \bibinfo{author}{Doray, M.},
+  \bibinfo{author}{Fielding, S.}, \bibinfo{author}{F\"assler, S. M.~M.},
+  \bibinfo{author}{Gauthier, S.}, \bibinfo{author}{Gastauer, S.},
+  \bibinfo{author}{Horne, J.}, \bibinfo{author}{Hutton, B.},
+  \bibinfo{author}{Iriarte, F.}, \bibinfo{author}{Jech, J.~M.},
+  \bibinfo{author}{Kloser, R.}, \bibinfo{author}{Lawson, G.},
+  \bibinfo{author}{{Lebourges-Dhaussy}, A.}, \bibinfo{author}{McQuinn, I.},
+  \bibinfo{author}{Pe\~na, M.}, \bibinfo{author}{Scoulding, B.},
+  \bibinfo{author}{Sakinan, S.}, \bibinfo{author}{Schaber, M.},
+  \bibinfo{author}{Taylor, J.~C.},  and \bibinfo{author}{Thompson, C.~H.}
+  (\textbf{\bibinfo{year}{2018}}). \enquote{\bibinfo{title}{Target
+  classification}} \bibinfo{type}{ICES Cooperative Research Report}
+  \bibinfo{number}{No. 344} , \dodoi{doi.org/10.17895/ices.pub.4567}.
+
+\bibitem[{Korneliussen \emph{et~al.}(2016)Korneliussen, Heggelund, Macaulay,
+  Patel, Johnsen, and Eliassen}]{Korneliussen2016Acoustic}
+\bibinfo{author}{Korneliussen, R.~J.}, \bibinfo{author}{Heggelund, Y.},
+  \bibinfo{author}{Macaulay, G.~J.}, \bibinfo{author}{Patel, D.},
+  \bibinfo{author}{Johnsen, E.},  and \bibinfo{author}{Eliassen, I.~K.}
+  (\textbf{\bibinfo{year}{2016}}). \enquote{\bibinfo{title}{{Acoustic
+  identification of marine species using a feature library}}}
+  \bibinfo{journal}{Methods in Oceanography} \textbf{17},
+  \bibinfo{pages}{187--205}, \dodoi{10.1016/j.mio.2016.09.002}.
+
+\bibitem[{Korneliussen and Ona(2002)}]{Korneliussen2002operational}
+\bibinfo{author}{Korneliussen, R.~J.},  and \bibinfo{author}{Ona, E.}
+  (\textbf{\bibinfo{year}{2002}}). \enquote{\bibinfo{title}{{An operational
+  system for processing and visualizing multi-frequency acoustic data}}}
+  \bibinfo{journal}{ICES Journal of Marine Science} \textbf{59}(2),
+  \bibinfo{pages}{293--313}, \dodoi{10.1006/jmsc.2001.1168}.
+
+\bibitem[{Lavery \emph{et~al.}(2017)Lavery, Bassett, Lawson, and Jech}]{lavery2017}
+\bibinfo{author}{Lavery, A.~C.},  \bibinfo{author}{Bassett, C.},
+  \bibinfo{author}{Lawson, G.~L.}, and \bibinfo{author}{Jech. J.~M.}
+  (\textbf{\bibinfo{year}{2017}}). \enquote{\bibinfo{title}{{Exploiting signal 
+  processing approaches for broadband echosounders}}} \bibinfo{journal}{ICES Journal
+  of Marine Science} \textbf{74}(8), \bibinfo{pages}{2262--2275},
+  \dodoi{10.1093/icesjms/fsx155}.
+  
+\bibitem[{Lunde and Korneliussen(2016)}]{lunde2016}
+\bibinfo{author}{Lunde, P.},  and \bibinfo{author}{Korneliussen, R.~J.}
+  (\textbf{\bibinfo{year}{2016}}). \enquote{\bibinfo{title}{Power-{{Budget
+  Equations}} and {{Calibration Factors}} for {{Fish Abundance Estimation Using
+  Scientific Echo Sounder}} and {{Sonar Systems}}}} \bibinfo{journal}{Journal
+  of Marine Science and Engineering} \textbf{4}(3), \bibinfo{pages}{43},
+  \dodoi{10.3390/jmse4030043}.
+
+\bibitem[{MacLennan(1981)}]{maclennan1981}
+\bibinfo{author}{MacLennan, D.~N.} (\textbf{\bibinfo{year}{1981}}).
+  \enquote{\bibinfo{title}{The {{Theory}} of {{Solid Spheres}} as {{Sonar
+  Calibration Targets}}}} \bibinfo{type}{Scottish {{Fisheries Research Report
+  Number}} 22} .
+
+\bibitem[{MacLennan \emph{et~al.}(2002)MacLennan, Fernandes, and
+  Dalen}]{MacLennan2002consistent}
+\bibinfo{author}{MacLennan, D.~N.}, \bibinfo{author}{Fernandes, P.},  and
+  \bibinfo{author}{Dalen, J.} (\textbf{\bibinfo{year}{2002}}).
+  \enquote{\bibinfo{title}{{A consistent approach to definitions and symbols in
+  fisheries acoustics}}} \bibinfo{journal}{ICES Journal of Marine Science}
+  \textbf{59}, \bibinfo{pages}{365--369}, \dodoi{10.1006/jmsc.2001.1158}.
+
+\bibitem[{Simmonds \emph{et~al.}(1996)Simmonds, Armstrong, and
+  Copland}]{Simmonds1996Species}
+\bibinfo{author}{Simmonds, E.~J.}, \bibinfo{author}{Armstrong, F.},  and
+  \bibinfo{author}{Copland, P.~J.} (\textbf{\bibinfo{year}{1996}}).
+  \enquote{\bibinfo{title}{{Species identification using wideband backscatter
+  with neural network and discriminant analysis}}} \bibinfo{journal}{ICES
+  Journal of Marine Science} \textbf{53}(2), \bibinfo{pages}{189–195},
+  \dodoi{10.1006/jmsc.1996.0021}.
+
+\bibitem[{Simmonds and MacLennan(2005)}]{Simmonds2005Fisheries}
+\bibinfo{author}{Simmonds, J.},  and \bibinfo{author}{MacLennan, D.}
+  (\textbf{\bibinfo{year}{2005}}). \emph{\bibinfo{title}{{Fisheries Acoustics.
+  Theory and Practice}}}, \bibinfo{edition}{2nd ed.}
+  (\bibinfo{publisher}{Blackwell Science}, \bibinfo{address}{Oxford}).
+
+\bibitem[{Skaret \emph{et~al.}(2020)Skaret, Johansen, Johnsen, Fall, Fiksen,
+  Englund, Fauchald, Gj{\o}s{\ae}ter, Macaulay, and Johannesen}]{skaret2020}
+\bibinfo{author}{Skaret, G.}, \bibinfo{author}{Johansen, G.~O.},
+  \bibinfo{author}{Johnsen, E.}, \bibinfo{author}{Fall, J.},
+  \bibinfo{author}{Fiksen, {\O}.}, \bibinfo{author}{Englund, G.},
+  \bibinfo{author}{Fauchald, P.}, \bibinfo{author}{Gj{\o}s{\ae}ter, H.},
+  \bibinfo{author}{Macaulay, G.~J.},  and \bibinfo{author}{Johannesen, E.}
+  (\textbf{\bibinfo{year}{2020}}). \enquote{\bibinfo{title}{Diel vertical
+  movements determine spatial interactions between cod, pelagic fish and krill
+  on an {{Arctic}} shelf bank}} \bibinfo{journal}{Marine Ecology Progress
+  Series} \textbf{638}, \bibinfo{pages}{13--23}, \dodoi{10.3354/meps13254}.
+
+\bibitem[{Stanton and Chu(2008)}]{stanton2008}
+\bibinfo{author}{Stanton, T.~K.},  and \bibinfo{author}{Chu, D.}
+  (\textbf{\bibinfo{year}{2008}}). \enquote{\bibinfo{title}{Calibration of
+  broadband active acoustic systems using a single standard spherical target}}
+  \bibinfo{journal}{The Journal of the Acoustical Society of America}
+  \textbf{124}(1), \bibinfo{pages}{128--136}, \dodoi{10.1121/1.2917387}.
+
+\bibitem[{Stanton \emph{et~al.}(2010)Stanton, Chu, Jech, and
+  Irish}]{Stanton2010New}
+\bibinfo{author}{Stanton, T.~K.}, \bibinfo{author}{Chu, D.},
+  \bibinfo{author}{Jech, J.~M.},  and \bibinfo{author}{Irish, J.~D.}
+  (\textbf{\bibinfo{year}{2010}}). \enquote{\bibinfo{title}{{New broadband
+  methods for resonance classification and high-resolution imagery of fish with
+  swimbladders using a modified commercial broadband echosounder}}}
+  \bibinfo{journal}{ICES Journal of Marine Science} \textbf{67}(2),
+  \bibinfo{pages}{365--378}, \dodoi{10.1093/icesjms/fsp262}.
+
+\bibitem[{Stanton \emph{et~al.}(2012)Stanton, Sellers, and
+  Jech}]{Stanton2012Resonance}
+\bibinfo{author}{Stanton, T.~K.}, \bibinfo{author}{Sellers, C.~J.},  and
+  \bibinfo{author}{Jech, J.~M.} (\textbf{\bibinfo{year}{2012}}).
+  \enquote{\bibinfo{title}{{Resonance classification of mixed assemblages of
+  fish with swimbladders using a modified commercial broadband acoustic
+  echosounder at 1–6 kHz}}} \bibinfo{journal}{Canadian Journal of Fisheries
+  and Aquatic Sciences} \textbf{69}(5), \bibinfo{pages}{854--868},
+  \dodoi{10.1139/f2012-013}.
+
+\bibitem[{Traykovski \emph{et~al.}(1998)Traykovski, O'Driscoll, and
+  McGhee}]{Traykovski1998Effect}
+\bibinfo{author}{Traykovski, L.~M.}, \bibinfo{author}{O'Driscoll, R.},  and
+  \bibinfo{author}{McGhee, D.} (\textbf{\bibinfo{year}{1998}}).
+  \enquote{\bibinfo{title}{{Effect of orientation on broadband acoustic
+  scattering of Antarctic krill \textit{Euphausia superba}: Implications for
+  inverting zooplankton spectral acoustic signatures for angle of
+  orientation}}} \bibinfo{journal}{The Journal of the Acoustical Society of
+  America} \textbf{104}(4), \bibinfo{pages}{2121–2135},
+  \dodoi{10.1121/1.423726}.
+
+\bibitem[{Turin(1960)}]{turin1960}
+\bibinfo{author}{Turin, G.} (\textbf{\bibinfo{year}{1960}}).
+  \enquote{\bibinfo{title}{An introduction to matched filters}}
+  \bibinfo{journal}{IRE Transactions on Information Theory} \textbf{6}(3),
+  \bibinfo{pages}{311--329}, \dodoi{10.1109/TIT.1960.1057571}.
+
+\bibitem[{Zakharia \emph{et~al.}(1989)Zakharia, Corgiatti, Joly, and
+  Person}]{Zakharia1989Wide-band}
+\bibinfo{author}{Zakharia, M.}, \bibinfo{author}{Corgiatti, J.},
+  \bibinfo{author}{Joly, F.},  and \bibinfo{author}{Person, R.}
+  (\textbf{\bibinfo{year}{1989}}). \enquote{\bibinfo{title}{{Wide-band sounder
+  for fisheries}}} \bibinfo{journal}{Proceedings of the Institute of Acoustics}
+  \textbf{11}, \bibinfo{pages}{274--281}.
+
+\bibitem[{Zakharia \emph{et~al.}(1996)Zakharia, Magand, Hetroit, and
+  Diner}]{Zakharia1996Wideband}
+\bibinfo{author}{Zakharia, M.~E.}, \bibinfo{author}{Magand, F.},
+  \bibinfo{author}{Hetroit, F.},  and \bibinfo{author}{Diner, N.}
+  (\textbf{\bibinfo{year}{1996}}). \enquote{\bibinfo{title}{{Wideband sounder
+  for fish species identification at sea}}} \bibinfo{journal}{ICES Journal of
+  Marine Science} \textbf{53}, \bibinfo{pages}{203–208},
+  \dodoi{10.1006/jmsc.1996.0023}.
+
+\bibitem[{Zedel \emph{et~al.}(2003)Zedel, Knutsen, and
+  Patro}]{Zedel2003Acoustic}
+\bibinfo{author}{Zedel, L.}, \bibinfo{author}{Knutsen, T.},  and
+  \bibinfo{author}{Patro, R.} (\textbf{\bibinfo{year}{2003}}).
+  \enquote{\bibinfo{title}{{Acoustic Doppler current profiler observations of
+  herring movement}}} \bibinfo{journal}{ICES Journal of Marine Science}
+  \textbf{60}(4), \bibinfo{pages}{846--859},
+  \dodoi{10.1016/s1054-3139(03)00067-5}.
+
+\end{thebibliography}
+
+
+\end{document}
