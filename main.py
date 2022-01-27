@@ -27,6 +27,7 @@ plt.title(
     .format(f0/1000, f1/1000, slope))
 plt.xlabel('time (ms)')
 plt.ylabel('amplitude')
+plt.savefig('Fig_ytx.png')
 
 # Chapter: Signal reception
 
@@ -48,6 +49,7 @@ plt.plot(np.abs(ekcalc.y_mf_n))
 plt.title('The absolute value of the filtered and decmiated output signal')
 plt.xlabel('samples ()')
 plt.ylabel('amplitude')
+plt.savefig('Fig_y_mf_n.png')
 
 # The autocorrelation function of the matched filter signal
 # ekcalc.y_mf_auto
@@ -57,6 +59,7 @@ plt.plot(np.abs(ekcalc.y_mf_auto))
 plt.title('The autocorrelation function of the filtered and decmiated output signal')
 plt.xlabel('samples')
 plt.ylabel('ACF')
+plt.savefig('Fig_ACF.png')
 
 
 # Calculating the pulse compressed quadrant signals separately on each channel
@@ -79,4 +82,3 @@ p_rx_e = ekcalc.calcPower(y_pc_n)
 y_theta_n, y_phi_n = ekcalc.calcElectricalAngles(y_pc_nu)
 
 
-plt.show()
