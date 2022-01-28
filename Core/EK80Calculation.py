@@ -130,8 +130,8 @@ class EK80Calculation(EK80DataContainer):
         return np.array(pulseCompressedQuadrants)
 
     @staticmethod
-    def calcAvgSumQuad(y_pc):
-        return np.sum(y_pc, axis=0) / y_pc.shape[0]
+    def calcAvgSumQuad(y_pc_nu):
+        return np.sum(y_pc_nu, axis=0) / y_pc_nu.shape[0]
 
     def calcPower(self, y_pc):
         return self.C1Prx * np.abs(y_pc) ** 2
