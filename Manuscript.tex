@@ -176,11 +176,7 @@ The generated signal $\ytxe(\timesym)$ is converted to an analogue electric sign
 
 \subsection{Signal reception}
 
- (Fig. \ref{fi:ek_sys}) 
-
-The returning acoustic signal, $\yrxa(\timesym)$, is received by each transducer sector, $\channelsym$, and converted to an analog electric signal, $\yrxe(\timesym,\channelsym)$, in the transducer and received by corresponding receiver channels, $\channelsym$, in the transceiver.
-
-The received electric signal, $\yrxe(\timesym,\channelsym)$, from each channel, $\channelsym$, is pre-amplified, filtered by an analog anti-aliasing filter, and digitized in the transceiver at a frequency of $\fs$, creating the digital signal, $\yrxorg(\samplesymt,\channelsym)$.
+The returning acoustic signal, $\yrxa(\timesym)$, is received by each transducer sector, $\channelsym$, and converted to an analog electric signal, $\yrxe(\timesym,\channelsym)$, in the transducer and received by corresponding receiver channels, $\channelsym$, in the transceiver. The received electric signal, $\yrxe(\timesym,\channelsym)$, from each channel, $\channelsym$, is pre-amplified, filtered by an analog anti-aliasing filter, and digitized in the transceiver at a frequency of $\fs$, creating the digital signal, $\yrxorg(\samplesymt,\channelsym)$.
 
 To remove noise and reduce the quantity of data, the sampled signal from each channel is filtered and decimated in multiple stages, $\stagesym$, using complex bandpass filters, $\hfl(\genidxsym,\stagesym)$, and decimation factors, $\decfac(\stagesym)$. The individual filter coefficients for each filter and decimation stage are indexed by $i$. The output signal from each channel, $\channelsym$, from each filter and decimation stage, $\stagesym$, is then given by:
 %
@@ -197,7 +193,15 @@ where $\yrx(\samplesymt,\channelsym,0)$ is set to $\yrxorg(\samplesymt,\channels
 \fsdec = \fs\prod_{\stagesym=1}^{\nstages} \frac{1}{\decfac(\stagesym)}.
 \end{equation}
 %
-The characteristics of the bandpass filter and decimation factors are chosen with regard to the desired operating bandwidth, noise suppression levels, impulse response duration, and other common filter characteristics, with the aim of maintaining sufficient information in the data. The filtered and decimated complex samples from each transducer channel, $\yrx(\samplesymt,\channelsym)$, are considered raw data and are recorded together with additional data such as from position and motion sensors and system configuration data in raw data files for display and analysis by processing software.
+The characteristics of the bandpass filter and decimation factors are chosen with regard to the desired operating bandwidth, noise suppression levels, impulse response duration, and other common filter characteristics, with the aim of maintaining sufficient information in the data. In the example $N_v=2$. The frequency responses of the filters are shown in Figure~\ref{fi:fir}, and the corresponding filter coefficients and decimation factors are found in the test data set.
+
+\begin{figure}
+\includegraphics[width=16cm]{Fig_fir}
+\caption{\label{fi:fir} The frequency (power) response of the filters in from our test set.}
+\end{figure}
+
+The original sample data $\yrxorg(\samplesymt,\channelsym)$ are not available in the EK80 data files. Instead,the resulting filtered and decimated complex samples from each transducer channel $\yrx(\samplesymt,\channelsym)$ are stored in the data files. The data are recorded together with additional data such as from position and motion sensors and system configuration data in raw data files for display and analysis by processing software. The filter parameters are in this paper used to generate the transmit pulse for the matched filter, see below.
+
 
 \subsection{Pulse compression}
 To increase signal-to-noise ratio and resolution along the acoustic beam a matched filter may be applied to the raw data samples \citep{turin1960}. This technique is also known as pulse compression \citep{klauder1960}. One approach for a matched filter is to use a normalized version of the ideal transmit signal as the replicate signal, filtered and decimated using the same filters and decimation factors as applied in Eq. \ref{eq:yrx}. The normalized ideal transmit signal, $\ytxnorm(\samplesymt)$, is given by:
@@ -210,15 +214,15 @@ where $\textrm{max}$ is the maximum value of $\ytx(\samplesymt)$. The filtered a
 %
 \begin{equation}
 \label{eq:FilterStagesTX}
-\ytxnorm(\samplesymt,\stagesym) = \left( \ytxnorm(\samplesymt,\stagesym-1) * \hfl(\genidxsym,\stagesym) \right)_{\downarrow \decfac(\stagesym)}, 
+\ytxnorm(\samplesymt,\stagesym) = \left[ \ytxnorm(\samplesymt,\stagesym-1) * \hfl(\genidxsym,\stagesym) \right]_{\downarrow \decfac(\stagesym)}, 
 \stagesym = 1,\ldots,\nstages,
 \end{equation}
 %
-where $\ytxnorm(\samplesymt,0)$ is set to $\ytxnorm(\samplesymt)$ and $\downarrow$ indicates decimation by the factor $\decfac(\stagesym)$. The output signal from the final filter and decimation stage, $\ytxnorm(\samplesymt,\nstages)$, is used as the matched filter and is denoted as $\ymf(\samplesymt)$.
+where $\ytxnorm(\samplesymt,0)$ is set to $\ytxnorm(\samplesymt)$ and $\downarrow$ indicates decimation by the factor $\decfac(\stagesym)$. The output signal from the final filter and decimation stage, $\ytxnorm(\samplesymt,\nstages)$, is used as the matched filter and is denoted as $\ymf(\samplesymt)$  (Fig.~\ref{fi:y_mf_n}).
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_y_mf_n}
-\caption{\label{fi:ytx} The absolute value of the filtered and decimated output signal used in the pulse compression.}
+\caption{\label{fi:y_mf_n} The absolute value of the filtered and decimated output signal $\ymf(\samplesymt)$ used by the pulse compression.}
 \end{figure}
 
 To perform pulse compression the received signal, $\yrx(\samplesymt,\channelsym)$, is convolved with a complex conjugated and time-reversed version of the matched filter signal with the matched filter signal, and here also normalized with the $l^2$-norm of the matched filter to maintain received signal power. The pulse compressed signal, $\ypc(\samplesymt,\channelsym)$, then becomes

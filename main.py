@@ -6,11 +6,13 @@ from Core.EK80Calculation import EK80Calculation
 # Test data
 
 # The data file ./data/pyEcholabEK80data.json contain data from one
-# ping from the EK80 echosounder, including the 
+# ping from the EK80 echosounder, including the
 
 ekcalc = EK80Calculation('./data/pyEcholabEK80data.json')
 
+#
 # Chapter: Signal generation
+#
 
 f0 = ekcalc.f0  # frequency (Hz)
 f1 = ekcalc.f1  # frequency (Hz)
@@ -29,13 +31,63 @@ plt.xlabel('time (ms)')
 plt.ylabel('amplitude')
 plt.savefig('Fig_ytx.png')
 
+#
 # Chapter: Signal reception
+#
 
-# The raw signal 'y_rx_org' is stored as complex numbers in a numpy nd array
-# where the first dimension corresponds to one of the four the transducer
-# quadrants adn the second is the sample in time. The complex numbers include
-# the phase of the signal.
-# (or is this the decmiated signal? Unclear.)
+# The raw signal 'y_rx_org' is filtered and decimated to the filter
+# bank and the final signal is stored in 'y_rx_nu'. Note that the
+# raw files from the EK80 implementation does not store the initial
+# or the intermediate steps in the raw file, but the filtered and
+# deciated result, store in the variable 'y_rx_nu'
+
+# The filter coefficients 'h_fl_iv' are accessible through
+# In this implementation there are two filters (N_v=2). The first
+# filter operates on the raw data [y_rx(N,u,0)=y_rx_org].
+ekcalc.fil1s[0].Coefficients
+ekcalc.fil1s[1].Coefficients
+# and the corresponding decimation factor is available through
+ekcalc.fil1s[0].DecimationFactor
+ekcalc.fil1s[1].DecimationFactor
+
+# The frequency response function of the filter is given by its
+# discrete time fourier transform:
+H0 = np.fft.fft(ekcalc.fil1s[0].Coefficients)
+H1 = np.fft.fft(ekcalc.fil1s[1].Coefficients)
+
+# Plot of the frequency response of the filters (power) (in dB)
+# [someone needs to review this, I am not an expert here and I am not
+# sure hwo this works for complex filters and how to deal with the
+# higher freqs (that are symm for real input)]
+plt.figure()
+#plt.plot(np.fft.fftfreq(len(H0))*fs/1000, 20 * np.log10(H0/len(H0)),'.',
+#         np.fft.fftfreq(len(H1))*fs/1000, 20 * np.log10(H1/len(H1)),'.')
+plt.semilogx(np.arange(len(H0)), 20 * np.log10(np.abs(H0)),
+             np.arange(len(H1)), 20 * np.log10(np.abs(H1)))
+plt.xlabel('Normalized Frequency')
+plt.ylabel('Gain [dB]')
+plt.savefig('Fig_fir.png')
+
+#
+# Chapter: Pulse compression
+#
+
+# The normalized ideal transmit signal is given by
+
+y_tx (ideal pulse, fs orig) -> Decimation processing -> y_mf_n
+
+# EK80calcuation.calculateDerivedVariables(ekcalc)
+
+# These are on the output signal only:
+
+# The stage filters are accessible here
+ekcalc.stageFilter(y_tx, fil1)
+
+ekcalc.y_mf_n
+ekcalc.y_mf
+ekcalc.y_mf_twoNormSquared
+ekcalc.y_mf_auto
+
 
 print('The four quadrants and the length of the sampled data: ' +
       str(np.shape(ekcalc.y_rx_org)))
@@ -44,6 +96,7 @@ print('The four quadrants and the length of the sampled data: ' +
 
 # The source signal filtered through the final decimation is stored in
 # ekcalc.y_rx_org
+
 plt.figure()
 plt.plot(np.abs(ekcalc.y_mf_n))
 plt.title('The absolute value of the filtered and decmiated output signal')
