@@ -131,6 +131,15 @@ class EK80Calculation(EK80DataContainer):
 
     @staticmethod
     def calcAvgSumQuad(y_pc_nu):
+        """
+        Calculate the mean signal over all transducer sectors
+
+        Input:
+        np_array: y_pc_nu
+
+        Returns:
+        np.array: y_pc_n
+        """
         return np.sum(y_pc_nu, axis=0) / y_pc_nu.shape[0]
 
     def calcPower(self, y_pc):
