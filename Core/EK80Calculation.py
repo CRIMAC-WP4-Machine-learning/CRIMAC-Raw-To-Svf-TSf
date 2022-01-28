@@ -110,7 +110,10 @@ class EK80Calculation(EK80DataContainer):
 
     def calcPulseCompressedQuadrants(self, quadrant_signals):
         """
-        Generate match filtered transmit pulse
+        Generate matched filtered signal for each quadrant
+        
+        Returns:
+        np.array: y_pc_nu pulseCompressedQuadrants
         """
         # Do pulse compression on all quadrants
         pulseCompressedQuadrants = []
