@@ -109,14 +109,20 @@ class EK80Calculation(EK80DataContainer):
 
 
     def calcPulseCompressedQuadrants(self, quadrant_signals):
-
+        """
+        Generate match filtered transmit pulse
+        """
         # Do pulse compression on all quadrants
         pulseCompressedQuadrants = []
-        start_idx = len(self.y_mf_n) - 1
+        start_idx = len(self.y_mf_n_conj_rev) - 1
         for u in quadrant_signals:
-            y_pc = np.convolve(self.y_mf_n, u, mode='full') / self.y_mf_twoNormSquared
-            y_pc = y_pc[start_idx::] # Correct sample indexes for mached filter
-            pulseCompressedQuadrants.append(y_pc)
+            # Please check that the order is ok and that
+            # the use of y_mf_n_conj_rev is ok. I did this after a beer.
+            y_pc_nu = np.convolve(self.y_mf_n_conj_rev, u,
+                                  mode='full') / self.y_mf_twoNormSquared
+            # Correct sample indexes for mached filter
+            y_pc_nu = y_pc_nu[start_idx::] 
+            pulseCompressedQuadrants.append(y_pc_nu)
 
         return np.array(pulseCompressedQuadrants)
 
