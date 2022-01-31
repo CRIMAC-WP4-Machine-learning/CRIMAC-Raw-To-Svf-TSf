@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Optional file which allows the reading of EK80 raw data with pyecholab, selecting  a single ping and storing in json data file.
+Optional file which allows the reading of EK80 raw data with pyecholab, selecting  a single ping and storing
 1.Environmental and calibration data
 2.Complex values per sector
-Write to json file for ek80pulsecompression.py
+in json data file which can be read with the EK80 processing scripts.
 Requires that pyecholab is installed
 https://github.com/CI-CMG/pyEcholab
+
 Usage:
 python readpyecholabPing --channel 2 --pingNo 11 --inputFile C:/Users/a32685/Documents/Projects/2020_CRIMAC/CRIMACHackEx/IMR-CRIMAC-D20201120-T080856.raw --outputFile ..\Data\pyEcholabEK80data.json
 or if you are within Spyder or similar:
