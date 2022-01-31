@@ -8,9 +8,9 @@ Requires that pyecholab is installed
 https://github.com/CI-CMG/pyEcholab
 
 Usage:
-python readpyecholabPing --channel 2 --pingNo 11 --inputFile C:/Users/a32685/Documents/Projects/2020_CRIMAC/CRIMACHackEx/IMR-CRIMAC-D20201120-T080856.raw --outputFile ..\Data\pyEcholabEK80data.json
+python readpyecholabPing --channel 2 --pingNo 11 --inputFile E:/IMR-CRIMAC-EK80-FM-38kHz-WC22-WC381.raw --outputFile ..\Data\pyEcholabEK80data.json
 or if you are within Spyder or similar:
-run readpyecholabPing --channel 2 --pingNo 11 --inputFile C:/Users/a32685/Documents/Projects/2020_CRIMAC/CRIMACHackEx/IMR-CRIMAC-D20201120-T080856.raw --outputFile ..\Data\pyEcholabEK80data.json
+run readpyecholabPing --channel 2 --pingNo 11 --inputFile E:/IMR-CRIMAC-EK80-FM-38kHz-WC22-WC381.raw --outputFile ..\Data\pyEcholabEK80data.json
 Reads channel 2, in this case 38 kHz, and ping number 11 in the raw file
 GP 01.06.2021
 """
