@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Read data with pyecholab - select a single ping
+Optional file which allows the reading of EK80 raw data with pyecholab, selecting  a single ping and storing in json data file.
 1.Environmental and calibration data
 2.Complex values per sector
 Write to json file for ek80pulsecompression.py
@@ -9,7 +9,6 @@ https://github.com/CI-CMG/pyEcholab
 Usage:
 python readpyecholabPing --channel 2 --pingNo 11 --inputFile C:/Users/a32685/Documents/Projects/2020_CRIMAC/CRIMACHackEx/cal-babak-D20201120-T080856.raw --outputFile ..\Data\pyEcholabEK80data.json
 or if you are within Spyder or similar:
-run readpyecholabPing --channel 2 --pingNo 11 --inputFile C:/Users/a32685/Documents/Projects/2020_CRIMAC/CRIMACHackEx/cal-babak-D20201120-T080856.raw --outputFile data.json
 run readpyecholabPing --channel 2 --pingNo 11 --inputFile C:/Users/a32685/Documents/Projects/2020_CRIMAC/CRIMACHackEx/cal-babak-D20201120-T080856.raw --outputFile ..\Data\pyEcholabEK80data.json
 Reads channel 2, in this case 38 kHz, and ping number 11 in the raw file
 GP 01.06.2021
