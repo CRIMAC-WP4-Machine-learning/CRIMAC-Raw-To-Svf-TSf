@@ -219,10 +219,21 @@ where $\textrm{max}$ is the maximum value of $\ytx(\samplesymt)$. The filtered a
 \end{equation}
 %
 where $\ytxnorm(\samplesymt,0)$ is set to $\ytxnorm(\samplesymt)$ and $\downarrow$ indicates decimation by the factor $\decfac(\stagesym)$. The output signal from the final filter and decimation stage, $\ytxnorm(\samplesymt,\nstages)$, is used as the matched filter and is denoted as $\ymf(\samplesymt)$  (Fig.~\ref{fi:y_mf_n}).
-
+%
 \begin{figure}
 \includegraphics[width=16cm]{Fig_y_mf_n}
 \caption{\label{fi:y_mf_n} The absolute value of the filtered and decimated output signal $\ymf(\samplesymt)$ used by the pulse compression.}
+\end{figure}
+
+The auto correlation function of the matched filter signal, $\ymfauto(\samplesymt)$, that will be used in a later processing step is defined as:
+\begin{equation}
+\label{eq:TXAuto}
+\ymfauto(\samplesymt) = \frac{\ymf(\samplesymt)*\ymf^*(-\samplesymt)}{||\ymf||^2_2}.
+\end{equation}
+
+\begin{figure}
+\includegraphics{Fig_ACF}
+\caption{\label{fi:ACF}.}
 \end{figure}
 
 To perform pulse compression the received signal, $\yrx(\samplesymt,\channelsym)$, is convolved with a complex conjugated and time-reversed version of the matched filter signal with the matched filter signal, and here also normalized with the $l^2$-norm of the matched filter to maintain received signal power. The pulse compressed signal, $\ypc(\samplesymt,\channelsym)$, then becomes
@@ -253,18 +264,6 @@ where fore, aft, star(board), and port indicate the relevant transducer halves.
 \caption{\label{fi:trd_quad}Transducer divided into four quadrants. The labels are directions often used when a transducer is mounted on a ship.}
 \end{figure}
 %
-\subsection{Auto correlation function}
-The auto correlation function of the matched filter signal, $\ymfauto(\samplesymt)$, that will be used in a later processing step is defined as:
-\begin{equation}
-\label{eq:TXAuto}
-\ymfauto(\samplesymt) = \frac{\ymf(\samplesymt)*\ymf^*(-\samplesymt)}{||\ymf||^2_2}.
-\end{equation}
-
-\begin{figure}
-\includegraphics{Fig_ACF}
-\caption{\label{fi:ACF}.}
-\end{figure}
-
 
 
 \subsection{Power and angle samples}
