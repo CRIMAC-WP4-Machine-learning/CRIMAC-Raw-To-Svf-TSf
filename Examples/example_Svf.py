@@ -18,7 +18,7 @@ if __name__ == '__main__':
     #ekdata = EK80DataContainer(args.file)
     ekcalc = EK80Calculation(args.file)
 
-    y_pc_u = ekcalc.calcPulseCompressedQuadrants(ekcalc.y_rx_org)
+    y_pc_u = ekcalc.calcPulseCompressedQuadrants(ekcalc.y_rx_nu)
     y_pc = ekcalc.calcAvgSumQuad(y_pc_u)
     p_rx_e = ekcalc.calcPower(y_pc)
 

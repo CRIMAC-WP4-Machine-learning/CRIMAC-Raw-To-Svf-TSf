@@ -38,37 +38,59 @@ class EK80Calculation(EK80DataContainer):
 
     def calculateDerivedVariables(self):
 
+        """
+        Generate match filtered transmit pulse
+
+        Function to generate the decmiated and filtered transmit
+        pulse for matche filtering
+        
+        self.f_c Center frequency for transmit pulse
+        self.y_tx_n Ideal transmit pulse at original sampling rate
+        self.y_tx_n_t Time vector for transmit pulse at original sampling rate
+        self.y_tilde_tx_n Normalized ideal transmit pulse
+        self.y_mf_n Filtered and decimated transmit pulse for matched filter
+        self.y_mf_n_conj_rev Complex conjugated time reversed filter
+        self.y_mf_twoNormSquared Squared 2-norm of mathced filter
+        self.y_mf_auto Auto correlation function for matched filter
+        self.tau_eff effective pulse duration
+  
+        """
+
         # Estmate center frequency for transmit pulse
         self.f_c = (self.f0 + self.f1) / 2.0
 
         # Generate ideal transmit pulse at original sampling rate
-        y_tx, t = EK80Calculation.generateIdealWindowedSendPulse(self.f0, self.f1, self.tau, self.f_s,
-                                                                 self.slope)
-        self.ytx0 = y_tx
-        self.ytx0_t = t
+        y_tx_n, t = EK80Calculation.generateIdealWindowedSendPulse(
+            self.f0, self.f1, self.tau, self.f_s, self.slope)
+        self.y_tx_n = y_tx_n
+        self.y_tx_n_t = t
 
         # Normalize ideal transmit pulse
-        y_tx = y_tx / np.max(y_tx)
+        y_tilde_tx_n = y_tx_n / np.max(y_tx_n)
 
-        # Filter and decimate ideal transmit pulse trough stage filters and calculate decimated sampling rate
+        # Filter and decimate ideal transmit pulse trough stage filters
+        # and calculate decimated sampling rate
+        y_tilde_tx_nv = y_tilde_tx_n
         self.f_s_dec *= self.f_s
         if self.fil1s is not None:
             for fil1 in self.fil1s:
-                y_tx = self.stageFilter(y_tx, fil1)
+                y_tilde_tx_nv = self.stageFilter(y_tilde_tx_nv, fil1)
                 self.f_s_dec *= 1 / fil1.DecimationFactor
 
-        # Output signal from the final filter and decimation stage is used as matched filter
-        y_mf = y_tx
-        self.y_mf = y_mf
-
-        # Create complex conjugated time reversed version and 2-norm of matched filter
-        y_mf_n = np.conj(y_mf)[::-1]
-        y_mf_twoNormSquared = np.linalg.norm(y_mf, 2) ** 2
+        # Output signal from the final filter and decimation stage is used
+        # as matched filter
+        y_mf_n = y_tilde_tx_nv
         self.y_mf_n = y_mf_n
+        
+        # Create complex conjugated time reversed version and 2-norm of
+        # matched filter
+        y_mf_n_conj_rev = np.conj(y_mf_n)[::-1]
+        y_mf_twoNormSquared = np.linalg.norm(y_mf_n, 2) ** 2
+        self.y_mf_n_conj_rev = y_mf_n_conj_rev
         self.y_mf_twoNormSquared = y_mf_twoNormSquared
 
         # Calculate auto correlation function for matched filter
-        y_mf_auto = np.convolve(y_mf, y_mf_n) / y_mf_twoNormSquared
+        y_mf_auto = np.convolve(y_mf_n, y_mf_n_conj_rev) / y_mf_twoNormSquared
         self.y_mf_auto = y_mf_auto
 
         # Estimate effective pulse duration
@@ -80,26 +102,45 @@ class EK80Calculation(EK80DataContainer):
             self.frequencies = np.array(self.frequencies)
         else:
             # If no calibration make a frequency vector
-            # This is used to calculate correct frequencies after signal decimation
+            # This is used to calculate correct frequencies after signal
+            # decimation
             noFreq = 112
             self.frequencies = np.linspace(self.f0, self.f1, noFreq)
 
 
     def calcPulseCompressedQuadrants(self, quadrant_signals):
-
+        """
+        Generate matched filtered signal for each quadrant
+        
+        Returns:
+        np.array: y_pc_nu pulseCompressedQuadrants
+        """
         # Do pulse compression on all quadrants
         pulseCompressedQuadrants = []
-        start_idx = len(self.y_mf_n) - 1
+        start_idx = len(self.y_mf_n_conj_rev) - 1
         for u in quadrant_signals:
-            y_pc = np.convolve(self.y_mf_n, u, mode='full') / self.y_mf_twoNormSquared
-            y_pc = y_pc[start_idx::] # Correct sample indexes for mached filter
-            pulseCompressedQuadrants.append(y_pc)
+            # Please check that the order is ok and that
+            # the use of y_mf_n_conj_rev is ok. I did this after a beer.
+            y_pc_nu = np.convolve(self.y_mf_n_conj_rev, u,
+                                  mode='full') / self.y_mf_twoNormSquared
+            # Correct sample indexes for mached filter
+            y_pc_nu = y_pc_nu[start_idx::] 
+            pulseCompressedQuadrants.append(y_pc_nu)
 
         return np.array(pulseCompressedQuadrants)
 
     @staticmethod
-    def calcAvgSumQuad(y_pc):
-        return np.sum(y_pc, axis=0) / y_pc.shape[0]
+    def calcAvgSumQuad(y_pc_nu):
+        """
+        Calculate the mean signal over all transducer sectors
+
+        Input:
+        np_array: y_pc_nu
+
+        Returns:
+        np.array: y_pc_n
+        """
+        return np.sum(y_pc_nu, axis=0) / y_pc_nu.shape[0]
 
     def calcPower(self, y_pc):
         return self.C1Prx * np.abs(y_pc) ** 2
@@ -300,8 +341,8 @@ class EK80Calculation(EK80DataContainer):
         y_pc_star = 0.5 * (y_pc[0, :] + y_pc[3, :])
         y_pc_port = 0.5 * (y_pc[1, :] + y_pc[2, :])
 
-        y_alon = np.atan2(np.real(y_pc_fore), np.imag(np.conj(y_pc_aft))) * 180 / np.pi
-        y_athw = np.atan2(np.real(y_pc_star), np.imag(np.conj(y_pc_port))) * 180 / np.pi
+        y_alon = np.arctan2(np.real(y_pc_fore), np.imag(np.conj(y_pc_aft))) * 180 / np.pi
+        y_athw = np.arctan2(np.real(y_pc_star), np.imag(np.conj(y_pc_port))) * 180 / np.pi
 
         return y_alon, y_athw
 

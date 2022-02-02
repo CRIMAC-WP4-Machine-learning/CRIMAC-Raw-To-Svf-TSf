@@ -157,14 +157,26 @@ Our presentation uses nomenclature and approaches that are commonly used for nar
 A basic echosounder system consists of a transducer, a transceiver, and a computer program that controls the operation of the transceiver and records received signals. During transmission the program defines the signals which are created as electric signals in the transceiver, converted to acoustic signals by the transducer and transmitted into the water. The acoustic signals propagate through the water, are reflected or scattered by objects in the water, and propagate back to the transducer. During reception the transducer converts the received acoustic signals to electric signals, which are received, pre-amplified, filtered, digitized, and processed in the transceiver, and then transferred to the controlling program for further data processing and storage (Fig. \ref{fi:ek_sys}). Many types of transmit signals are feasible - this paper considers only the transmission of linear frequency modulated signals (also known as linear chirps).
 
 \begin{figure}
-\includegraphics[width=16cm]{Figure1}
+\includegraphics[width=16cm]{Fig_ek_sys}
 \caption{\label{fi:ek_sys}Signal and data flow in the \ek{} system. An echosounder ping starts with the definition of a transmit signal (upper left) and ends with file storage (lower middle) and display and analysis (lower right). Note that all signals are complex-valued time-series.}
 \end{figure}
-\subsection{Internal signal processing}
 
-The controlling computer program generates a short-duration digital transmit signal (a ping), $\ytx(\samplesymt)$, that is converted to an analogue electric signal, $\ytxe(\timesym)$, by the transceiver and applied to the transducer to generate the transmitted acoustic signal $\ytxa(\timesym)$ (Fig. \ref{fi:ek_sys}) where $\samplesymt$ is a sample index in the discrete time domain and $\timesym$ is time for the analog signal. Any returning acoustic signal, $\yrxa(\timesym)$, is received by each transducer sector, $\channelsym$, and converted to an analog electric signal, $\yrxe(\timesym,\channelsym)$, in the transducer and received by corresponding receiver channels, $\channelsym$, in the transceiver. For a split-aperture echosounder system, there are typically three or four channels in the system (a minimum of three are necessary for estimating the angle of arriving echoes). Here, we focus on a four-channel system.
+\subsection{Signal generation}
 
-The received electric signal, $\yrxe(\timesym,\channelsym)$, from each channel, $\channelsym$, is pre-amplified, filtered by an analog anti-aliasing filter, and digitized in the transceiver at a frequency of $\fs$, creating the digital signal, $\yrxorg(\samplesymt,\channelsym)$.
+The controlling computer program generates a short-duration digital transmit signal (a ping), $\ytx(\samplesymt)$, where $\samplesymt$ is a sample index in the discrete time domain. Typical BB pulses are linear upsweep pulses windowed by an envelope function. In the EK80 a linear sweep enveloped by a Hann function is implemented (Fig.~\ref{fi:ytx}. This is found in the class \verb|Core.EK80Calculation.generateIdealWindowedSendPulse|, where the parameters 'f0', 'f1', tau, fs and slope are the initial frequency, the final frequency, the pulse duration, the sampling rate, and the proportion of the signal that is tapered in each end, respectively. A slope of 0 and .5 indicates no tapering and tapering across the whole signal, respectively.
+
+To generate the signal
+
+The generated signal $\ytxe(\timesym)$ is converted to an analogue electric signal and amplified by the transceiver to obtain analogue signal $\ytxe(\timesym)$. The analogue and amplified signal is passed on to the transducer to generate the transmitted acoustic signal $\ytxA(\timesym)$ in the water column, where $\timesym$ is the time for the (analog) signal. For a split-aperture echosounder system, there are typically three or four channels to allow estimation of the angle of arriving echoes, and the signal is typically transmitted with equal power across the channels.
+
+\begin{figure}
+\includegraphics[width=16cm]{Fig_ytx}
+\caption{\label{fi:ytx} Ideal and enveloped send pulse between 34kHz to 45kHz with a slope of 0.057, as implemented in the EK80. The orange curve illustrate the effect of setting the slope to 0.5.}
+\end{figure}
+
+\subsection{Signal reception}
+
+The returning acoustic signal, $\yrxa(\timesym)$, is received by each transducer sector, $\channelsym$, and converted to an analog electric signal, $\yrxe(\timesym,\channelsym)$, in the transducer and received by corresponding receiver channels, $\channelsym$, in the transceiver. The received electric signal, $\yrxe(\timesym,\channelsym)$, from each channel, $\channelsym$, is pre-amplified, filtered by an analog anti-aliasing filter, and digitized in the transceiver at a frequency of $\fs$, creating the digital signal, $\yrxorg(\samplesymt,\channelsym)$.
 
 To remove noise and reduce the quantity of data, the sampled signal from each channel is filtered and decimated in multiple stages, $\stagesym$, using complex bandpass filters, $\hfl(\genidxsym,\stagesym)$, and decimation factors, $\decfac(\stagesym)$. The individual filter coefficients for each filter and decimation stage are indexed by $i$. The output signal from each channel, $\channelsym$, from each filter and decimation stage, $\stagesym$, is then given by:
 %
@@ -181,7 +193,15 @@ where $\yrx(\samplesymt,\channelsym,0)$ is set to $\yrxorg(\samplesymt,\channels
 \fsdec = \fs\prod_{\stagesym=1}^{\nstages} \frac{1}{\decfac(\stagesym)}.
 \end{equation}
 %
-The characteristics of the bandpass filter and decimation factors are chosen with regard to the desired operating bandwidth, noise suppression levels, impulse response duration, and other common filter characteristics, with the aim of maintaining sufficient information in the data. The filtered and decimated complex samples from each transducer channel, $\yrx(\samplesymt,\channelsym)$, are considered raw data and are recorded together with additional data such as from position and motion sensors and system configuration data in raw data files for display and analysis by processing software.
+The characteristics of the bandpass filter and decimation factors are chosen with regard to the desired operating bandwidth, noise suppression levels, impulse response duration, and other common filter characteristics, with the aim of maintaining sufficient information in the data. In the example $N_v=2$. The frequency responses of the filters are shown in Figure~\ref{fi:fir}, and the corresponding filter coefficients and decimation factors are found in the test data set.
+
+\begin{figure}
+\includegraphics[width=16cm]{Fig_fir}
+\caption{\label{fi:fir} The frequency (power) response of the filters in from our test set.}
+\end{figure}
+
+The original sample data $\yrxorg(\samplesymt,\channelsym)$ are not available in the EK80 data files. Instead,the resulting filtered and decimated complex samples from each transducer channel $\yrx(\samplesymt,\channelsym)$ are stored in the data files. The data are recorded together with additional data such as from position and motion sensors and system configuration data in raw data files for display and analysis by processing software. The filter parameters are in this paper used to generate the transmit pulse for the matched filter, see below.
+
 
 \subsection{Pulse compression}
 To increase signal-to-noise ratio and resolution along the acoustic beam a matched filter may be applied to the raw data samples \citep{turin1960}. This technique is also known as pulse compression \citep{klauder1960}. One approach for a matched filter is to use a normalized version of the ideal transmit signal as the replicate signal, filtered and decimated using the same filters and decimation factors as applied in Eq. \ref{eq:yrx}. The normalized ideal transmit signal, $\ytxnorm(\samplesymt)$, is given by:
@@ -194,11 +214,27 @@ where $\textrm{max}$ is the maximum value of $\ytx(\samplesymt)$. The filtered a
 %
 \begin{equation}
 \label{eq:FilterStagesTX}
-\ytxnorm(\samplesymt,\stagesym) = \left( \ytxnorm(\samplesymt,\stagesym-1) * \hfl(\genidxsym,\stagesym) \right)_{\downarrow \decfac(\stagesym)}, 
+\ytxnorm(\samplesymt,\stagesym) = \left[ \ytxnorm(\samplesymt,\stagesym-1) * \hfl(\genidxsym,\stagesym) \right]_{\downarrow \decfac(\stagesym)}, 
 \stagesym = 1,\ldots,\nstages,
 \end{equation}
 %
-where $\ytxnorm(\samplesymt,0)$ is set to $\ytxnorm(\samplesymt)$ and $\downarrow$ indicates decimation by the factor $\decfac(\stagesym)$. The output signal from the final filter and decimation stage, $\ytxnorm(\samplesymt,\nstages)$, is used as the matched filter and is denoted as $\ymf(\samplesymt)$.
+where $\ytxnorm(\samplesymt,0)$ is set to $\ytxnorm(\samplesymt)$ and $\downarrow$ indicates decimation by the factor $\decfac(\stagesym)$. The output signal from the final filter and decimation stage, $\ytxnorm(\samplesymt,\nstages)$, is used as the matched filter and is denoted as $\ymf(\samplesymt)$  (Fig.~\ref{fi:y_mf_n}).
+%
+\begin{figure}
+\includegraphics[width=16cm]{Fig_y_mf_n}
+\caption{\label{fi:y_mf_n} The absolute value of the filtered and decimated output signal $\ymf(\samplesymt)$ used by the pulse compression.}
+\end{figure}
+
+The auto correlation function of the matched filter signal, $\ymfauto(\samplesymt)$, that will be used in a later processing step is defined as:
+\begin{equation}
+\label{eq:TXAuto}
+\ymfauto(\samplesymt) = \frac{\ymf(\samplesymt)*\ymf^*(-\samplesymt)}{||\ymf||^2_2}.
+\end{equation}
+
+\begin{figure}
+\includegraphics{Fig_ACF}
+\caption{\label{fi:ACF}.}
+\end{figure}
 
 To perform pulse compression the received signal, $\yrx(\samplesymt,\channelsym)$, is convolved with a complex conjugated and time-reversed version of the matched filter signal with the matched filter signal, and here also normalized with the $l^2$-norm of the matched filter to maintain received signal power. The pulse compressed signal, $\ypc(\samplesymt,\channelsym)$, then becomes
 \begin{equation}
@@ -224,16 +260,11 @@ y_{\textrm{pc,port}}(\samplesymt) & = & \frac{1}{2} \left( \ypc(\samplesymt,2)+\
 %
 where fore, aft, star(board), and port indicate the relevant transducer halves.
 \begin{figure}
-\includegraphics{Figure2}
+\includegraphics{Fig_trd_quad}
 \caption{\label{fi:trd_quad}Transducer divided into four quadrants. The labels are directions often used when a transducer is mounted on a ship.}
 \end{figure}
 %
-\subsection{Auto correlation function}
-The auto correlation function of the matched filter signal, $\ymfauto(\samplesymt)$, that will be used in a later processing step is defined as:
-\begin{equation}
-\label{eq:TXAuto}
-\ymfauto(\samplesymt) = \frac{\ymf(\samplesymt)*\ymf^*(-\samplesymt)}{||\ymf||^2_2}.
-\end{equation}
+
 
 \subsection{Power and angle samples}
 The transceiver measures voltage over a load, $\zrxe$, connected in series with the transducer impedance, $\ztde$. When calculating various acoustic properties a system gain parameter will be used which assumes a matched receiver load. The total received power, $\prxe(\samplesymt)$, from all transducer sectors for a matched receiver load (Fig. \ref{fi:impedances}) is given by: 
@@ -261,7 +292,7 @@ where $y_\along(\samplesymt)$ is the electrical angle along the minor axis of th
 where $\anglefalong$ and $\anglefathw$ are constants that convert from phase angles to physical echo arrival angles and are derived from the transducer geometry and $\fc$ the centre frequency of the chirp pulse \citep{ehrenberg1979}. The inverse sine is indicated by $\arcsin$, the four quadrant inverse tangent which returns values in the interval $[-\pi, \pi]$ inclusive is indicated by $\atan$, the real part of a complex number by $\Re$ and the imaginary part by $\Im$. As a mnemonic, the horizontal line in the symbol used for the forward/aft direction, $\along$, represents the pivot axis for the alongship angles and the near-vertical line in the $\athw$ symbol indicates the pivot axis for port/starboard angles.
 %
 \begin{figure}
-\includegraphics[width=\reprintcolumnwidth]{Figure3}
+\includegraphics[width=\reprintcolumnwidth]{Fig_impedances}
 \caption{\label{fi:impedances}Equivalent circuit diagram of transducer/transceiver with system impedances.}
 \end{figure}
 
@@ -430,12 +461,12 @@ A frequency modulated pulse scattered by a metallic sphere will exhibit frequenc
 A metallic sphere is a rather simple and ideal scatterer and we also present $\sv$ from a school of Atlantic mackerel (\textit{Scomber scombrus}) (Fig. \ref{fi:sv_example}a). The trend for increasing $\sv$ with frequency is well-known \citep{korneliussen2010} and is consistent with the trend observed in this example. In contrast to data from isolated scatterers, such as metallic spheres, the benefit of pulse compression on the backscatter from an object that generates many overlapping echoes is not immediately obvious (Fig. \ref{fi:sv_example}b, \ref{fi:sv_example}c), although in regions where the fish density decreases (e.g., top left of the school), single target echoes become visible.
 
 \begin{figure}
-\includegraphics[width=16cm]{Figure4}
+\includegraphics[width=16cm]{Fig_ts_example}
 \caption{\label{fi:ts_example}(color online) Target strength of 57.2 mm (a) and 22.0 mm (b) diameter tungsten carbide (with 6\% cobalt binder) calibration spheres, theoretical (solid line) and measured and derived using Eq. (\ref{eq:TS_f}) (dotted line). Echogram of non pulse compressed backscatter [dB re 1 W] (c) and pulse compressed backscatter [dB re 1 $\textrm{m}^2$] (d) from 57.2 mm (lower band) and 22.0 mm (upper band) diameter tungsten carbide spheres using a 2.048 ms duration linear frequency modulated pulse (160--260 kHz). The range from the spheres to the transducer varied during the time period shown.}
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=16cm]{Figure5}
+%\includegraphics[width=16cm]{Figure5}
 \caption{\label{fi:sv_example}(color online) (a): Mean frequency response (solid line) and standard error (dashed line) from a school of Atlantic mackerel (\textit{Scomber scombrus}) from three simultaneously operating linear frequency modulated echosounder channels (90--170, 160--260, and 280--450 kHz). Echogram of backscattered power [dB re 1 W] (b) and pulse compressed $\sv$ [dB re 1 $m^{-1}$] (c) from the 160--260 kHz pulse. The school is the trapezoid-shaped object between 25 and 90 m below the surface. The echo from the seafloor is visible at 130 m depth.} \end{figure}
 
 \section{Discussion}

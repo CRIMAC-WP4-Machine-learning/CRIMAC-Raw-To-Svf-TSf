@@ -73,10 +73,10 @@ class EK80DataContainer:
         raw3 = jdict['RAW3']
         self.offset = raw3['offset']
         self.sampleCount = raw3['sampleCount']
-        self.y_rx_org = None
+        self.y_rx_nu = None
         if 'quadrant_signals' in raw3 and 'NaN' not in raw3['quadrant_signals']:
-            self.y_rx_org = []
+            self.y_rx_nu = []
             for v in raw3['quadrant_signals'].values():
-                self.y_rx_org.append(np.array(v['real']) + np.array(v['imag']) * 1j)
+                self.y_rx_nu.append(np.array(v['real']) + np.array(v['imag']) * 1j)
 
-            self.y_rx_org = np.array(self.y_rx_org)
+            self.y_rx_nu = np.array(self.y_rx_nu)
