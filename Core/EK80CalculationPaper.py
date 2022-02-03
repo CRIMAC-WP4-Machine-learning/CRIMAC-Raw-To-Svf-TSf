@@ -95,8 +95,8 @@ class EK80CalculationPaper(EK80DataContainer):
             # If no calibration make a frequency vector
             # This is used to calculate correct frequencies after signal
             # decimation
-            noFreq = 112
-            self.frequencies = np.linspace(self.f0, self.f1, noFreq)
+
+            self.frequencies = np.linspace(self.f0, self.f1, self.noFreq)
 
     @staticmethod
     def calc_fs_dec(fil1s):
