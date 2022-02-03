@@ -98,7 +98,7 @@ y_tilde_tx_nv = EK80CalculationPaper.calc_y_tx_tilde_nv(
 #    ekcalc.h_fl_iv)
 
 # Normalized, filtered and decimated transmit signal for the matched filter
-y_mf_n = y_tilde_tx_nv[:,-1]
+#y_mf_n = y_tilde_tx_nv[:,-1]
 
 plt.figure()
 plt.plot(np.abs(ekcalc.y_mf_n))
@@ -126,7 +126,8 @@ y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(
 y_pc_n = EK80CalculationPaper.calcAvgSumQuad(y_pc_nu)
 
 # Calculating the average signal over paired fore, aft, starboard, port channel
-y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
+y_pc_halves_n = EK80CalculationPaper.calc_transducer_halves(
+    y_pc_nu)
 
 
 #
@@ -134,7 +135,7 @@ y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
 #
 
 # Calcuate the power across transducer channels
-p_rx_e = EK80CalculationPaper.calcPower(
+p_rx_e_n = EK80CalculationPaper.calcPower(
     y_pc_n,
     ekcalc.z_td_e,
     ekcalc.z_rx_e,
@@ -152,7 +153,7 @@ gamma_phi = EK80CalculationPaper.calcGamma(
 
 # Calculate the physical angles
 y_theta_n, y_phi_n = EK80CalculationPaper.calcAngles(
-    y_pc_halves,
+    y_pc_halves_n,
     gamma_theta,
     gamma_phi)
 

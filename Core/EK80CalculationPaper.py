@@ -47,7 +47,7 @@ class EK80CalculationPaper(EK80DataContainer):
         self.y_tx_n = y_tx_n
         self.y_tx_n_t = t
 
-        self.f_s_dec = EK80CalculationPaper.calc_fs_dec(self.fil1s)
+        self.f_s_dec = EK80CalculationPaper.calc_fs_dec(self.fil1s, self.f_s)
 
         # Normalize ideal transmit pulse
         #y_tilde_tx_n = y_tx_n / np.max(y_tx_n)
@@ -99,8 +99,8 @@ class EK80CalculationPaper(EK80DataContainer):
             self.frequencies = np.linspace(self.f0, self.f1, self.n_f_points)
 
     @staticmethod
-    def calc_fs_dec(fil1s):
-        f_s_dec = 1
+    def calc_fs_dec(fil1s, f_s):
+        f_s_dec = f_s
         if fil1s is not None:
             for fil1 in fil1s:
                 f_s_dec *= 1 / fil1.DecimationFactor
@@ -177,7 +177,7 @@ class EK80CalculationPaper(EK80DataContainer):
 
     def calcSp(self, power, r0=None, r1=None):
 
-        Gfc = self.G_f(self.f_c)
+        Gfc = self.calc_G0_m(self.f_c)
         PSIfc = self.PSI_f(self.f_c)
         logSpCf = self.calculateCSpfdB(self.f_c)
         r, _ = self.calcRange()
@@ -194,6 +194,8 @@ class EK80CalculationPaper(EK80DataContainer):
              2.0 * alpha_fc * r - \
              logSpCf - \
              2 * Gfc
+
+        return Sp, r
 
         return Sp, r
 
@@ -321,8 +323,8 @@ class EK80CalculationPaper(EK80DataContainer):
     @staticmethod
     def alignAuto(auto, y_pc_t_n):
 
-        idx_peak_auto = np.argmax(auto)
-        idx_peak_y_pc_t_n = np.argmax(y_pc_t_n)
+        idx_peak_auto = np.argmax(np.abs(auto))
+        idx_peak_y_pc_t_n = np.argmax(np.abs(y_pc_t_n))
 
         left_samples = idx_peak_y_pc_t_n
         right_samples = len(y_pc_t_n) - idx_peak_y_pc_t_n
@@ -383,7 +385,7 @@ class EK80CalculationPaper(EK80DataContainer):
 
         G0_m = self.calc_G0_m(f_m)
         B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m)
-        G_theta_phi_m = G0_m + B_theta_phi_m
+        G_theta_phi_m = G0_m - B_theta_phi_m
         alpha_m = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f_m)
         logSpCf = self.calculateCSpfdB(f_m)
 
@@ -400,7 +402,7 @@ class EK80CalculationPaper(EK80DataContainer):
         return TS_m, f_m
 
     def PSI_f(self, f):
-        return self.PSIfnom + 20 * np.log10(self.fnom / f)
+        return self.PSI_fnom + 20 * np.log10(self.fnom / f)
 
     def G_f(self, f):
         if self.frequencies is None:
@@ -415,9 +417,12 @@ class EK80CalculationPaper(EK80DataContainer):
         beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
 
         B_theta_phi_m = 0.5 * 6.0206 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 + \
-                                        (np.abs(theta - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2 - \
-                                        0.18 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 * \
-                                        (np.abs(theta - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2))
+                                        (np.abs(phi - angle_offset_athwartship_m) / (
+                                                    beam_width_athwartship_m / 2)) ** 2 - \
+                                        0.18 * ((np.abs(theta - angle_offset_alongship_m) / (
+                            beam_width_alongship_m / 2)) ** 2 * \
+                                                (np.abs(phi - angle_offset_athwartship_m) / (
+                                                            beam_width_athwartship_m / 2)) ** 2))
 
         return B_theta_phi_m
 
