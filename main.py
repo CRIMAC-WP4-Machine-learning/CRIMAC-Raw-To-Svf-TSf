@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from Core.EK80CalculationPaper import EK80CalculationPaper
-from Core.EK80Calculation import EK80Calculation
 
 # Test data
 
@@ -41,7 +40,7 @@ plt.savefig('./Paper/Fig_ytx.png')
 # through the filter bank and the final signal is stored in 'y_rx_nu'.
 # Note that the raw files from the EK80 implementation does not store
 # the initial or the intermediate steps in the raw file, but the filtered and
-# deciated result only, The data is stored in the variable 'y_rx_nu'.
+# decimated result only, The data is stored in the variable 'y_rx_nu'.
 
 # In this implementation there are two filters (N_v=2). The first
 # filter operates on the raw data [y_rx(N,u,0)=y_rx_org].
@@ -85,15 +84,19 @@ plt.xlim([0, 70000])
 plt.savefig('./Paper/Fig_fir.png')
 
 #
-# Chapter: Pulse compression
+# Chapter IID: Pulse compression
 #
 
-# The normalized ideal transmit signal (y_tilde_tx_n) is passed through the
-# filter banks to generate the matched filter.
-# Run ekcalc.calculateDerivedVariables? to see the explanation of the vars
+# The normalized ideal transmit signal
+#y_tilde_tx_n = EK80CalculationPaper.calcNorm()
 
-# The source signal filtered through the final decimation is stored in
-# ekcalc.y_rx_org
+# Passing the normalized and ideal transmit signal through the filter bank
+#y_tilde_tx_nv = EK80CalculationPaper.calcFilteredSignal(
+#    y_tilde_tx_n,
+#    ekcalc.h_fl_iv)
+
+# Normalized, filtered and decimated transmit signal for the matched filter
+#y_mf_n = y_tilde_tx_nv[:,-1]
 
 plt.figure()
 plt.plot(np.abs(ekcalc.y_mf_n))
@@ -102,8 +105,8 @@ plt.xlabel('samples ()')
 plt.ylabel('amplitude')
 plt.savefig('./Paper/Fig_y_mf_n.png')
 
-# The autocorrelation function of the matched filter signal
-# ekcalc.y_mf_auto
+# The autocorrelation function of the mathced filter
+#y_mf_auto_n = EK80CalculationPaper.calcAutoCorrelation(y_mf_n)
 
 plt.figure()
 plt.plot(np.abs(ekcalc.y_mf_auto_n))
@@ -113,14 +116,17 @@ plt.ylabel('ACF')
 plt.savefig('./Paper/Fig_ACF.png')
 
 # Calculating the pulse compressed quadrant signals separately on each channel
-y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(ekcalc.y_rx_nu,
-                                                            ekcalc.y_mf_n)
+y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(
+    ekcalc.y_rx_nu,
+    ekcalc.y_mf_n)
 
 # Calculating the average signal over the channels
-y_pc_n = EK80CalculationPaper.calcAvgSumQuad(y_pc_nu)
+y_pc_n = EK80CalculationPaper.calcAvgSumQuad(
+    y_pc_nu)
 
 # Calculating the average signal over paired fore, aft, starboard, port channel
-y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
+y_pc_halves = EK80CalculationPaper.calc_transducer_halves(
+    y_pc_nu)
 
 
 #
