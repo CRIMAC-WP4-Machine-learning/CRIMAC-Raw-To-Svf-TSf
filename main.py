@@ -32,7 +32,7 @@ plt.title(
     .format(f0/1000, f1/1000, slope))
 plt.xlabel('time (ms)')
 plt.ylabel('amplitude')
-plt.savefig('Fig_ytx.png')
+plt.savefig('./Paper/Fig_ytx.png')
 
 #
 # Chapter: Signal reception
@@ -83,7 +83,7 @@ plt.plot(F0, G0,
 plt.xlabel('frequency (Hz)')
 plt.ylabel('Gain (dB)')
 plt.xlim([0, 70000])
-plt.savefig('Fig_fir.png')
+plt.savefig('./Paper/Fig_fir.png')
 
 #
 # Chapter: Pulse compression
@@ -101,17 +101,17 @@ plt.plot(np.abs(ekcalc.y_mf_n))
 plt.title('The absolute value of the filtered and decimated output signal')
 plt.xlabel('samples ()')
 plt.ylabel('amplitude')
-plt.savefig('Fig_y_mf_n.png')
+plt.savefig('./Paper/Fig_y_mf_n.png')
 
 # The autocorrelation function of the matched filter signal
 # ekcalc.y_mf_auto
 
 plt.figure()
-plt.plot(np.abs(ekcalc.y_mf_auto))
+plt.plot(np.abs(ekcalc.y_mf_auto_n))
 plt.title('The autocorrelation function of the matched filter.')
 plt.xlabel('samples')
 plt.ylabel('ACF')
-plt.savefig('Fig_ACF.png')
+plt.savefig('./Paper/Fig_ACF.png')
 
 
 # Calculating the pulse compressed quadrant signals separately on each channel
