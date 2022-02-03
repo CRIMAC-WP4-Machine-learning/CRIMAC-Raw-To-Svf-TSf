@@ -14,7 +14,6 @@ class EK80DataContainer:
         self.z_td_e = 75  # (Ohm) Transducer impedance
         self.f_s = 1.5e6  # (Hz) Orginal WBT sampling rate
         self.n_f_points = 1000  # Number of frequency points for evaluation of TS(f) and Sv(f)
-        self.noFreq = 1000
 
         self.hasData = False
         if jsonfname is not None:
