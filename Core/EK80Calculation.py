@@ -3,7 +3,7 @@ import numpy as np
 from Core.EK80DataContainer import EK80DataContainer
 
 
-class EK80CalculationPaper(EK80DataContainer):
+class EK80Calculation(EK80DataContainer):
 
     def __init__(self, jsonfname=None):
         super().__init__(jsonfname)
