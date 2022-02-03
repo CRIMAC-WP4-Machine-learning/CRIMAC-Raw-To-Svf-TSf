@@ -1,13 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from Core.EK80CalculationPaper import EK80CalculationPaper
-# from Core.EK80DataContainer import EK80DataContainer
+from Core.EK80Calculation import EK80Calculation
 
 # Test data
 
 # The data file ./data/pyEcholabEK80data.json contain data from one
 # ping from the EK80 echosounder, including the
-
 ekcalc = EK80CalculationPaper('./data/pyEcholabEK80data.json')
 
 #
@@ -129,11 +128,29 @@ y_pc_n = ekcalc.calcAvgSumQuad(y_pc_nu)
 #      str(np.shape(ekcalc.y_rx_org)))
 
 #
-# Chapter: Power angles and samples
+# Chapter IIE: Power angles and samples
 #
 
-#p_rx_e = ekcalc.calcPower(y_pc_n)
+p_rx_e = ekcalc.calcPower(y_pc_n)
 
-#y_theta_n, y_phi_n = ekcalc.calcElectricalAngles(y_pc_nu)
+y_theta_n, y_phi_n = ekcalc.calcElectricalAngles(y_pc_nu)
+
+#
+# Chapter III: TARGET STRENGTH
+#
+
+# p_rx_e_n = ekcalc.calcPower(y_pc_n,c)
+#    def calcPower(y_pc_n, z_rx_e, z_td_e, N_u):
+
+#z_rx_e
+#impedac.z.z_td_e
+
+#p_rx_e_n = EK80Calculation.calcPower(y_pc_n)
+
+#theta_n, phi_n = ekcalc.calcElectricalAngles(y_pc_nu)
+
+
+
+
 
 
