@@ -46,15 +46,19 @@ plt.savefig('Fig_ytx.png')
 
 # In this implementation there are two filters (N_v=2). The first
 # filter operates on the raw data [y_rx(N,u,0)=y_rx_org].
-# The filter coefficients 'h_fl_iv' are accessible through the 'fil1s' variable:
+# The filter coefficients 'h_fl_iv' are accessible through the 'fil1s' variable
+# The 'fil1s' field corresponds to content of the EK80 datagram in the EK80 raw
+# file
 ekcalc.fil1s[0].Coefficients
 ekcalc.fil1s[1].Coefficients
 # and the corresponding decimation factor is available through
 ekcalc.fil1s[0].DecimationFactor
 ekcalc.fil1s[1].DecimationFactor
-
-# [Note from Nils Olav: I think that 'fil1s' should be renamed 'h_fl_iv' to
-# conform with the paper.]
+# The corresponding samplings frequenies
+f_s = ekcalc.f_s  # The initial sampling frequency
+f_s0 = f_s / ekcalc.fil1s[0].DecimationFactor
+f_s1 = f_s / (
+    ekcalc.fil1s[0].DecimationFactor*ekcalc.fil1s[1].DecimationFactor)
 
 # The frequency response function of the filter is given by its
 # discrete time fourier transform:
@@ -62,17 +66,23 @@ H0 = np.fft.fft(ekcalc.fil1s[0].Coefficients)
 H1 = np.fft.fft(ekcalc.fil1s[1].Coefficients)
 
 # Plot of the frequency response of the filters (power) (in dB)
-# [Note from Nils Olav: someone needs to review this, I am not an
-# expert here and I am not sure hwo this works for complex filters
-# and how to deal with the higher freqs (that are symm and typically
-# removed for real input)]
+F0 = np.arange(len(H0))*f_s/(len(H0))
+F1 = np.arange(len(H1))*f_s0/(len(H1))
+G0 = 20 * np.log10(np.abs(H0))
+# Repeat pattern for the second filter (3 times)
+F1l = np.append(F1, F1+f_s0)
+F1l = np.append(F1l, F1+2*f_s0)
+G1 = 20 * np.log10(np.abs(H1))
+G1l = np.append(G1, G1)
+G1l = np.append(G1l, G1)
+
 plt.figure()
-#plt.plot(np.fft.fftfreq(len(H0))*fs/1000, 20 * np.log10(H0/len(H0)),'.',
-#         np.fft.fftfreq(len(H1))*fs/1000, 20 * np.log10(H1/len(H1)),'.')
-plt.semilogx(np.arange(len(H0)), 20 * np.log10(np.abs(H0)),
-             np.arange(len(H1)), 20 * np.log10(np.abs(H1)))
-plt.xlabel('Normalized Frequency')
-plt.ylabel('Gain [dB]')
+plt.plot(F0, G0,
+         F1l, G1l,
+         [ekcalc.f0, ekcalc.f1], [-140, -140])
+plt.xlabel('frequency (Hz)')
+plt.ylabel('Gain (dB)')
+plt.xlim([0, 70000])
 plt.savefig('Fig_fir.png')
 
 #
