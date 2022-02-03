@@ -381,7 +381,9 @@ class EK80CalculationPaper(EK80DataContainer):
         _Y_mf_auto_red_m = np.fft.fft(y_mf_auto_red_n, n=N_DFT)
         Y_mf_auto_red_m = self.freqtransf(_Y_mf_auto_red_m, self.f_s_dec, f_m)
 
-        Gf = self.G_f(f_m)  # Used only if not calibrated
+        G0_m = self.calc_G0_m(f_m)
+        B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m)
+        G_theta_phi_m = G0_m + B_theta_phi_m
         alpha_m = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f_m)
         logSpCf = self.calculateCSpfdB(f_m)
 
@@ -392,8 +394,8 @@ class EK80CalculationPaper(EK80DataContainer):
         TS_m = 10 * np.log10(P_rx_e_t_m) + \
                40 * np.log10(r) + \
                2 * alpha_m * r - \
-               logSpCf - \
-               2 * Gf
+               2 * G_theta_phi_m - \
+               logSpCf
 
         return TS_m, f_m
 
@@ -407,6 +409,48 @@ class EK80CalculationPaper(EK80DataContainer):
         else:
             # Calibrated case
             return np.interp(f, self.frequencies, self.gain)
+
+    def calc_B_theta_phi_m(self, theta, phi, f):
+        angle_offset_alongship_m, angle_offset_athwartship_m = self.calc_angle_offsets_m(f)
+        beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
+
+        B_theta_phi_m = 0.5 * 6.0206 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 + \
+                                        (np.abs(theta - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2 - \
+                                        0.18 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 * \
+                                        (np.abs(theta - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2))
+
+        return B_theta_phi_m
+
+    def calc_G0_m(self, f):
+        if self.isCalibrated:
+            # Calibrated case
+            return np.interp(f, self.frequencies, self.gain)
+        else:
+            # Uncalibrated case
+            return self.G_fnom + 20 * np.log10(f / self.fnom)
+
+    def calc_angle_offsets_m(self, f):
+        if self.isCalibrated:
+            # Calibrated case
+            angle_offset_alongship_m = np.interp(f, self.frequencies, self.angle_offset_alongship)
+            angle_offset_athwartship_m = np.interp(f, self.frequencies, self.angle_offset_athwartship)
+        else:
+            # Uncalibrated case
+            angle_offset_alongship_m = self.angle_offset_alongship_fnom * np.ones(len(f))
+            angle_offset_athwartship_m = self.angle_offset_athwartship_fnom * np.ones(len(f))
+        return angle_offset_alongship_m, angle_offset_athwartship_m
+
+    def calc_beam_widths_m(self, f):
+        if self.isCalibrated:
+            # Calibrated case
+            beam_width_alongship_m = np.interp(f, self.frequencies, self.beam_width_alongship)
+            beam_width_athwartship_m = np.interp(f, self.frequencies, self.beam_width_athwartship)
+        else:
+            # Uncalibrated case
+            beam_width_alongship_m = self.beam_width_alongship_fnom * self.fnom / f
+            beam_width_athwartship_m = self.beam_width_athwartship_fnom * self.fnom / f
+        return beam_width_alongship_m, beam_width_athwartship_m
+
 
     def lambda_f(self, f):
         return self.c / f
@@ -472,7 +516,6 @@ class EK80CalculationPaper(EK80DataContainer):
 
     @staticmethod
     def stageFilter(signal, filter):
-        # signal = signal / np.max(np.abs(signal))
         return np.convolve(signal, filter.Coefficients, mode='full')[0::filter.DecimationFactor]
 
     @staticmethod
