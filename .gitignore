@@ -1,4 +1,6 @@
-*.pdf
+Core/__pycache__/
+#*
+.#*
 *.aux
 *.png
 *.log
