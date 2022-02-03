@@ -96,7 +96,7 @@ class EK80CalculationPaper(EK80DataContainer):
             # This is used to calculate correct frequencies after signal
             # decimation
 
-            self.frequencies = np.linspace(self.f0, self.f1, self.noFreq)
+            self.frequencies = np.linspace(self.f0, self.f1, self.n_f_points)
 
     @staticmethod
     def calc_fs_dec(fil1s):
