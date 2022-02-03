@@ -29,7 +29,7 @@
       "EquivalentBeamAngle": -20.7,
       "AngleOffsetAlongship": -0.09,
       "AngleOffsetAthwartship": 0.08,
-      "AngleSensitivtyAlongship": 18.0,
+      "AngleSensitivityAlongship": 18.0,
       "AngleSensitivityAthwartship": 18.0,
       "BeamWidthAlongship": 6.32,
       "BeamWidthAthwartship": 6.37,

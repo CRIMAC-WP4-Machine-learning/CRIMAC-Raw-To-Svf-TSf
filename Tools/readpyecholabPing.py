@@ -218,7 +218,7 @@ data={
                 "EquivalentBeamAngle": EquivalentBeamAngle,
                 "AngleOffsetAlongship": AngleOffsetAlongship,
                 "AngleOffsetAthwartship": AngleOffsetAthwartship,
-                "AngleSensitivtyAlongship": AngleSensitivityAlongship,
+                "AngleSensitivityAlongship": AngleSensitivityAlongship,
                 "AngleSensitivityAthwartship": AngleSensitivityAthwartship,
                 "BeamWidthAlongship": BeamWidthAlongship,
                 "BeamWidthAthwartship": BeamWidthAthwartship,
