@@ -225,7 +225,7 @@ class EK80Calculation(EK80DataContainer):
         Nw = int(2 ** np.ceil(np.log2(L))) # or : Nw = np.ceil(2 ** np.log2(L)) - Length of Hanning window
         tw = Nw / self.f_s_dec
 
-        w = EK80CalculationPaper.hann(Nw)
+        w = EK80Calculation.hann(Nw)
         w = w / (np.linalg.norm(w) / np.sqrt(Nw))
 
         step = int(Nw * (1 - overlap))
@@ -261,7 +261,7 @@ class EK80Calculation(EK80DataContainer):
                 last_bin = True
                 bin_stop_sample = max_sample
                 sub_yspread = yspread[bin_start_sample:bin_stop_sample]
-                w = EK80CalculationPaper.hann(len(sub_yspread))
+                w = EK80Calculation.hann(len(sub_yspread))
                 w = w / (np.linalg.norm(w) / np.sqrt(len(sub_yspread)))
                 yspread_bin = w * sub_yspread
 

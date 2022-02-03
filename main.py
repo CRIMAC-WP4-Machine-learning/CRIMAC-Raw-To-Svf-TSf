@@ -112,31 +112,52 @@ plt.xlabel('samples')
 plt.ylabel('ACF')
 plt.savefig('./Paper/Fig_ACF.png')
 
-
 # Calculating the pulse compressed quadrant signals separately on each channel
-#y_pc_nu = ekcalc.calcPulseCompressedQuadrants(ekcalc.y_rx_nu)
-y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(ekcalc.y_rx_nu, ekcalc.y_mf_n)
+y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(ekcalc.y_rx_nu,
+                                                            ekcalc.y_mf_n)
+
 # Calculating the average signal over the channels
-y_pc_n = ekcalc.calcAvgSumQuad(y_pc_nu)
+y_pc_n = EK80CalculationPaper.calcAvgSumQuad(y_pc_nu)
 
-# Calculating the average signal over paired channels
+# Calculating the average signal over paired fore, aft, starboard, port channel
+y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
 
-# This is done inside the calcElectricalAngles(self, y_pc) function and
-# the results are not directly accessible.
-
-#print('The four quadrants and the length of the sampled data: ' +
-#      str(np.shape(ekcalc.y_rx_org)))
 
 #
 # Chapter IIE: Power angles and samples
 #
 
-p_rx_e = ekcalc.calcPower(y_pc_n)
+# Calcuate the power across transducer channels
+p_rx_e = EK80CalculationPaper.calcPower(
+    y_pc_n,
+    ekcalc.z_td_e,
+    ekcalc.z_rx_e,
+    ekcalc.N_u)
 
-y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
+# Calculate the angle sensitivities
+gamma_theta = EK80CalculationPaper.calcGamma(
+    ekcalc.angle_sensitivity_alongship_fnom,
+    ekcalc.f_c,
+    ekcalc.fnom)
+gamma_phi = EK80CalculationPaper.calcGamma(
+    ekcalc.angle_sensitivity_athwartship_fnom,
+    ekcalc.f_c,
+    ekcalc.fnom)
 
-y_theta_n, y_phi_n = EK80CalculationPaper.calcElectricalAngles(y_pc_halves,ekcalc.angle_sensitivity_alongship_fnom,ekcalc.angle_sensitivity_athwartship_fnom,ekcalc.f_c,ekcalc.fnom)
-#y_theta_n, y_phi_n = EK80CalculationPaper.calcElectricalAngles(y_pc_nu,ekcalc.angle_sensitivity_alongship_fnom,ekcalc.angle_sensitivity_athwartship_fnom,ekcalc.f_c,ekcalc.fnom)
+# Calculate the physical angles
+y_theta_n, y_phi_n = EK80CalculationPaper.calcAngles(
+    y_pc_halves,
+    gamma_theta,
+    gamma_phi)
+
+# Plot angles
+plt.figure()
+plt.plot(y_theta_n)
+plt.plot(y_phi_n)
+plt.title('The physical angles.')
+plt.xlabel(' ')
+plt.ylabel('angles')
+plt.savefig('./Paper/Fig_theta_phi.png')
 
 #
 # Chapter III: TARGET STRENGTH
