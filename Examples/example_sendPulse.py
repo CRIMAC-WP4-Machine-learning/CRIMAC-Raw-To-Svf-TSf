@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import argparse
 
 from Core.EK80DataContainer import EK80DataContainer
-from Core.EK80Calculation import EK80Calculation
+from Core.EK80Calculation import EK80CalculationPaper
 
 # This example script generates and plots an ideal enveloped transmit pulse
 # A replica transmit pulse is used as the matched filter in the puls compression processing
@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    ekcalc = EK80Calculation(args.file)
+    ekcalc = EK80CalculationPaper(args.file)
 
 
     plt.figure()

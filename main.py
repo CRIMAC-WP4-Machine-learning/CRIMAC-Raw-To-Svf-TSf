@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from Core.EK80Calculation import EK80Calculation
+from Core.EK80CalculationPaper import EK80CalculationPaper
 # from Core.EK80DataContainer import EK80DataContainer
 
 # Test data
@@ -8,7 +8,7 @@ from Core.EK80Calculation import EK80Calculation
 # The data file ./data/pyEcholabEK80data.json contain data from one
 # ping from the EK80 echosounder, including the
 
-ekcalc = EK80Calculation('./data/pyEcholabEK80data.json')
+ekcalc = EK80CalculationPaper('./data/pyEcholabEK80data.json')
 
 #
 # Chapter: Signal generation
@@ -20,9 +20,9 @@ f1 = ekcalc.f1  # frequency (Hz)
 tau = ekcalc.tau  # time (s)
 fs = ekcalc.f_s  # frequency (Hz)
 slope = ekcalc.slope
-y_tx_n, t = EK80Calculation.generateIdealWindowedSendPulse(
+y_tx_n, t = EK80CalculationPaper.generateIdealWindowedSendPulse(
     f0, f1, tau, fs, slope)
-y_tx_n05slope, t = EK80Calculation.generateIdealWindowedSendPulse(
+y_tx_n05slope, t = EK80CalculationPaper.generateIdealWindowedSendPulse(
     f0, f1, tau, fs, .5)
 
 plt.figure()

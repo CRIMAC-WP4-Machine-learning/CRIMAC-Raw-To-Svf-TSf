@@ -1,7 +1,7 @@
 import argparse
 from scipy import io
 from Core.EK80DataContainer import EK80DataContainer
-from Core.EK80Calculation import EK80Calculation
+from Core.EK80Calculation import EK80CalculationPaper
 
 # python exportToMatlab.py --file ..\Data\pyEcholabEK80data.json
 if __name__ == '__main__':
@@ -13,7 +13,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     ekdata = EK80DataContainer(args.file)
-    ekcalc = EK80Calculation(ekdata)
+    ekcalc = EK80CalculationPaper(ekdata)
 
     range, dr = ekcalc.calcRange()
     y_mf = ekcalc.get_y_mf()
