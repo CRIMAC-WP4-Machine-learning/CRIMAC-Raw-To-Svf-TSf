@@ -415,7 +415,7 @@ class EK80CalculationPaper(EK80DataContainer):
         return y_pc_fore_n, y_pc_aft_n, y_pc_star_n, y_pc_port_n
 
     @staticmethod
-    def calcElectricalAngles(y_pc_halves,angle_sensitivity_alongship_fnom,angle_sensitivity_athwartship_fnom,f_c,fnom):
+    def calcAngles(y_pc_halves,angle_sensitivity_alongship_fnom,angle_sensitivity_athwartship_fnom,f_c,fnom):
         # Transducers might have different segment configuration
         # Here we assume 4 quadrants
         y_pc_fore_n, y_pc_aft_n, y_pc_star_n, y_pc_port_n = y_pc_halves

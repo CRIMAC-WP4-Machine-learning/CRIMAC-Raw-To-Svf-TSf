@@ -135,8 +135,9 @@ p_rx_e = ekcalc.calcPower(y_pc_n)
 
 y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
 
-y_theta_n, y_phi_n = EK80CalculationPaper.calcElectricalAngles(y_pc_halves,ekcalc.angle_sensitivity_alongship_fnom,ekcalc.angle_sensitivity_athwartship_fnom,ekcalc.f_c,ekcalc.fnom)
-#y_theta_n, y_phi_n = EK80CalculationPaper.calcElectricalAngles(y_pc_nu,ekcalc.angle_sensitivity_alongship_fnom,ekcalc.angle_sensitivity_athwartship_fnom,ekcalc.f_c,ekcalc.fnom)
+y_theta_n, y_phi_n = EK80CalculationPaper.calcAngles(
+    y_pc_halves, ekcalc.angle_sensitivity_alongship_fnom,
+    ekcalc.angle_sensitivity_athwartship_fnom, ekcalc.f_c, ekcalc.fnom)
 
 #
 # Chapter III: TARGET STRENGTH
