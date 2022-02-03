@@ -357,7 +357,7 @@ class EK80Calculation(EK80DataContainer):
 
         G0_m = self.calc_G0_m(f_m)
         B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m)
-        G_theta_phi_m = G0_m + B_theta_phi_m
+        G_theta_phi_m = G0_m - B_theta_phi_m
         alpha_m = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f_m)
         logSpCf = self.calculateCSpfdB(f_m)
 
@@ -381,9 +381,9 @@ class EK80Calculation(EK80DataContainer):
         beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
 
         B_theta_phi_m = 0.5 * 6.0206 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 + \
-                                        (np.abs(theta - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2 - \
+                                        (np.abs(phi - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2 - \
                                         0.18 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 * \
-                                        (np.abs(theta - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2))
+                                        (np.abs(phi - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2))
 
         return B_theta_phi_m
 
