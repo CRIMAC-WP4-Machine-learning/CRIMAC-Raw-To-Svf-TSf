@@ -405,10 +405,13 @@ class EK80CalculationPaper(EK80DataContainer):
     def lambda_f(self, f):
         return self.c / f
 
-    def calcElectricalAngles(self, y_pc_nu):
-
-        # Transduceres might have different segment configuration
+    @staticmethod
+    def calcElectricalAngles(y_pc_nu,angle_sensitivity_alongship_fnom,angle_sensitivity_athwartship_fnom,f_c,fnom):
+        # Transducers might have different segment configuration
         # Here we assume 4 quadrants
+
+        gamma_theta = angle_sensitivity_alongship_fnom * (f_c / fnom)
+        gamma_phi = angle_sensitivity_athwartship_fnom * (f_c / fnom)
 
         y_pc_fore_n = 0.5 * (y_pc_nu[2, :] + y_pc_nu[3, :])
         y_pc_aft_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[1, :])
@@ -418,8 +421,8 @@ class EK80CalculationPaper(EK80DataContainer):
         y_theta_n = y_pc_fore_n * np.conj(y_pc_aft_n)
         y_phi_n = y_pc_star_n * np.conj(y_pc_port_n)
 
-        theta_n = np.arcsin(np.arctan2(np.imag(y_theta_n), np.real(y_theta_n))) * 180 / np.pi
-        phi_n = np.arcsin(np.arctan2(np.imag(y_phi_n), np.real(y_phi_n))) * 180 / np.pi
+        theta_n = np.arcsin(np.arctan2(np.imag(y_theta_n), np.real(y_theta_n)) / gamma_theta) * 180 / np.pi
+        phi_n = np.arcsin(np.arctan2(np.imag(y_phi_n), np.real(y_phi_n)) / gamma_phi) * 180 / np.pi
 
         return theta_n, phi_n
 
