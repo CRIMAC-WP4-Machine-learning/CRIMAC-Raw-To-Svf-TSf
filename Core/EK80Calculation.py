@@ -295,8 +295,8 @@ class EK80Calculation(EK80DataContainer):
     @staticmethod
     def alignAuto(auto, y_pc_t_n):
 
-        idx_peak_auto = np.argmax(auto)
-        idx_peak_y_pc_t_n = np.argmax(y_pc_t_n)
+        idx_peak_auto = np.argmax(np.abs(auto))
+        idx_peak_y_pc_t_n = np.argmax(np.abs(y_pc_t_n))
 
         left_samples = idx_peak_y_pc_t_n
         right_samples = len(y_pc_t_n) - idx_peak_y_pc_t_n
@@ -380,10 +380,10 @@ class EK80Calculation(EK80DataContainer):
         angle_offset_alongship_m, angle_offset_athwartship_m = self.calc_angle_offsets_m(f)
         beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
 
-        B_theta_phi_m = 6.0206 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 + \
-                                  (np.abs(theta - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2 - \
-                                  0.18 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 * \
-                                          (np.abs(theta - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2))
+        B_theta_phi_m = 0.5 * 6.0206 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 + \
+                                        (np.abs(theta - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2 - \
+                                        0.18 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 * \
+                                        (np.abs(theta - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2))
 
         return B_theta_phi_m
 
