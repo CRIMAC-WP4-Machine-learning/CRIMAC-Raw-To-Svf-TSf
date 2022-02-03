@@ -55,7 +55,7 @@ class EK80Calculation(EK80DataContainer):
         self.f_c = (self.f0 + self.f1) / 2.0
 
         # Generate ideal transmit pulse at original sampling rate
-        y_tx_n, t = EK80CalculationPaper.generateIdealWindowedSendPulse(
+        y_tx_n, t = EK80Calculation.generateIdealWindowedSendPulse(
             self.f0, self.f1, self.tau, self.f_s, self.slope)
         self.y_tx_n = y_tx_n
         self.y_tx_n_t = t
@@ -444,9 +444,9 @@ class EK80Calculation(EK80DataContainer):
     def generateIdealWindowedSendPulse(f0, f1, tau, fs, slope):
         nsamples = int(np.floor(tau * fs))
         t = np.linspace(0, nsamples-1, num=nsamples) * 1/fs
-        y = EK80CalculationPaper.chirp(t, f0, tau, f1)
+        y = EK80Calculation.chirp(t, f0, tau, f1)
         L = int(np.round(tau * fs * slope * 2.0))  # Length of hanning window
-        w = EK80CalculationPaper.hann(L)
+        w = EK80Calculation.hann(L)
         N = len(y)
         w1 = w[0:int(len(w) / 2)]
         w2 = w[int(len(w) / 2):-1]
