@@ -8,19 +8,6 @@ class EK80CalculationPaper(EK80DataContainer):
     def __init__(self, jsonfname=None):
         super().__init__(jsonfname)
 
-        # Derived variables
-        """
-        if self.hasData is not None:
-            self.ekdata = ekdata
-            self.z_rx_e = ekdata.z_rx_e  # (Ohm) WBT receiving impedance
-            self.ycq = ekdata.quadrant_signals
-            self.ycq_pc = ekdata.ycq_pc
-            self.yc = ekdata.yc
-            self.power = ekdata.yc
-            self.Sv = ekdata.Sv
-            self.Svf = ekdata.Svf
-        """
-
         # Constants
 
         self.z_trd = 75  # (Ohm) Transducer impedance
@@ -43,7 +30,7 @@ class EK80CalculationPaper(EK80DataContainer):
 
         Function to generate the decmiated and filtered transmit
         pulse for matche filtering
-        
+
         self.f_c Center frequency for transmit pulse
         self.y_tx_n Ideal transmit pulse at original sampling rate
         self.y_tx_n_t Time vector for transmit pulse at original sampling rate
@@ -53,7 +40,7 @@ class EK80CalculationPaper(EK80DataContainer):
         self.y_mf_twoNormSquared Squared 2-norm of mathced filter
         self.y_mf_auto Auto correlation function for matched filter
         self.tau_eff effective pulse duration
-  
+
         """
 
         # Estmate center frequency for transmit pulse
@@ -81,7 +68,7 @@ class EK80CalculationPaper(EK80DataContainer):
         # as matched filter
         y_mf_n = y_tilde_tx_nv
         self.y_mf_n = y_mf_n
-        
+
         # Create complex conjugated time reversed version and 2-norm of
         # matched filter
         y_mf_n_conj_rev = np.conj(y_mf_n)[::-1]
@@ -107,11 +94,10 @@ class EK80CalculationPaper(EK80DataContainer):
             noFreq = 112
             self.frequencies = np.linspace(self.f0, self.f1, noFreq)
 
-
     def calcPulseCompressedQuadrants(self, quadrant_signals):
         """
         Generate matched filtered signal for each quadrant
-        
+
         Returns:
         np.array: y_pc_nu pulseCompressedQuadrants
         """
@@ -124,7 +110,7 @@ class EK80CalculationPaper(EK80DataContainer):
             y_pc_nu = np.convolve(self.y_mf_n_conj_rev, u,
                                   mode='full') / self.y_mf_twoNormSquared
             # Correct sample indexes for mached filter
-            y_pc_nu = y_pc_nu[start_idx::] 
+            y_pc_nu = y_pc_nu[start_idx::]
             pulseCompressedQuadrants.append(y_pc_nu)
 
         return np.array(pulseCompressedQuadrants)
@@ -152,7 +138,7 @@ class EK80CalculationPaper(EK80DataContainer):
 
     def calcSp(self, power, r0=None, r1=None):
 
-        Gfc = self.calc_G0_m(self.f_c)
+        Gfc = self.G_f(self.f_c)
         PSIfc = self.PSI_f(self.f_c)
         logSpCf = self.calculateCSpfdB(self.f_c)
         r, _ = self.calcRange()
@@ -160,7 +146,7 @@ class EK80CalculationPaper(EK80DataContainer):
         alpha_fc = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, self.f_c)
 
         if r0 is not None and r1 is not None:
-            Idx = np.where((r>=r0) & (r<=r1))
+            Idx = np.where((r >= r0) & (r <= r1))
             r = r[Idx]
             power = power[Idx]
 
@@ -172,10 +158,9 @@ class EK80CalculationPaper(EK80DataContainer):
 
         return Sp, r
 
-
     def calcSv(self, power, r0=None, r1=None):
 
-        Gfc = self.calc_G0_m(self.f_c)
+        Gfc = self.G_f(self.f_c)
         PSIfc = self.PSI_f(self.f_c)
         logSvCf = self.calculateCSvfdB(self.f_c)
         r, _ = self.calcRange()
@@ -183,7 +168,7 @@ class EK80CalculationPaper(EK80DataContainer):
         alpha_fc = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, self.f_c)
 
         if r0 is not None and r1 is not None:
-            Idx = np.where((r>=r0) & (r<=r1))
+            Idx = np.where((r >= r0) & (r <= r1))
             r = r[Idx]
             power = power[Idx]
 
@@ -196,7 +181,6 @@ class EK80CalculationPaper(EK80DataContainer):
              PSIfc
 
         return Sv, r
-
 
     @staticmethod
     def freqtransf(FFTvecin, fsdec, fvec=None):
@@ -215,8 +199,6 @@ class EK80CalculationPaper(EK80DataContainer):
 
         return FFTvecin[idx]
 
-
-
     def calcSvf(self, y_pc, r0, r1, overlap=0.5):
 
         r, dr = self.calcRange()
@@ -225,9 +207,9 @@ class EK80CalculationPaper(EK80DataContainer):
         """
             Length of Hanning window currently chosen as 2^k samples for lowest k where 2^k >= 2 * No of samples in pulse
         """
-        L = ((self.c * 2 * self.tau) / dr) # Number of samples in pulse duration
+        L = ((self.c * 2 * self.tau) / dr)  # Number of samples in pulse duration
 
-        Nw = int(2 ** np.ceil(np.log2(L))) # or : Nw = np.ceil(2 ** np.log2(L)) - Length of Hanning window
+        Nw = int(2 ** np.ceil(np.log2(L)))  # or : Nw = np.ceil(2 ** np.log2(L)) - Length of Hanning window
         tw = Nw / self.f_s_dec
 
         w = EK80CalculationPaper.hann(Nw)
@@ -240,7 +222,7 @@ class EK80CalculationPaper(EK80DataContainer):
         _FFTytxauto = np.fft.fft(self.y_mf_auto_n, n=Nw)
         FFTytxauto = self.freqtransf(_FFTytxauto, self.f_s_dec, f)
 
-        Gf = self.calc_G0_m(f)    # Used only if not calibrated
+        Gf = self.G_f(f)  # Used only if not calibrated
         PSIf = self.PSI_f(f)
         alpha_f = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f)
         logSvCf = self.calculateCSvfdB(f)
@@ -253,7 +235,7 @@ class EK80CalculationPaper(EK80DataContainer):
         bin_start_sample = min_sample
         last_bin = False
         n_bins = 0
-        while not last_bin :
+        while not last_bin:
             n_bins += 1
             bin_stop_sample = bin_start_sample + Nw
 
@@ -270,7 +252,7 @@ class EK80CalculationPaper(EK80DataContainer):
                 w = w / (np.linalg.norm(w) / np.sqrt(len(sub_yspread)))
                 yspread_bin = w * sub_yspread
 
-            bin_center_sample = int((bin_stop_sample+bin_start_sample) / 2)
+            bin_center_sample = int((bin_stop_sample + bin_start_sample) / 2)
             bin_center_range = r[bin_center_sample]
             svf_range.append(bin_center_range)
 
@@ -309,7 +291,7 @@ class EK80CalculationPaper(EK80DataContainer):
         idx_start_auto = max(0, idx_peak_auto - left_samples)
         idx_stop_auto = min(len(auto), idx_peak_auto + right_samples)
 
-        new_auto = auto[idx_start_auto : idx_stop_auto]
+        new_auto = auto[idx_start_auto: idx_stop_auto]
 
         return new_auto
 
@@ -348,7 +330,7 @@ class EK80CalculationPaper(EK80DataContainer):
 
         # L = len(y_pc_t_n)
         L = self.n_f_points
-        N_DFT = int(2 ** np.ceil(np.log2(L))) # or : Nw = np.ceil(2 ** np.log2(L))
+        N_DFT = int(2 ** np.ceil(np.log2(L)))  # or : Nw = np.ceil(2 ** np.log2(L))
 
         f_m = np.linspace(self.f0, self.f1, self.n_f_points)
 
@@ -360,9 +342,7 @@ class EK80CalculationPaper(EK80DataContainer):
         _Y_mf_auto_red_m = np.fft.fft(y_mf_auto_red_n, n=N_DFT)
         Y_mf_auto_red_m = self.freqtransf(_Y_mf_auto_red_m, self.f_s_dec, f_m)
 
-        G0_m = self.calc_G0_m(f_m)
-        B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m)
-        G_theta_phi_m = G0_m + B_theta_phi_m
+        Gf = self.G_f(f_m)  # Used only if not calibrated
         alpha_m = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f_m)
         logSpCf = self.calculateCSpfdB(f_m)
 
@@ -371,66 +351,31 @@ class EK80CalculationPaper(EK80DataContainer):
         P_rx_e_t_m = self.C1Prx * np.abs(Y_tilde_pc_t_m) ** 2
 
         TS_m = 10 * np.log10(P_rx_e_t_m) + \
-           40 * np.log10(r) + \
-           2 * alpha_m * r - \
-           2 * G_theta_phi_m - \
-           logSpCf
+               40 * np.log10(r) + \
+               2 * alpha_m * r - \
+               logSpCf - \
+               2 * Gf
 
         return TS_m, f_m
 
     def PSI_f(self, f):
-        return self.PSI_fnom + 20 * np.log10(self.fnom / f)
+        return self.PSIfnom + 20 * np.log10(self.fnom / f)
 
-    def calc_B_theta_phi_m(self, theta, phi, f):
-        angle_offset_alongship_m, angle_offset_athwartship_m = self.calc_angle_offsets_m(f)
-        beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
-
-        B_theta_phi_m = 6.0206 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 + \
-                                  (np.abs(theta - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2 - \
-                                  0.18 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 * \
-                                          (np.abs(theta - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2))
-
-        return B_theta_phi_m
-
-    def calc_G0_m(self, f):
-        if self.isCalibrated:
+    def G_f(self, f):
+        if self.frequencies is None:
+            # Uncalibrated case
+            return self.Gfnom + 20 * np.log10(f / self.fnom)
+        else:
             # Calibrated case
             return np.interp(f, self.frequencies, self.gain)
-        else:
-            # Uncalibrated case
-            return self.G_fnom + 20 * np.log10(f / self.fnom)
-
-    def calc_angle_offsets_m(self, f):
-        if self.isCalibrated:
-            # Calibrated case
-            angle_offset_alongship_m = np.interp(f, self.frequencies, self.angle_offset_alongship)
-            angle_offset_athwartship_m = np.interp(f, self.frequencies, self.angle_offset_athwartship)
-        else:
-            # Uncalibrated case
-            angle_offset_alongship_m = self.angle_offset_alongship_fnom * np.ones(len(f))
-            angle_offset_athwartship_m = self.angle_offset_athwartship_fnom * np.ones(len(f))
-        return angle_offset_alongship_m, angle_offset_athwartship_m
-
-    def calc_beam_widths_m(self, f):
-        if self.isCalibrated:
-            # Calibrated case
-            beam_width_alongship_m = np.interp(f, self.frequencies, self.beam_width_alongship)
-            beam_width_athwartship_m = np.interp(f, self.frequencies, self.beam_width_athwartship)
-        else:
-            # Uncalibrated case
-            beam_width_alongship_m = self.beam_width_alongship_fnom * self.fnom / f
-            beam_width_athwartship_m = self.beam_width_athwartship_fnom * self.fnom / f
-        return beam_width_alongship_m, beam_width_athwartship_m
 
     def lambda_f(self, f):
         return self.c / f
 
     def calcElectricalAngles(self, y_pc_nu):
-        # Transducers might have different segment configuration
-        # Here we assume 4 quadrants
 
-        gamma_theta = self.angle_sensitivity_alongship_fnom * (self.f_c / self.fnom)
-        gamma_phi = self.angle_sensitivity_athwartship_fnom * (self.f_c / self.fnom)
+        # Transduceres might have different segment configuration
+        # Here we assume 4 quadrants
 
         y_pc_fore_n = 0.5 * (y_pc_nu[2, :] + y_pc_nu[3, :])
         y_pc_aft_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[1, :])
@@ -440,15 +385,15 @@ class EK80CalculationPaper(EK80DataContainer):
         y_theta_n = y_pc_fore_n * np.conj(y_pc_aft_n)
         y_phi_n = y_pc_star_n * np.conj(y_pc_port_n)
 
-        theta_n = np.arcsin(np.arctan2(np.imag(y_theta_n), np.real(y_theta_n)) / gamma_theta) * 180 / np.pi
-        phi_n = np.arcsin(np.arctan2(np.imag(y_phi_n), np.real(y_phi_n)) / gamma_phi) * 180 / np.pi
+        theta_n = np.arcsin(np.arctan2(np.imag(y_theta_n), np.real(y_theta_n))) * 180 / np.pi
+        phi_n = np.arcsin(np.arctan2(np.imag(y_phi_n), np.real(y_phi_n))) * 180 / np.pi
 
         return theta_n, phi_n
 
     @staticmethod
     def generateIdealWindowedSendPulse(f0, f1, tau, fs, slope):
         nsamples = int(np.floor(tau * fs))
-        t = np.linspace(0, nsamples-1, num=nsamples) * 1/fs
+        t = np.linspace(0, nsamples - 1, num=nsamples) * 1 / fs
         y = EK80CalculationPaper.chirp(t, f0, tau, f1)
         L = int(np.round(tau * fs * slope * 2.0))  # Length of hanning window
         w = EK80CalculationPaper.hann(L)

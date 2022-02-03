@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 
-from Core.EK80Calculation import EK80Calculation
+from Core.EK80Calculation import EK80CalculationPaper
 
 # python example_Svf.py --file ..\Data\pyEcholabEK80data.json --r0 10 --r1 30
 if __name__ == '__main__':
@@ -16,7 +16,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     #ekdata = EK80DataContainer(args.file)
-    ekcalc = EK80Calculation(args.file)
+    ekcalc = EK80CalculationPaper(args.file)
 
     y_pc_u = ekcalc.calcPulseCompressedQuadrants(ekcalc.y_rx_nu)
     y_pc = ekcalc.calcAvgSumQuad(y_pc_u)

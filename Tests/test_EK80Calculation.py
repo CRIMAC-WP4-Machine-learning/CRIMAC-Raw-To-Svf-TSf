@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import scipy.io
 
-from Core.EK80Calculation import EK80Calculation
+from Core.EK80Calculation import EK80CalculationPaper
 
 
 class TestEK80Calculation(unittest.TestCase):
@@ -10,14 +10,14 @@ class TestEK80Calculation(unittest.TestCase):
     @classmethod
     def setUpClass(self):
 
-        self.calc = EK80Calculation('..\Data\pyEcholabEK80data.json')
+        self.calc = EK80CalculationPaper('..\Data\pyEcholabEK80data.json')
 
 
     def test_calcAvgSumQuad(self):
 
         # Calculation trough implemented methods
         ycq = np.array([[4.85690181+11.37198657j, -5.3561974 + 0.20880486j], [5.64515755+11.23851476j, -5.28595187 +0.55263475j], [ 5.40798186+11.21237538j, -5.30801666 +0.45015535j], [5.17319057+11.08695032j, -5.31563328 +0.38322727j]])
-        yc = EK80Calculation.calcAvgSumQuad(ycq)
+        yc = EK80CalculationPaper.calcAvgSumQuad(ycq)
 
         # Ground truth
         gt_yc = np.array([5.27081+11.2275j, -5.31645+0.398706j])
@@ -28,7 +28,7 @@ class TestEK80Calculation(unittest.TestCase):
     def test_hann(self):
 
         # Calculation trough implemented methods
-        w = EK80Calculation.hann(7)
+        w = EK80CalculationPaper.hann(7)
 
         # Ground truth
         gt_w = np.array([0., 0.25, 0.75, 1., 0.75, 0.25, 0.])
@@ -38,7 +38,7 @@ class TestEK80Calculation(unittest.TestCase):
 
     def test_chirp(self):
         # Calculation trough implemented methods
-        signal = EK80Calculation.chirp(np.arange(0, 5), 1, 5, 2)
+        signal = EK80CalculationPaper.chirp(np.arange(0, 5), 1, 5, 2)
 
         # Ground truth
         gt_signal = np.array([1.,  0.80901699, -0.80901699,  0.80901699, -0.80901699])
@@ -51,7 +51,7 @@ class TestEK80Calculation(unittest.TestCase):
         # Calculation trough implemented methods
         alpha = 0.010425962012642035
         r = np.array([1, 50, 100, 500])
-        tvg = EK80Calculation.calculateTVGdB(alpha, r)
+        tvg = EK80CalculationPaper.calculateTVGdB(alpha, r)
 
         # Ground truth
         gt_tvg = np.array([2.08519240e-02, 3.50219963e+01, 4.20851924e+01, 6.44053621e+01])
@@ -76,7 +76,7 @@ class TestEK80Calculation(unittest.TestCase):
         auto = np.array([-0.7, -0.6, -0.7, -0.8, -0.9, 1, 0.9, 0.8, 0.7, 0.6, 0.5])
         yc = np.array([-0.8, -0.9, 1, 0.9, 0.8, 0.7])
 
-        _auto = EK80Calculation.alignAuto(auto, yc)
+        _auto = EK80CalculationPaper.alignAuto(auto, yc)
 
         np.testing.assert_equal(_auto, np.array([-0.8, -0.9, 1, 0.9, 0.8, 0.7]))
 
@@ -84,7 +84,7 @@ class TestEK80Calculation(unittest.TestCase):
 
         testData = scipy.io.loadmat('freqtransf.mat')
 
-        FFTvec = EK80Calculation.freqtransf(testData['FFTvecin'].squeeze(), testData['fsdec'].squeeze(), testData['fvec'].squeeze())
+        FFTvec = EK80CalculationPaper.freqtransf(testData['FFTvecin'].squeeze(), testData['fsdec'].squeeze(), testData['fvec'].squeeze())
 
         np.testing.assert_allclose(FFTvec, testData['FFTvec'].squeeze(), rtol=0.01, atol=0.1)
 

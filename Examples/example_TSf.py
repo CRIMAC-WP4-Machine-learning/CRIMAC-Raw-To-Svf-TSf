@@ -3,7 +3,7 @@ import numpy as np
 import argparse
 
 from Core.EK80DataContainer import EK80DataContainer
-from Core.EK80Calculation import EK80Calculation
+from Core.EK80Calculation import EK80CalculationPaper
 
 # python example_TSf.py --file ..\Data\pyEcholabEK80data.json --r0 10 --r1 30 --before 0.5 --after 1
 if __name__ == '__main__':
@@ -19,7 +19,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     #ekdata = EK80DataContainer(args.file)
-    ekcalc = EK80Calculation(args.file)
+    ekcalc = EK80CalculationPaper(args.file)
 
     y_pc_nu = ekcalc.calcPulseCompressedQuadrants(ekcalc.y_rx_nu)
     y_pc_n = ekcalc.calcAvgSumQuad(y_pc_nu)
