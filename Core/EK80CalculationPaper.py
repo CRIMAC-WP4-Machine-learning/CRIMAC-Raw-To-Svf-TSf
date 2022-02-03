@@ -415,12 +415,14 @@ class EK80CalculationPaper(EK80DataContainer):
         return y_pc_fore_n, y_pc_aft_n, y_pc_star_n, y_pc_port_n
 
     @staticmethod
-    def calcAngles(y_pc_halves,angle_sensitivity_alongship_fnom,angle_sensitivity_athwartship_fnom,f_c,fnom):
+    def calcGamma(angle_sensitivity_fnom, f_c, fnom):
+        return angle_sensitivity_fnom * (f_c / fnom)
+
+    @staticmethod
+    def calcAngles(y_pc_halves,gamma_theta, gamma_phi):
         # Transducers might have different segment configuration
         # Here we assume 4 quadrants
         y_pc_fore_n, y_pc_aft_n, y_pc_star_n, y_pc_port_n = y_pc_halves
-        gamma_theta = angle_sensitivity_alongship_fnom * (f_c / fnom)
-        gamma_phi = angle_sensitivity_athwartship_fnom * (f_c / fnom)
 
         y_theta_n = y_pc_fore_n * np.conj(y_pc_aft_n)
         y_phi_n = y_pc_star_n * np.conj(y_pc_port_n)
