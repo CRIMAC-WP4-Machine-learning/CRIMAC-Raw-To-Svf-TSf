@@ -112,32 +112,39 @@ plt.xlabel('samples')
 plt.ylabel('ACF')
 plt.savefig('./Paper/Fig_ACF.png')
 
-
 # Calculating the pulse compressed quadrant signals separately on each channel
-#y_pc_nu = ekcalc.calcPulseCompressedQuadrants(ekcalc.y_rx_nu)
-y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(ekcalc.y_rx_nu, ekcalc.y_mf_n)
+y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(ekcalc.y_rx_nu,
+                                                            ekcalc.y_mf_n)
+
 # Calculating the average signal over the channels
-y_pc_n = ekcalc.calcAvgSumQuad(y_pc_nu)
+y_pc_n = EK80CalculationPaper.calcAvgSumQuad(y_pc_nu)
 
-# Calculating the average signal over paired channels
+# Calculating the average signal over paired fore, aft, starboard, port channel
+y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
 
-# This is done inside the calcElectricalAngles(self, y_pc) function and
-# the results are not directly accessible.
-
-#print('The four quadrants and the length of the sampled data: ' +
-#      str(np.shape(ekcalc.y_rx_org)))
 
 #
 # Chapter IIE: Power angles and samples
 #
 
+# Calcuate the power across transducer channels
 p_rx_e = ekcalc.calcPower(y_pc_n)
 
-y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
+# Calculate the angle sensitivities
+gamma_theta = EK80CalculationPaper.calcGamma(
+    ekcalc.angle_sensitivity_alongship_fnom,
+    ekcalc.f_c,
+    ekcalc.fnom)
+gamma_phi = EK80CalculationPaper.calcGamma(
+    ekcalc.angle_sensitivity_athwartship_fnom,
+    ekcalc.f_c,
+    ekcalc.fnom)
 
+# Calculate the physical angles
 y_theta_n, y_phi_n = EK80CalculationPaper.calcAngles(
-    y_pc_halves, ekcalc.angle_sensitivity_alongship_fnom,
-    ekcalc.angle_sensitivity_athwartship_fnom, ekcalc.f_c, ekcalc.fnom)
+    y_pc_halves,
+    gamma_theta,
+    gamma_phi)
 
 #
 # Chapter III: TARGET STRENGTH
