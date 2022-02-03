@@ -3,7 +3,7 @@ import numpy as np
 import argparse
 
 from Core.EK80DataContainer import EK80DataContainer
-from Core.EK80Calculation import EK80Calculation
+from Core.EK80CalculationPaper import EK80CalculationPaper
 
 # python example_TSf.py --file ..\Data\pyEcholabEK80data.json --r0 10 --r1 30 --before 0.5 --after 1
 if __name__ == '__main__':
@@ -19,12 +19,35 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     #ekdata = EK80DataContainer(args.file)
-    ekcalc = EK80Calculation(args.file)
+    ekcalc = EK80CalculationPaper(args.file)
 
-    y_pc_nu = ekcalc.calcPulseCompressedQuadrants(ekcalc.y_rx_nu)
-    y_pc_n = ekcalc.calcAvgSumQuad(y_pc_nu)
-    p_rx_e_n = ekcalc.calcPower(y_pc_n)
-    theta_n, phi_n = ekcalc.calcElectricalAngles(y_pc_nu)
+    y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(ekcalc.y_rx_nu,
+                                                                ekcalc.y_mf_n)
+
+    #y_pc_nu = ekcalc.calcPulseCompressedQuadrants(ekcalc.y_rx_nu)
+    y_pc_n = EK80CalculationPaper.calcAvgSumQuad(y_pc_nu)
+    y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
+    p_rx_e_n = EK80CalculationPaper.calcPower(
+        y_pc_n,
+        ekcalc.z_td_e,
+        ekcalc.z_rx_e,
+        ekcalc.N_u)
+
+    gamma_theta = EK80CalculationPaper.calcGamma(
+        ekcalc.angle_sensitivity_alongship_fnom,
+        ekcalc.f_c,
+        ekcalc.fnom)
+    gamma_phi = EK80CalculationPaper.calcGamma(
+        ekcalc.angle_sensitivity_athwartship_fnom,
+        ekcalc.f_c,
+        ekcalc.fnom)
+
+    # Calculate the physical angles
+    theta_n, phi_n = EK80CalculationPaper.calcAngles(
+        y_pc_halves,
+        gamma_theta,
+        gamma_phi)
+
 
     Sp_n, r_n = ekcalc.calcSp(p_rx_e_n, args.r0, args.r1)
 

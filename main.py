@@ -120,7 +120,7 @@ y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(ekcalc.y_rx_nu,
 y_pc_n = EK80CalculationPaper.calcAvgSumQuad(y_pc_nu)
 
 # Calculating the average signal over paired fore, aft, starboard, port channel
-y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
+y_pc_halves_n = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
 
 
 #
@@ -128,7 +128,7 @@ y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
 #
 
 # Calcuate the power across transducer channels
-p_rx_e = EK80CalculationPaper.calcPower(
+p_rx_e_n = EK80CalculationPaper.calcPower(
     y_pc_n,
     ekcalc.z_td_e,
     ekcalc.z_rx_e,
@@ -146,7 +146,7 @@ gamma_phi = EK80CalculationPaper.calcGamma(
 
 # Calculate the physical angles
 y_theta_n, y_phi_n = EK80CalculationPaper.calcAngles(
-    y_pc_halves,
+    y_pc_halves_n,
     gamma_theta,
     gamma_phi)
 
