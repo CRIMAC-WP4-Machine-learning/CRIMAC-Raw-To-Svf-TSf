@@ -8,11 +8,6 @@ class EK80CalculationPaper(EK80DataContainer):
     def __init__(self, jsonfname=None):
         super().__init__(jsonfname)
 
-        # Constants
-
-        self.z_trd = 75  # (Ohm) Transducer impedance
-        self.f_s = 1.5e6  # (Hz) Orginal WBT sampling rate
-        self.n_f_points = 1000  # Number of frequency points for evaluation of TS(f) and Sv(f)
 
         # Derived constants
         # Constant used to calculate power, some factors can be simplified, but this is written for clarity
@@ -52,18 +47,27 @@ class EK80CalculationPaper(EK80DataContainer):
         self.y_tx_n = y_tx_n
         self.y_tx_n_t = t
 
+        self.f_s_dec = EK80CalculationPaper.calc_fs_dec(self.fil1s)
+
         # Normalize ideal transmit pulse
-        y_tilde_tx_n = y_tx_n / np.max(y_tx_n)
+        #y_tilde_tx_n = y_tx_n / np.max(y_tx_n)
+
+        # Eq (4)
+        y_tilde_tx_n = EK80CalculationPaper.calc_y_tx_tilde_n(y_tx_n)
+
+        # Eq (5)
+        y_tilde_tx_nv = EK80CalculationPaper.calc_y_tx_tilde_nv(y_tilde_tx_n, self.fil1s)
 
         # Filter and decimate ideal transmit pulse trough stage filters
         # and calculate decimated sampling rate
-        y_tilde_tx_nv = y_tilde_tx_n
+        #y_tilde_tx_nv = y_tilde_tx_n
+        """
         self.f_s_dec *= self.f_s
         if self.fil1s is not None:
             for fil1 in self.fil1s:
-                y_tilde_tx_nv = self.stageFilter(y_tilde_tx_nv, fil1)
+                #y_tilde_tx_nv = self.stageFilter(y_tilde_tx_nv, fil1)
                 self.f_s_dec *= 1 / fil1.DecimationFactor
-
+        """
         # Output signal from the final filter and decimation stage is used
         # as matched filter
         y_mf_n = y_tilde_tx_nv
@@ -93,6 +97,30 @@ class EK80CalculationPaper(EK80DataContainer):
             # decimation
             noFreq = 112
             self.frequencies = np.linspace(self.f0, self.f1, noFreq)
+
+    @staticmethod
+    def calc_fs_dec(fil1s):
+        f_s_dec = 1
+        if fil1s is not None:
+            for fil1 in fil1s:
+                f_s_dec *= 1 / fil1.DecimationFactor
+
+        return f_s_dec
+
+    @staticmethod
+    def calc_y_tx_tilde_n(y_tx_n):
+        return y_tx_n / np.max(y_tx_n)
+
+    @staticmethod
+    def calc_y_tx_tilde_nv(y_tilde_tx_n, fil1s):
+
+        y_tilde_tx_nv = y_tilde_tx_n
+
+        if fil1s is not None:
+            for fil1 in fil1s:
+                y_tilde_tx_nv = np.convolve(y_tilde_tx_nv, fil1.Coefficients, mode='full')[0::fil1.DecimationFactor]
+
+        return y_tilde_tx_nv
 
     def calcPulseCompressedQuadrants(self, quadrant_signals):
         """

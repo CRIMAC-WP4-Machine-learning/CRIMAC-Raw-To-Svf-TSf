@@ -21,11 +21,6 @@ class EK80CalculationPaper(EK80DataContainer):
             self.Svf = ekdata.Svf
         """
 
-        # Constants
-
-        self.z_trd = 75  # (Ohm) Transducer impedance
-        self.f_s = 1.5e6  # (Hz) Orginal WBT sampling rate
-        self.n_f_points = 1000  # Number of frequency points for evaluation of TS(f) and Sv(f)
 
         # Derived constants
         # Constant used to calculate power, some factors can be simplified, but this is written for clarity

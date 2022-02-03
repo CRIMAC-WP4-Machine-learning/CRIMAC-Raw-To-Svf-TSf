@@ -9,6 +9,12 @@ class EK80DataContainer:
     # Should we use pyecholab to get the data from .raw files?
     def __init__(self, jsonfname=None):
 
+        # Constants
+
+        self.z_trd = 75  # (Ohm) Transducer impedance
+        self.f_s = 1.5e6  # (Hz) Orginal WBT sampling rate
+        self.n_f_points = 1000  # Number of frequency points for evaluation of TS(f) and Sv(f)
+
         self.hasData = False
         if jsonfname is not None:
 
