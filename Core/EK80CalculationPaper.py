@@ -160,9 +160,15 @@ class EK80CalculationPaper(EK80DataContainer):
         np.array: y_pc_n
         """
         return np.sum(y_pc_nu, axis=0) / y_pc_nu.shape[0]
-
-    def calcPower(self, y_pc):
-        return self.C1Prx * np.abs(y_pc) ** 2
+    
+    @staticmethod
+    def calcPower(y_pc, z_td_e, z_rx_e, N_u):
+        K1 = 4 / ((2 * np.sqrt(2)) ** 2)
+        K2 = (np.abs(z_rx_e + z_td_e) / z_rx_e) ** 2
+        K3 = 1.0 / np.abs(z_td_e)
+        C1Prx = K1 * K2 * K3
+        
+        return C1Prx * np.abs(y_pc) ** 2
 
     def calcRange(self):
         dr = self.sampleInterval * self.c * 0.5

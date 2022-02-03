@@ -128,7 +128,11 @@ y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
 #
 
 # Calcuate the power across transducer channels
-p_rx_e = ekcalc.calcPower(y_pc_n)
+p_rx_e = EK80CalculationPaper.calcPower(
+    y_pc_n,
+    ekcalc.z_td_e,
+    ekcalc.z_rx_e,
+    ekcalc.N_u)
 
 # Calculate the angle sensitivities
 gamma_theta = EK80CalculationPaper.calcGamma(
@@ -145,6 +149,15 @@ y_theta_n, y_phi_n = EK80CalculationPaper.calcAngles(
     y_pc_halves,
     gamma_theta,
     gamma_phi)
+
+# Plot angles
+plt.figure()
+plt.plot(y_theta_n)
+plt.plot(y_phi_n)
+plt.title('The physical angles.')
+plt.xlabel(' ')
+plt.ylabel('angles')
+plt.savefig('./Paper/Fig_theta_phi.png')
 
 #
 # Chapter III: TARGET STRENGTH
