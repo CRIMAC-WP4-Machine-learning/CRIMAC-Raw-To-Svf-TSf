@@ -25,8 +25,8 @@ class EK80Calculation(EK80DataContainer):
         # Derived constants
         # Constant used to calculate power, some factors can be simplified, but this is written for clarity
         K1 = 4 / ((2 * np.sqrt(2)) ** 2)
-        K2 = (np.abs(self.z_rx_e + self.z_trd) / self.z_rx_e) ** 2
-        K3 = 1.0 / np.abs(self.z_trd)
+        K2 = (np.abs(self.z_rx_e + self.z_td_e) / self.z_rx_e) ** 2
+        K3 = 1.0 / np.abs(self.z_td_e)
         self.C1Prx = K1 * K2 * K3
         self.f_s_dec = 1
         self.calculateDerivedVariables()

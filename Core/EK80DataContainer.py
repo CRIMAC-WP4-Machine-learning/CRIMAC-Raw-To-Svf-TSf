@@ -11,7 +11,7 @@ class EK80DataContainer:
 
         # Constants
 
-        self.z_trd = 75  # (Ohm) Transducer impedance
+        self.z_td_e = 75  # (Ohm) Transducer impedance
         self.f_s = 1.5e6  # (Hz) Orginal WBT sampling rate
         self.n_f_points = 1000  # Number of frequency points for evaluation of TS(f) and Sv(f)
         self.noFreq = 1000
@@ -83,12 +83,15 @@ class EK80DataContainer:
                 coefficients = np.array(c['real']) + np.array(c['imag']) * 1j
                 self.fil1s.append(FIL1(v['noOfCoefficients'], v['decimationFactor'], coefficients))
 
+            self.N_v=len(self.fil1s)
+
         raw3 = jdict['RAW3']
         self.offset = raw3['offset']
         self.sampleCount = raw3['sampleCount']
         self.y_rx_nu = None
         if 'quadrant_signals' in raw3 and 'NaN' not in raw3['quadrant_signals']:
             self.y_rx_nu = []
+            self.N_u = len(raw3['quadrant_signals'].values())
             for v in raw3['quadrant_signals'].values():
                 self.y_rx_nu.append(np.array(v['real']) + np.array(v['imag']) * 1j)
 
