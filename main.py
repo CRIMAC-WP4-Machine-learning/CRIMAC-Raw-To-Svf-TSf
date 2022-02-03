@@ -33,7 +33,7 @@ plt.ylabel('amplitude')
 plt.savefig('./Paper/Fig_ytx.png')
 
 #
-# Chapter: Signal reception
+# Chapter IIC: Signal reception
 #
 
 # The digitized received signal 'y_rx_org' is filtered and decimated
@@ -88,15 +88,17 @@ plt.savefig('./Paper/Fig_fir.png')
 #
 
 # The normalized ideal transmit signal
-#y_tilde_tx_n = EK80CalculationPaper.calcNorm()
+y_tilde_tx_n = EK80CalculationPaper.calc_y_tx_tilde_n(y_tx_n)
 
 # Passing the normalized and ideal transmit signal through the filter bank
-#y_tilde_tx_nv = EK80CalculationPaper.calcFilteredSignal(
+y_tilde_tx_nv = EK80CalculationPaper.calc_y_tx_tilde_nv(
+    y_tilde_tx_n, ekcalc.fil1s)
+
 #    y_tilde_tx_n,
 #    ekcalc.h_fl_iv)
 
 # Normalized, filtered and decimated transmit signal for the matched filter
-#y_mf_n = y_tilde_tx_nv[:,-1]
+y_mf_n = y_tilde_tx_nv[:,-1]
 
 plt.figure()
 plt.plot(np.abs(ekcalc.y_mf_n))
@@ -121,12 +123,10 @@ y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(
     ekcalc.y_mf_n)
 
 # Calculating the average signal over the channels
-y_pc_n = EK80CalculationPaper.calcAvgSumQuad(
-    y_pc_nu)
+y_pc_n = EK80CalculationPaper.calcAvgSumQuad(y_pc_nu)
 
 # Calculating the average signal over paired fore, aft, starboard, port channel
-y_pc_halves = EK80CalculationPaper.calc_transducer_halves(
-    y_pc_nu)
+y_pc_halves = EK80CalculationPaper.calc_transducer_halves(y_pc_nu)
 
 
 #
@@ -169,15 +169,15 @@ plt.savefig('./Paper/Fig_theta_phi.png')
 # Chapter III: TARGET STRENGTH
 #
 
-# p_rx_e_n = ekcalc.calcPower(y_pc_n,c)
-#    def calcPower(y_pc_n, z_rx_e, z_td_e, N_u):
+#Sp_n, r_n = EK80CalculationPaper.calcSp(p_rx_e, args.r0, args.r1)
 
-#z_rx_e
-#impedac.z.z_td_e
 
-#p_rx_e_n = EK80Calculation.calcPower(y_pc_n)
+#
+# Chapter IV: VOLUME BACKSCATTERING STRENGTH
+#
 
-#theta_n, phi_n = ekcalc.calcElectricalAngles(y_pc_nu)
+# Calculate Sv
+# Sv =
 
 
 
