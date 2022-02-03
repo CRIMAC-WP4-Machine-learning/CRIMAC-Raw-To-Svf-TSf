@@ -90,11 +90,11 @@ class EK80Calculation(EK80DataContainer):
         self.y_mf_twoNormSquared = y_mf_twoNormSquared
 
         # Calculate auto correlation function for matched filter
-        y_mf_auto = np.convolve(y_mf_n, y_mf_n_conj_rev) / y_mf_twoNormSquared
-        self.y_mf_auto = y_mf_auto
+        y_mf_auto_n = np.convolve(y_mf_n, y_mf_n_conj_rev) / y_mf_twoNormSquared
+        self.y_mf_auto_n = y_mf_auto_n
 
         # Estimate effective pulse duration
-        p_tx_auto = np.abs(y_mf_auto) ** 2
+        p_tx_auto = np.abs(y_mf_auto_n) ** 2
         self.tau_eff = np.sum(p_tx_auto) / ((np.max(p_tx_auto)) * self.f_s_dec)
 
         # Calibration data
@@ -149,6 +149,29 @@ class EK80Calculation(EK80DataContainer):
         dr = self.sampleInterval * self.c * 0.5
         r = np.array([(self.offset + i + 1) * dr for i in range(0, self.sampleCount)])
         return r, dr
+
+    def calcSp(self, power, r0=None, r1=None):
+
+        Gfc = self.G_f(self.f_c)
+        PSIfc = self.PSI_f(self.f_c)
+        logSpCf = self.calculateCSpfdB(self.f_c)
+        r, _ = self.calcRange()
+
+        alpha_fc = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, self.f_c)
+
+        if r0 is not None and r1 is not None:
+            Idx = np.where((r>=r0) & (r<=r1))
+            r = r[Idx]
+            power = power[Idx]
+
+        Sp = 10.0 * np.log10(power) + \
+             40.0 * np.log10(r) + \
+             2.0 * alpha_fc * r - \
+             logSpCf - \
+             2 * Gfc
+
+        return Sp, r
+
 
     def calcSv(self, power, r0=None, r1=None):
 
@@ -214,7 +237,7 @@ class EK80Calculation(EK80DataContainer):
 
         f = np.linspace(self.f0, self.f1, self.n_f_points)
 
-        _FFTytxauto = np.fft.fft(self.y_mf_auto, n=Nw)
+        _FFTytxauto = np.fft.fft(self.y_mf_auto_n, n=Nw)
         FFTytxauto = self.freqtransf(_FFTytxauto, self.f_s_dec, f)
 
         Gf = self.G_f(f)    # Used only if not calibrated
@@ -275,45 +298,83 @@ class EK80Calculation(EK80DataContainer):
         return Svf, svf_range, f
 
     @staticmethod
-    def alignAuto(auto, yc):
+    def alignAuto(auto, y_pc_t_n):
 
         idx_peak_auto = np.argmax(auto)
-        idx_peak_yc = np.argmax(yc)
+        idx_peak_y_pc_t_n = np.argmax(y_pc_t_n)
 
-        left_samples_yc = idx_peak_yc
-        right_samples_yc = len(yc) - idx_peak_yc
+        left_samples = idx_peak_y_pc_t_n
+        right_samples = len(y_pc_t_n) - idx_peak_y_pc_t_n
 
-        idx_start_auto = max(0, idx_peak_auto - left_samples_yc)
-        idx_stop_auto = min(len(auto), idx_peak_auto + right_samples_yc)
+        idx_start_auto = max(0, idx_peak_auto - left_samples)
+        idx_stop_auto = min(len(auto), idx_peak_auto + right_samples)
 
         new_auto = auto[idx_start_auto : idx_stop_auto]
 
         return new_auto
 
-    def calcTSf(self, yc_target, peakIdx):
+    def singleTarget(self, y_pc_n, p_rx_e_n, theta_n, phi_n, r0, r1, before=0.5, after=0.5):
 
-        """
-        Usually the extracted target signal is shorter than the entire length of the
-        auto correlation function of the transmit signal. In order to compensate correctly we need to extract the same samples from the auto correlation of the
-        transmit signal as from the received signal relative to the peak signal sample.
-        The reduced auto correlation signal of the transmit signal is labeled
-        How to find samples from ytx_auto?
+        r_n, _ = self.calcRange()
 
-        These FFT’s represent the frequency band 0 − fs;dec with a resolution of fs;dec
-        nff t and should be transferred to the actual frequency band through simple
-        repetitions of the FFT’s and extraction of the original frequency band.
-        How to extract the orginal frequency band?
+        # Extract samples for given range limits
 
-        """
-        if len(yc_target) <= len(self.y_mf_auto):
+        if r0 is not None and r1 is not None:
+            Idx = np.where((r_n >= r0) & (r_n <= r1))
+            r_n = r_n[Idx]
+            y_pc_n = y_pc_n[Idx]
+            p_rx_e_n = p_rx_e_n[Idx]
+            theta_n = theta_n[Idx]
+            phi_n = phi_n[Idx]
 
+        # Use peak power within given range limits as index for single target
+        # This assumes a single target detection algorithm has been used to
+        # detect a single target and define the range limits for the single target
 
-            # Middel of autocorelation function should allign with peakIdx
-            ytx_auto_peakIdx = len(self.y_mf_auto) // 2
+        idx_peak_p_rx = np.argmax(p_rx_e_n)
+        r = r_n[idx_peak_p_rx]
+        theta = theta_n[idx_peak_p_rx]
+        phi = phi_n[idx_peak_p_rx]
 
-            reduced_ytx_auto = self.y_mf_auto[ytx_auto_peakIdx-peakIdx:ytx_auto_peakIdx+(len(yc_target)-peakIdx)]
+        # Extract pulse compressed samples before and after the peak power
+        r_t_begin = r - before
+        r_t_end = r + after
+        Idx = np.where((r_n >= r_t_begin) & (r_n <= r_t_end))
+        y_pc_t_n = y_pc_n[Idx]
 
-        pass
+        return r, theta, phi, y_pc_t_n
+
+    def calcTSf(self, r, theta, phi, y_pc_t_n):
+
+        # L = len(y_pc_t_n)
+        L = self.n_f_points
+        N_DFT = int(2 ** np.ceil(np.log2(L))) # or : Nw = np.ceil(2 ** np.log2(L))
+
+        f_m = np.linspace(self.f0, self.f1, self.n_f_points)
+
+        y_mf_auto_red_n = self.alignAuto(self.y_mf_auto_n, y_pc_t_n)
+
+        _Y_pc_t_m = np.fft.fft(y_pc_t_n, n=N_DFT)
+        Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m)
+
+        _Y_mf_auto_red_m = np.fft.fft(y_mf_auto_red_n, n=N_DFT)
+        Y_mf_auto_red_m = self.freqtransf(_Y_mf_auto_red_m, self.f_s_dec, f_m)
+
+        Gf = self.G_f(f_m)    # Used only if not calibrated
+        alpha_m = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f_m)
+        logSpCf = self.calculateCSpfdB(f_m)
+
+        Y_tilde_pc_t_m = Y_pc_t_m / Y_mf_auto_red_m
+
+        P_rx_e_t_m = self.C1Prx * np.abs(Y_tilde_pc_t_m) ** 2
+
+        TS_m = 10 * np.log10(P_rx_e_t_m) + \
+           40 * np.log10(r) + \
+           2 * alpha_m * r - \
+           logSpCf - \
+           2 * Gf
+
+        return TS_m, f_m
 
     def PSI_f(self, f):
         return self.PSIfnom + 20 * np.log10(self.fnom / f)
@@ -331,20 +392,23 @@ class EK80Calculation(EK80DataContainer):
     def lambda_f(self, f):
         return self.c / f
 
-    def calcElectricalAngles(self, y_pc):
+    def calcElectricalAngles(self, y_pc_nu):
 
         # Transduceres might have different segment configuration
         # Here we assume 4 quadrants
 
-        y_pc_fore = 0.5 * (y_pc[2, :] + y_pc[2, :])
-        y_pc_aft = 0.5 * (y_pc[0, :] + y_pc[1, :])
-        y_pc_star = 0.5 * (y_pc[0, :] + y_pc[3, :])
-        y_pc_port = 0.5 * (y_pc[1, :] + y_pc[2, :])
+        y_pc_fore_n = 0.5 * (y_pc_nu[2, :] + y_pc_nu[3, :])
+        y_pc_aft_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[1, :])
+        y_pc_star_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[3, :])
+        y_pc_port_n = 0.5 * (y_pc_nu[1, :] + y_pc_nu[2, :])
 
-        y_alon = np.arctan2(np.real(y_pc_fore), np.imag(np.conj(y_pc_aft))) * 180 / np.pi
-        y_athw = np.arctan2(np.real(y_pc_star), np.imag(np.conj(y_pc_port))) * 180 / np.pi
+        y_theta_n = y_pc_fore_n * np.conj(y_pc_aft_n)
+        y_phi_n = y_pc_star_n * np.conj(y_pc_port_n)
 
-        return y_alon, y_athw
+        theta_n = np.arcsin(np.arctan2(np.imag(y_theta_n), np.real(y_theta_n))) * 180 / np.pi
+        phi_n = np.arcsin(np.arctan2(np.imag(y_phi_n), np.real(y_phi_n))) * 180 / np.pi
+
+        return theta_n, phi_n
 
     @staticmethod
     def generateIdealWindowedSendPulse(f0, f1, tau, fs, slope):
@@ -386,6 +450,10 @@ class EK80Calculation(EK80DataContainer):
     @staticmethod
     def calculateTVGdB(alpha, r):
         return 20.0 * np.log10(r) + 2.0 * alpha * r
+
+    def calculateCSpfdB(self, f):
+        lf = self.lambda_f(f)
+        return 10 * np.log10((self.ptx * lf ** 2) / (16.0 * np.pi * np.pi))
 
     def calculateCSvfdB(self, f):
         lf = self.lambda_f(f)
