@@ -47,7 +47,7 @@ class EK80CalculationPaper(EK80DataContainer):
         self.y_tx_n = y_tx_n
         self.y_tx_n_t = t
 
-        self.f_s_dec = EK80CalculationPaper.calc_fs_dec(self.fil1s, self.f_s)
+        self.f_s_dec = EK80CalculationPaper.calc_fs_dec(self.filter_v, self.f_s)
 
         # Normalize ideal transmit pulse
         #y_tilde_tx_n = y_tx_n / np.max(y_tx_n)
@@ -56,7 +56,7 @@ class EK80CalculationPaper(EK80DataContainer):
         y_tilde_tx_n = EK80CalculationPaper.calc_y_tx_tilde_n(y_tx_n)
 
         # Eq (5)
-        y_tilde_tx_nv = EK80CalculationPaper.calc_y_tx_tilde_nv(y_tilde_tx_n, self.fil1s)
+        y_tilde_tx_nv = EK80CalculationPaper.calc_y_tx_tilde_nv(y_tilde_tx_n, self.filter_v)
 
         # Filter and decimate ideal transmit pulse trough stage filters
         # and calculate decimated sampling rate
@@ -99,11 +99,11 @@ class EK80CalculationPaper(EK80DataContainer):
             self.frequencies = np.linspace(self.f0, self.f1, self.n_f_points)
 
     @staticmethod
-    def calc_fs_dec(fil1s, f_s):
+    def calc_fs_dec(filter_v, f_s):
         f_s_dec = f_s
-        if fil1s is not None:
-            for fil1 in fil1s:
-                f_s_dec *= 1 / fil1.DecimationFactor
+        if filter_v is not None:
+            for filter_v in filter_v:
+                f_s_dec *= 1 / filter_v["D"]
 
         return f_s_dec
 
@@ -112,13 +112,17 @@ class EK80CalculationPaper(EK80DataContainer):
         return y_tx_n / np.max(y_tx_n)
 
     @staticmethod
-    def calc_y_tx_tilde_nv(y_tilde_tx_n, fil1s):
+    def calc_y_tx_tilde_nv(y_tilde_tx_n, filter_v):
 
         y_tilde_tx_nv = y_tilde_tx_n
 
-        if fil1s is not None:
-            for fil1 in fil1s:
-                y_tilde_tx_nv = np.convolve(y_tilde_tx_nv, fil1.Coefficients, mode='full')[0::fil1.DecimationFactor]
+        # import pdb; pdb.set_trace()
+
+        if filter_v is not None:
+            for filter_v in filter_v:
+                y_tilde_tx_nv = np.convolve(y_tilde_tx_nv,
+                                            filter_v["h_fl_i"],
+                                            mode='full')[0::filter_v["D"]]
 
         return y_tilde_tx_nv
 

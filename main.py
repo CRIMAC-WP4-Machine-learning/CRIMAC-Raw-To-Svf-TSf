@@ -47,21 +47,24 @@ plt.savefig('./Paper/Fig_ytx.png')
 # The filter coefficients 'h_fl_iv' are accessible through the 'fil1s' variable
 # The 'fil1s' field corresponds to content of the EK80 datagram in the EK80 raw
 # file
-ekcalc.fil1s[0].Coefficients
-ekcalc.fil1s[1].Coefficients
+
+ekcalc.filter_v[0]["h_fl_i"]
+ekcalc.filter_v[1]["h_fl_i"]
+
 # and the corresponding decimation factor is available through
-ekcalc.fil1s[0].DecimationFactor
-ekcalc.fil1s[1].DecimationFactor
+ekcalc.filter_v[0]["D"]
+ekcalc.filter_v[1]["D"]
+
 # The corresponding samplings frequenies
 f_s = ekcalc.f_s  # The initial sampling frequency
-f_s0 = f_s / ekcalc.fil1s[0].DecimationFactor
+f_s0 = f_s / ekcalc.filter_v[0]["D"]
 f_s1 = f_s / (
-    ekcalc.fil1s[0].DecimationFactor*ekcalc.fil1s[1].DecimationFactor)
+    ekcalc.filter_v[0]["D"]*ekcalc.filter_v[1]["D"])
 
 # The frequency response function of the filter is given by its
 # discrete time fourier transform:
-H0 = np.fft.fft(ekcalc.fil1s[0].Coefficients)
-H1 = np.fft.fft(ekcalc.fil1s[1].Coefficients)
+H0 = np.fft.fft(ekcalc.filter_v[0]["h_fl_i"])
+H1 = np.fft.fft(ekcalc.filter_v[1]["h_fl_i"])
 
 # Plot of the frequency response of the filters (power) (in dB)
 F0 = np.arange(len(H0))*f_s/(len(H0))
@@ -92,10 +95,7 @@ y_tilde_tx_n = EK80CalculationPaper.calc_y_tx_tilde_n(y_tx_n)
 
 # Passing the normalized and ideal transmit signal through the filter bank
 y_tilde_tx_nv = EK80CalculationPaper.calc_y_tx_tilde_nv(
-    y_tilde_tx_n, ekcalc.fil1s)
-
-#    y_tilde_tx_n,
-#    ekcalc.h_fl_iv)
+    y_tilde_tx_n, ekcalc.filter_v)
 
 # Normalized, filtered and decimated transmit signal for the matched filter
 #y_mf_n = y_tilde_tx_nv[:,-1]

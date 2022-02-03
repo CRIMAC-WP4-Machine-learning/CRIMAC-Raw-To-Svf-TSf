@@ -74,16 +74,17 @@ class EK80DataContainer:
             self.beam_width_alongship = None
             self.isCalibrated = False
             
-        self.fil1s = None
+        self.filter_v = None
         if 'FIL1' in jdict and 'NaN' not in jdict['FIL1']:
-            self.fil1s = []
+            self.filter_v = []
             for v in jdict['FIL1'].values():
                 c = v['coefficients']
-                coefficients = np.array(c['real']) + np.array(c['imag']) * 1j
-                self.fil1s.append(FIL1(v['noOfCoefficients'], v['decimationFactor'], coefficients))
-
-            self.N_v=len(self.fil1s)
-
+                h_fl_i = np.array(c['real']) + np.array(c['imag']) * 1j
+                D = v['decimationFactor']
+                N_i = v['noOfCoefficients']
+                self.filter_v.append({"h_fl_i": h_fl_i, "D": D, "N_i": N_i})
+            self.N_v = len(self.filter_v)
+            
         raw3 = jdict['RAW3']
         self.offset = raw3['offset']
         self.sampleCount = raw3['sampleCount']
