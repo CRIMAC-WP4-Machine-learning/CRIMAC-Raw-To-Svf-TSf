@@ -115,8 +115,8 @@ plt.savefig('./Paper/Fig_ACF.png')
 
 
 # Calculating the pulse compressed quadrant signals separately on each channel
-y_pc_nu = ekcalc.calcPulseCompressedQuadrants(ekcalc.y_rx_nu)
-
+#y_pc_nu = ekcalc.calcPulseCompressedQuadrants(ekcalc.y_rx_nu)
+y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(ekcalc.y_rx_nu, ekcalc.y_mf_n)
 # Calculating the average signal over the channels
 y_pc_n = ekcalc.calcAvgSumQuad(y_pc_nu)
 
