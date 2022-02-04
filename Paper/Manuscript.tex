@@ -167,7 +167,7 @@ The controlling computer program generates a short-duration digital transmit sig
 
 To generate the signal
 
-The generated signal $\ytxe(\timesym)$ is converted to an analogue electric signal and amplified by the transceiver to obtain analogue signal $\ytxe(\timesym)$. The analogue and amplified signal is passed on to the transducer to generate the transmitted acoustic signal $\ytxA(\timesym)$ in the water column, where $\timesym$ is the time for the (analog) signal. For a split-aperture echosounder system, there are typically three or four channels to allow estimation of the angle of arriving echoes, and the signal is typically transmitted with equal power across the channels.
+The generated signal $\ytxe(\timesym)$ is converted to an analogue electric signal and amplified by the transceiver to obtain analogue signal $\ytxe(\timesym)$. The analogue and amplified signal is passed on to the transducer to generate the transmitted acoustic signal $\ytxa(\timesym)$ in the water column, where $\timesym$ is the time for the (analog) signal. For a split-aperture echosounder system, there are typically three or four channels to allow estimation of the angle of arriving echoes, and the signal is typically transmitted with equal power across the channels.
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_ytx}
@@ -225,16 +225,28 @@ where $\ytxnorm(\samplesymt,0)$ is set to $\ytxnorm(\samplesymt)$ and $\downarro
 \caption{\label{fi:y_mf_n} The absolute value of the filtered and decimated output signal $\ymf(\samplesymt)$ used by the pulse compression.}
 \end{figure}
 
-The auto correlation function of the matched filter signal, $\ymfauto(\samplesymt)$, that will be used in a later processing step is defined as:
+The auto correlation function of the matched filter signal and the effective pulse duration, defined as the pulse duration at transmit power $\ptxe$ which produces the same energy as the actual transmitted pulse, will be used in later processing steps and are defined as
 \begin{equation}
 \label{eq:TXAuto}
-\ymfauto(\samplesymt) = \frac{\ymf(\samplesymt)*\ymf^*(-\samplesymt)}{||\ymf||^2_2}.
+\ymfauto(\samplesymt) = \frac{\ymf(\samplesymt)*\ymf^*(-\samplesymt)}{||\ymf||^2_2}
 \end{equation}
+and
+\begin{equation}
+\label{eq:TauEff}
+\teff = \frac{\sum \ptxauto(\samplesymt)}{\textrm{max}(\ptxauto(\samplesymt))\fsdec},
+\end{equation}
+where
+\begin{equation*}
+%\label{eq:TauEff}
+\ptxauto(\samplesymt)  =  |\ymfauto(\samplesymt)|^2
+\end{equation*}
+is the square of the absolute value of the matched filter autocorrelation function, and the summation is calculated over a duration of twice the nominal pulse duration, $2\tnom$. For an ideal system, i.e., no tapering at the rising and trailing edges of the transmitted signal, the effective pulse duration is the same as the transmit pulse duration.
 
 \begin{figure}
 \includegraphics{Fig_ACF}
-\caption{\label{fi:ACF}.}
+\caption{The aoutocorrekation function $\ptxauto$ from the example. The corresponding $\teff=0.1ms$ and $\tnom=2ms$\label{fi:ACF}.}
 \end{figure}
+
 
 To perform pulse compression the received signal, $\yrx(\samplesymt,\channelsym)$, is convolved with a complex conjugated and time-reversed version of the matched filter signal with the matched filter signal, and here also normalized with the $l^2$-norm of the matched filter to maintain received signal power. The pulse compressed signal, $\ypc(\samplesymt,\channelsym)$, then becomes
 \begin{equation}
@@ -389,14 +401,7 @@ Volume backscattering samples compressed over the operational frequency band are
 \sv(\samplesymt)  =  10\log_{10}(\prxe(\samplesymt)) + 20\log_{10}(\range(\samplesymt)) + 2\absorp(\fc)\range(\samplesymt) 
 - 10\log_{10}\left( \frac{\ptxe \wlen^2(\fc) \cw \teff \eqang(\fc) \gainzero^2(\fc)}{32\pi^2} \right),
 \end{equation}
-noting that $\sv(\samplesymt)$ is an average over frequency of all echoes received at sample $\samplesymt$. In this case, the time window, $\tslide$, is the effective pulse duration, $\teff$, resulting from pulse compression. The effective pulse duration is defined as the pulse duration at transmit power $\ptxe$ which produces the same energy as the actual transmitted pulse, and is estimated from digitized data via:
-%
-\begin{eqnarray}
-\label{eq:TauEff}
-\ptxauto(\samplesymt) & = & |\ymfauto(\samplesymt)|^2,\\
-\teff & = & \frac{\sum \ptxauto(\samplesymt)}{\textrm{max}(\ptxauto(\samplesymt))\fsdec},
-\end{eqnarray}
-where $\ptxauto$ is the square of the absolute value of the matched filter autocorrelation function, and the summation is calculated over a duration of twice the nominal pulse duration, $2\tnom$. For an ideal system, i.e., no tapering at the rising and trailing edges of the transmitted signal, the effective pulse duration is the same as the transmit pulse duration.
+noting that $\sv(\samplesymt)$ is an average over frequency of all echoes received at sample $\samplesymt$. In this case, the time window, $\tslide$, is the effective pulse duration, $\teff$, resulting from pulse compression.
 
 To estimate $\sv$ as a function of frequency a Fourier transform is used, repeatedly applied via a sliding window in range. However, the duration of this sliding window can be so long that the difference in spherical spreading loss compensation ($r^2$, implemented as the $20\log_{10}(\range)$ term in Eq. \ref{eq:Sv}) from the beginning of the window to the end can be significant, particularly for short range measurements. Thus, compensation for spreading loss is performed before applying the discrete Fourier transform. Absorption loss compensation is also range dependent (and frequency dependent), but since absorption loss compensation is insignificant for typical operating frequencies at short ranges and the difference in absorption loss compensation between the beginning and the end of the sliding window is insignificant at longer ranges, compensation for absorption loss is performed after applying the discrete Fourier transform.
 
