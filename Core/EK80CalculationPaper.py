@@ -47,16 +47,16 @@ class EK80CalculationPaper(EK80DataContainer):
         self.y_tx_n = y_tx_n
         self.y_tx_n_t = t
 
-        self.f_s_dec = EK80CalculationPaper.calc_fs_dec(self.filter_v, self.f_s)
+        self.f_s_dec = EK80CalculationPaper.calcDecmiatedSamplingRate(self.filter_v, self.f_s)
 
         # Normalize ideal transmit pulse
         #y_tilde_tx_n = y_tx_n / np.max(y_tx_n)
 
         # Eq (4)
-        y_tilde_tx_n = EK80CalculationPaper.calc_y_tx_tilde_n(y_tx_n)
+        y_tilde_tx_n = EK80CalculationPaper.calcNormalizedTransmitSignal(y_tx_n)
 
         # Eq (5)
-        y_tilde_tx_nv = EK80CalculationPaper.calc_y_tx_tilde_nv(y_tilde_tx_n, self.filter_v)
+        y_tilde_tx_nv = EK80CalculationPaper.calcFilteredAndDecimatedSignal(y_tilde_tx_n, self.filter_v)
 
         # Filter and decimate ideal transmit pulse trough stage filters
         # and calculate decimated sampling rate
@@ -114,20 +114,22 @@ class EK80CalculationPaper(EK80DataContainer):
         return y_mf_auto_n, tau_eff
 
     @staticmethod
-    def calc_fs_dec(filter_v, f_s):
-        f_s_dec = f_s
+    def calcDecmiatedSamplingRate(filter_v, f_s):
+        f_s_dec = [f_s]
+        v = 0
         if filter_v is not None:
             for filter_v in filter_v:
-                f_s_dec *= 1 / filter_v["D"]
-
+                tmp = f_s_dec[v] / filter_v["D"]
+                f_s_dec.append(tmp)
+                v += 1
         return f_s_dec
-
+    
     @staticmethod
-    def calc_y_tx_tilde_n(y_tx_n):
+    def calcNormalizedTransmitSignal(y_tx_n):
         return y_tx_n / np.max(y_tx_n)
 
     @staticmethod
-    def calc_y_tx_tilde_nv(y_tilde_tx_n, filter_v):
+    def calcFilteredAndDecimatedSignal(y_tilde_tx_n, filter_v):
         # Initialize with normalized transmit pulse
         y_tilde_tx_nv = [y_tilde_tx_n]
         v = 0
@@ -480,7 +482,7 @@ class EK80CalculationPaper(EK80DataContainer):
         return self.c / f
 
     @staticmethod
-    def calc_transducer_halves(y_pc_nu):
+    def calcTransducerHalves(y_pc_nu):
         y_pc_fore_n = 0.5 * (y_pc_nu[2, :] + y_pc_nu[3, :])
         y_pc_aft_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[1, :])
         y_pc_star_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[3, :])

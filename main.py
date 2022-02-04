@@ -46,14 +46,11 @@ data.filter_v[1]["h_fl_i"]
 data.filter_v[0]["D"]
 data.filter_v[1]["D"]
 
-# Comment: This should be returned by the filter_v functions:
-# and the corresponding samplings frequenies
-f_s = data.f_s  # The initial sampling frequency
-f_s0 = f_s / data.filter_v[0]["D"]
-f_s1 = f_s / (
-    data.filter_v[0]["D"]*data.filter_v[1]["D"])
-# The final sampling freq is stored in f_s_dec
-f_s_dec = f_s1
+# The sampling freq for each filter step
+f_s_dec_v = EK80CalculationPaper.calcDecmiatedSamplingRate(
+    data.filter_v, data.f_s)
+# The final sampling frequency
+f_s_dec = f_s_dec_v[-1]
 
 # The frequency response function of the filter is given by its
 # discrete time fourier transform:
@@ -61,13 +58,13 @@ H0 = np.fft.fft(data.filter_v[0]["h_fl_i"])
 H1 = np.fft.fft(data.filter_v[1]["h_fl_i"])
 
 # Plot of the frequency response of the filters (power) (in dB)
-F0 = np.arange(len(H0))*f_s/(len(H0))
-F1 = np.arange(len(H1))*f_s0/(len(H1))
+F0 = np.arange(len(H0))*f_s_dec_v[0]/(len(H0))
+F1 = np.arange(len(H1))*f_s_dec_v[1]/(len(H1))
 G0 = 20 * np.log10(np.abs(H0))
 # Repeat pattern for the second filter (4 times)
-F1l = np.append(F1, F1+f_s0)
-F1l = np.append(F1l, F1+2*f_s0)
-F1l = np.append(F1l, F1+3*f_s0)
+F1l = np.append(F1, F1+f_s_dec_v[1])
+F1l = np.append(F1l, F1+2*f_s_dec_v[1])
+F1l = np.append(F1l, F1+3*f_s_dec_v[1])
 G1 = 20 * np.log10(np.abs(H1))
 G1l = np.append(G1, G1)
 G1l = np.append(G1l, G1)
