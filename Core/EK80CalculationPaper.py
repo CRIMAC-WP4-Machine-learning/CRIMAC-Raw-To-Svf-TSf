@@ -68,9 +68,9 @@ class EK80CalculationPaper(EK80DataContainer):
                 #y_tilde_tx_nv = self.stageFilter(y_tilde_tx_nv, fil1)
                 self.f_s_dec *= 1 / fil1.DecimationFactor
         """
-        # Output signal from the final filter and decimation stage is used
+        # Output signal from the final filter and decimation stage [-1] is used
         # as matched filter
-        y_mf_n = y_tilde_tx_nv
+        y_mf_n = y_tilde_tx_nv[-1]
         self.y_mf_n = y_mf_n
 
         # Create complex conjugated time reversed version and 2-norm of
@@ -97,6 +97,21 @@ class EK80CalculationPaper(EK80DataContainer):
             # decimation
 
             self.frequencies = np.linspace(self.f0, self.f1, self.n_f_points)
+            
+    @staticmethod
+    def calcAutoCorrelation(y_mf_n, f_s_dec):
+        y_mf_n_conj_rev = np.conj(y_mf_n)[::-1]
+        y_mf_twoNormSquared = np.linalg.norm(y_mf_n, 2) ** 2
+        y_mf_n_conj_rev = y_mf_n_conj_rev
+        y_mf_twoNormSquared = y_mf_twoNormSquared
+
+        # Calculate auto correlation function for matched filter
+        y_mf_auto_n = np.convolve(y_mf_n, y_mf_n_conj_rev)/y_mf_twoNormSquared
+
+        # Estimate effective pulse duration
+        p_tx_auto = np.abs(y_mf_auto_n) ** 2
+        tau_eff = np.sum(p_tx_auto) / ((np.max(p_tx_auto)) * f_s_dec)
+        return y_mf_auto_n, tau_eff
 
     @staticmethod
     def calc_fs_dec(filter_v, f_s):
@@ -113,16 +128,16 @@ class EK80CalculationPaper(EK80DataContainer):
 
     @staticmethod
     def calc_y_tx_tilde_nv(y_tilde_tx_n, filter_v):
-
-        y_tilde_tx_nv = y_tilde_tx_n
-
-        # import pdb; pdb.set_trace()
-
+        # Initialize with normalized transmit pulse
+        y_tilde_tx_nv = [y_tilde_tx_n]
+        v = 0
         if filter_v is not None:
-            for filter_v in filter_v:
-                y_tilde_tx_nv = np.convolve(y_tilde_tx_nv,
-                                            filter_v["h_fl_i"],
-                                            mode='full')[0::filter_v["D"]]
+            for filter_vi in filter_v:
+                tmp = np.convolve(y_tilde_tx_nv[v],
+                                  filter_vi["h_fl_i"],
+                                  mode='full')[0::filter_vi["D"]]
+                y_tilde_tx_nv.append(tmp)
+                v += 1
 
         return y_tilde_tx_nv
 

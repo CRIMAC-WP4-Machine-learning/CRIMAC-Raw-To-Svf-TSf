@@ -1,12 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from Core.EK80CalculationPaper import EK80CalculationPaper
+from Core.EK80DataContainer import EK80DataContainer
 
 # Test data
 
 # The data file ./data/pyEcholabEK80data.json contain data from one
 # ping from the EK80 echosounder, including the
-ekcalc = EK80CalculationPaper('./data/pyEcholabEK80data.json')
+#ekcalc = EK80CalculationPaper('./data/pyEcholabEK80data.json')
+ekcalc = EK80DataContainer('./data/pyEcholabEK80data.json')
 
 #
 # Chapter: Signal generation
@@ -60,6 +62,8 @@ f_s = ekcalc.f_s  # The initial sampling frequency
 f_s0 = f_s / ekcalc.filter_v[0]["D"]
 f_s1 = f_s / (
     ekcalc.filter_v[0]["D"]*ekcalc.filter_v[1]["D"])
+# Comment: This should be returned by the filter_v functions:
+f_s_dec = f_s1
 
 # The frequency response function of the filter is given by its
 # discrete time fourier transform:
@@ -99,7 +103,8 @@ y_tilde_tx_n = EK80CalculationPaper.calc_y_tx_tilde_n(y_tx_n)
 
 # Comment from Nils Olav: I added all the steps to a list, but the indexing
 # is different from the notation, i.e. y_tilde_tx_nv[v][i], wheras the paper
-# uses y_tilde_tx_nv[i,v].
+# uses y_tilde_tx_nv[i,v]. I think it is ok, though.
+# Add decimation sampling rates to this function?
 y_tilde_tx_nv = EK80CalculationPaper.calc_y_tx_tilde_nv(
     y_tilde_tx_n, ekcalc.filter_v)
 
@@ -108,17 +113,19 @@ y_tilde_tx_nv = EK80CalculationPaper.calc_y_tx_tilde_nv(
 y_mf_n = y_tilde_tx_nv[-1]
 
 plt.figure()
-plt.plot(np.abs(ekcalc.y_mf_n))
+plt.plot(np.abs(y_mf_n))
 plt.title('The absolute value of the filtered and decimated output signal')
 plt.xlabel('samples ()')
 plt.ylabel('amplitude')
 plt.savefig('./Paper/Fig_y_mf_n.png')
 
 # The autocorrelation function of the mathced filter
-#y_mf_auto_n = EK80CalculationPaper.calcAutoCorrelation(y_mf_n)
+y_mf_auto_n, tau_eff = EK80CalculationPaper.calcAutoCorrelation(
+    y_mf_n, f_s_dec)
+
 
 plt.figure()
-plt.plot(np.abs(ekcalc.y_mf_auto_n))
+plt.plot(np.abs(y_mf_auto_n))
 plt.title('The autocorrelation function of the matched filter.')
 plt.xlabel('samples')
 plt.ylabel('ACF')
@@ -127,7 +134,7 @@ plt.savefig('./Paper/Fig_ACF.png')
 # Calculating the pulse compressed quadrant signals separately on each channel
 y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(
     ekcalc.y_rx_nu,
-    ekcalc.y_mf_n)
+    y_mf_n)
 
 # Calculating the average signal over the channels
 y_pc_n = EK80CalculationPaper.calcAvgSumQuad(y_pc_nu)

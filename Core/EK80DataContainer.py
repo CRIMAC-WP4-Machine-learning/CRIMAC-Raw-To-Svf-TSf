@@ -30,7 +30,7 @@ class EK80DataContainer:
         self.f0 = xml0['Parameter']['FrequencyStart']
         self.fnom = xml0['Transducer']['Frequency']  # nominal design frequency for the transducer
         self.f1 = xml0['Parameter']['FrequencyEnd']
-
+        self.f_c = (self.f0 + self.f1) / 2.0
         self.tau = xml0['Parameter']['PulseDuration']
         self.slope = xml0['Parameter']['Slope']
         self.sampleInterval = xml0['Parameter']['SampleInterval']
