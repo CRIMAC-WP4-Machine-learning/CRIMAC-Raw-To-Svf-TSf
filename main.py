@@ -70,11 +70,13 @@ H1 = np.fft.fft(ekcalc.filter_v[1]["h_fl_i"])
 F0 = np.arange(len(H0))*f_s/(len(H0))
 F1 = np.arange(len(H1))*f_s0/(len(H1))
 G0 = 20 * np.log10(np.abs(H0))
-# Repeat pattern for the second filter (3 times)
+# Repeat pattern for the second filter (4 times)
 F1l = np.append(F1, F1+f_s0)
 F1l = np.append(F1l, F1+2*f_s0)
+F1l = np.append(F1l, F1+3*f_s0)
 G1 = 20 * np.log10(np.abs(H1))
 G1l = np.append(G1, G1)
+G1l = np.append(G1l, G1)
 G1l = np.append(G1l, G1)
 
 plt.figure()
@@ -83,7 +85,7 @@ plt.plot(F0, G0,
          [ekcalc.f0, ekcalc.f1], [-140, -140])
 plt.xlabel('frequency (Hz)')
 plt.ylabel('Gain (dB)')
-plt.xlim([0, 70000])
+plt.xlim([0, 100000])
 plt.savefig('./Paper/Fig_fir.png')
 
 #
@@ -94,11 +96,16 @@ plt.savefig('./Paper/Fig_fir.png')
 y_tilde_tx_n = EK80CalculationPaper.calc_y_tx_tilde_n(y_tx_n)
 
 # Passing the normalized and ideal transmit signal through the filter bank
+
+# Comment from Nils Olav: I added all the steps to a list, but the indexing
+# is different from the notation, i.e. y_tilde_tx_nv[v][i], wheras the paper
+# uses y_tilde_tx_nv[i,v].
 y_tilde_tx_nv = EK80CalculationPaper.calc_y_tx_tilde_nv(
     y_tilde_tx_n, ekcalc.filter_v)
 
-# Normalized, filtered and decimated transmit signal for the matched filter
-#y_mf_n = y_tilde_tx_nv[:,-1]
+# Use the normalized, filtered and decimated transmit signal from the last
+# filter stage for the matched filter.
+y_mf_n = y_tilde_tx_nv[-1]
 
 plt.figure()
 plt.plot(np.abs(ekcalc.y_mf_n))
