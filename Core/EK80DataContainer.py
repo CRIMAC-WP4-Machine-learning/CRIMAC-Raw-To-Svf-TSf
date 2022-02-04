@@ -73,6 +73,15 @@ class EK80DataContainer:
             self.beam_width_athwartship = None
             self.beam_width_alongship = None
             self.isCalibrated = False
+        # Calibration data (copied from EK80CalculationPaper)
+        if self.frequencies is not None:
+            self.frequencies = np.array(self.frequencies)
+        else:
+            # If no calibration make a frequency vector
+            # This is used to calculate correct frequencies after signal
+            # decimation
+
+            self.frequencies = np.linspace(self.f0, self.f1, self.n_f_points)
             
         self.filter_v = None
         if 'FIL1' in jdict and 'NaN' not in jdict['FIL1']:
