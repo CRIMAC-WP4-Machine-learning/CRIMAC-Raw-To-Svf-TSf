@@ -4,16 +4,116 @@ import json
 from Core.FIL1 import FIL1
 
 
+class Constants:
+    def __init__(self, z_td_e,f_s,n_f_points):
+        self.z_td_e = z_td_e
+        self.f_s = f_s
+        self.n_f_points = n_f_points
+
+class Transceiver:
+    def __init__(self, xml):
+        self.z_rx_e = xml['z_rx_e']
+
+class Parameter:
+    def __init__(self, xml):
+        self.f0 = xml['FrequencyStart']
+        self.f1 = xml['FrequencyEnd']
+        self.f_c = (self.f0 + self.f1) / 2.0
+        self.tau = xml['PulseDuration']
+        self.slope = xml['Slope']
+        self.sampleInterval = xml['SampleInterval']
+        self.ptx = xml['TransmitPower']
+
+class Transducer:
+    def __init__(self, xml):
+        self.fnom = xml['Frequency']  # nominal design frequency for the transducer
+        self.G_fnom = xml['GainNom']
+        self.PSI_fnom = xml['EquivalentBeamAngle']
+        self.angle_offset_alongship_fnom = xml['AngleOffsetAlongship']
+        self.angle_offset_athwartship_fnom = xml['AngleOffsetAthwartship']
+        self.angle_sensitivity_alongship_fnom = xml['AngleSensitivityAlongship']
+        self.angle_sensitivity_athwartship_fnom = xml['AngleSensitivityAthwartship']
+        self.beam_width_alongship_fnom = xml['BeamWidthAlongship']
+        self.beam_width_athwartship_fnom = xml['BeamWidthAthwartship']
+        self.corrSa = xml['SaCorrection']
+
+class Environment:
+    def __init__(self, xml):
+        self.c = xml['SoundSpeed']
+        self.alpha = xml['Alpha']
+        self.temperature = xml['Temperature']
+        self.salinity = xml['Salinity']
+        self.acidity = xml['Acidity']
+        self.latitude = xml['Latitude']
+        self.depth = xml['Depth']
+        self.dropKeelOffset = xml['DropKeelOffset']
+
+class FrequencyPar:
+    def __init__(self, xml=None):
+        # Test if broadband calibration values exists, if not use nominal values and extrapolate
+        if xml['frequencies']:
+            print("Broadband calibration values exists")
+            self.frequencies = xml['frequencies']
+            self.gain = xml['gain']
+            self.angle_offset_athwartship = xml['angle_offset_alongship']
+            self.angle_offset_alongship = xml['angle_offset_alongship']
+            self.beam_width_athwartship = xml['beam_width_athwartship']
+            self.beam_width_alongship = xml['beam_width_alongship']
+            self.isCalibrated = True
+        elif not xml['frequencies']:
+            print("Broadband calibration values does not exist - use nominal and fit function")
+            self.frequencies = None
+            self.gain = None
+            self.angle_offset_athwartship = None
+            self.angle_offset_alongship = None
+            self.beam_width_athwartship = None
+            self.beam_width_alongship = None
+            self.isCalibrated = False
+        # Calibration data (copied from EK80CalculationPaper)
+        if self.frequencies is not None:
+            self.frequencies = np.array(self.frequencies)
+        else:
+            # If no calibration make a frequency vector
+            # This is used to calculate correct frequencies after signal
+            # decimation
+
+            self.frequencies = np.linspace(self.f0, self.f1, self.n_f_points)
+
+
+class Filters:
+    def __init__(self, xml=None):
+        self.filter_v = None
+        if 'FIL1' in xml and 'NaN' not in xml['FIL1']:
+            self.filter_v = []
+            for v in xml['FIL1'].values():
+                c = v['coefficients']
+                h_fl_i = np.array(c['real']) + np.array(c['imag']) * 1j
+                D = v['decimationFactor']
+                N_i = v['noOfCoefficients']
+                self.filter_v.append({"h_fl_i": h_fl_i, "D": D, "N_i": N_i})
+            self.N_v = len(self.filter_v)
+
+class Raw3:
+    def __init__(self, xml=None):
+        self.offset = xml['offset']
+        self.sampleCount = xml['sampleCount']
+        self.y_rx_nu = None
+        if 'quadrant_signals' in xml and 'NaN' not in xml['quadrant_signals']:
+            self.y_rx_nu = []
+            self.N_u = len(xml['quadrant_signals'].values())
+            for v in xml['quadrant_signals'].values():
+                self.y_rx_nu.append(np.array(v['real']) + np.array(v['imag']) * 1j)
+
+            self.y_rx_nu = np.array(self.y_rx_nu)
+
+
 class EK80DataContainer:
 
     # Should we use pyecholab to get the data from .raw files?
     def __init__(self, jsonfname=None):
 
         # Constants
-
-        self.z_td_e = 75  # (Ohm) Transducer impedance
-        self.f_s = 1.5e6  # (Hz) Orginal WBT sampling rate
-        self.n_f_points = 1000  # Number of frequency points for evaluation of TS(f) and Sv(f)
+        self.cont = Constants(z_td_e=75,f_s=1.5e6,n_f_points=1000)
 
         self.hasData = False
         if jsonfname is not None:
@@ -22,8 +122,19 @@ class EK80DataContainer:
             with open(jsonfname,'r') as fp:
                 self.jdict = json.load(fp)
 
-            self.parseEK80JSON(self.jdict)
+            self.trcv = Transceiver(self.jdict['XML0']['Transceiver'])
+            self.parm = Parameter(self.jdict['XML0']['Parameter'])
+            self.trdu = Transducer(self.jdict['XML0']['Transducer'])
+            self.envr = Environment(self.jdict['XML0']['Environment'])
+            self.frqp = FrequencyPar(self.jdict['XML0']['FrequencyPar'])
+            self.filt = Filters(self.jdict)
+            self.raw3 = Raw3(self.jdict['RAW3'])
 
+            self.isCalibrated = self.frqp.isCalibrated
+
+            #self.parseEK80JSON(self.jdict)
+
+    """
     def parseEK80JSON(self, jdict) :
         xml0 = jdict['XML0']
         self.z_rx_e = xml0['Transceiver']['z_rx_e']
@@ -105,3 +216,4 @@ class EK80DataContainer:
                 self.y_rx_nu.append(np.array(v['real']) + np.array(v['imag']) * 1j)
 
             self.y_rx_nu = np.array(self.y_rx_nu)
+    """
