@@ -6,21 +6,37 @@ from Core.EK80DataContainer import EK80DataContainer
 # Test data
 data = EK80DataContainer('./data/pyEcholabEK80data.json')
 
+cont = data.cont
+trcv = data.trcv
+parm = data.parm
+trdu = data.trdu
+envr = data.envr
+frqp = data.frqp
+filt = data.filt
+raw3 = data.raw3
 #
 # Chapter IIB: Signal generation
 #
 
 # Generate ideal send pulse
 y_tx_n, t = EK80CalculationPaper.generateIdealWindowedSendPulse(
-    data.f0, data.f1, data.tau, data.f_s, data.slope)
+    parm.f0,
+    parm.f1,
+    parm.tau,
+    cont.f_s,
+    parm.slope)
+
 y_tx_n05slope, t = EK80CalculationPaper.generateIdealWindowedSendPulse(
-    data.f0, data.f1, data.tau, data.f_s, .5)
+    parm.f0,
+    parm.f1,
+    parm.tau,
+    cont.f_s, .5)
 
 plt.figure()
 plt.plot(t*1000, y_tx_n, t*1000, y_tx_n05slope)
 plt.title(
     'Ideal enveloped send pulse.{:.0f}kHz - {:.0f}kHz, slope {:.3f}'
-    .format(data.f0/1000, data.f1/1000, data.slope))
+    .format(parm.f0/1000, parm.f1/1000, parm.slope))
 plt.xlabel('time (ms)')
 plt.ylabel('amplitude')
 plt.savefig('./Paper/Fig_ytx.png')
@@ -39,23 +55,23 @@ plt.savefig('./Paper/Fig_ytx.png')
 # filter operates on the raw data [y_rx(N,u,0)=y_rx_org].
 
 # The filter coefficients 'h_fl_iv' are accessible through 'data.filter_v':
-data.filter_v[0]["h_fl_i"]
-data.filter_v[1]["h_fl_i"]
+filt.filter_v[0]["h_fl_i"]
+filt.filter_v[1]["h_fl_i"]
 
 # the corresponding decimation factors are available through
-data.filter_v[0]["D"]
-data.filter_v[1]["D"]
+filt.filter_v[0]["D"]
+filt.filter_v[1]["D"]
 
 # The sampling freq for each filter step
 f_s_dec_v = EK80CalculationPaper.calcDecmiatedSamplingRate(
-    data.filter_v, data.f_s)
+    filt.filter_v, cont.f_s)
 # The final sampling frequency
 f_s_dec = f_s_dec_v[-1]
 
 # The frequency response function of the filter is given by its
 # discrete time fourier transform:
-H0 = np.fft.fft(data.filter_v[0]["h_fl_i"])
-H1 = np.fft.fft(data.filter_v[1]["h_fl_i"])
+H0 = np.fft.fft(filt.filter_v[0]["h_fl_i"])
+H1 = np.fft.fft(filt.filter_v[1]["h_fl_i"])
 
 # Plot of the frequency response of the filters (power) (in dB)
 F0 = np.arange(len(H0))*f_s_dec_v[0]/(len(H0))
@@ -73,7 +89,7 @@ G1l = np.append(G1l, G1)
 plt.figure()
 plt.plot(F0, G0,
          F1l, G1l,
-         [data.f0, data.f1], [-140, -140])
+         [parm.f0, parm.f1], [-140, -140])
 plt.xlabel('frequency (Hz)')
 plt.ylabel('Gain (dB)')
 plt.xlim([0, 100000])
@@ -88,7 +104,7 @@ y_tilde_tx_n = EK80CalculationPaper.calcNormalizedTransmitSignal(y_tx_n)
 
 # Passing the normalized and ideal transmit signal through the filter bank
 y_tilde_tx_nv = EK80CalculationPaper.calcFilteredAndDecimatedSignal(
-    y_tilde_tx_n, data.filter_v)
+    y_tilde_tx_n, filt.filter_v)
 
 # Use the normalized, filtered and decimated transmit signal from the last
 # filter stage for the matched filter.
@@ -114,7 +130,7 @@ plt.savefig('./Paper/Fig_ACF.png')
 
 # Calculating the pulse compressed quadrant signals separately on each channel
 y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(
-    data.y_rx_nu,
+    raw3.y_rx_nu,
     y_mf_n)
 
 # Calculating the average signal over the channels
@@ -131,19 +147,19 @@ y_pc_halves_n = EK80CalculationPaper.calcTransducerHalves(
 # Calcuate the power across transducer channels
 p_rx_e_n = EK80CalculationPaper.calcPower(
     y_pc_n,
-    data.z_td_e,
-    data.z_rx_e,
-    data.N_u)
+    cont.z_td_e,
+    trcv.z_rx_e,
+    raw3.N_u)
 
 # Calculate the angle sensitivities
 gamma_theta = EK80CalculationPaper.calcGamma(
-    data.angle_sensitivity_alongship_fnom,
-    data.f_c,
-    data.fnom)
+    trdu.angle_sensitivity_alongship_fnom,
+    parm.f_c,
+    trdu.fnom)
 gamma_phi = EK80CalculationPaper.calcGamma(
-    data.angle_sensitivity_athwartship_fnom,
-    data.f_c,
-    data.fnom)
+    trdu.angle_sensitivity_athwartship_fnom,
+    parm.f_c,
+    trdu.fnom)
 
 # Calculate the physical angles
 y_theta_n, y_phi_n = EK80CalculationPaper.calcAngles(
