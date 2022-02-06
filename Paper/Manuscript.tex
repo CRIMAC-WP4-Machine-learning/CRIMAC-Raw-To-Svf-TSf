@@ -281,6 +281,11 @@ The transceiver measures voltage over a load, $\zrxe$, connected in series with 
 \label{eq:prx}
 \prxe(\samplesymt) = \nchannels\left( \frac{|\ypc(\samplesymt)|}{2\sqrt{2}} \right)^2 \left( \frac{|\zrxe+\ztde|}{\zrxe} \right)^2 \frac{1}{|\ztde|}.
 \end{equation}
+%
+\begin{figure}
+\includegraphics[width=\reprintcolumnwidth]{Fig_impedances}
+\caption{\label{fi:impedances}Equivalent circuit diagram of transducer/transceiver with system impedances.}
+\end{figure}
 
 Forward/aft and port/starboard phase angles of target echoes are estimated by combining the transducer half signals thus: 
 %
@@ -301,8 +306,8 @@ where $y_\along(\samplesymt)$ is the electrical angle along the minor axis of th
 where $\anglefalong$ and $\anglefathw$ are constants that convert from phase angles to physical echo arrival angles and are derived from the transducer geometry and $\fc$ the centre frequency of the chirp pulse \citep{ehrenberg1979}. The inverse sine is indicated by $\arcsin$, the four quadrant inverse tangent which returns values in the interval $[-\pi, \pi]$ inclusive is indicated by $\atan$, the real part of a complex number by $\Re$ and the imaginary part by $\Im$. As a mnemonic, the horizontal line in the symbol used for the forward/aft direction, $\along$, represents the pivot axis for the alongship angles and the near-vertical line in the $\athw$ symbol indicates the pivot axis for port/starboard angles.
 %
 \begin{figure}
-\includegraphics[width=\reprintcolumnwidth]{Fig_impedances}
-\caption{\label{fi:impedances}Equivalent circuit diagram of transducer/transceiver with system impedances.}
+\includegraphics[width=\reprintcolumnwidth]{'Fig_theta_phi.png'}
+\caption{\label{fi:theta_phi}Physical angles.}
 \end{figure}
 
 \section{Target strength}
