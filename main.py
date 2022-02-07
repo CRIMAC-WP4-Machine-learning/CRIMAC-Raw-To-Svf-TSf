@@ -181,29 +181,38 @@ plt.savefig('./Paper/Fig_theta_phi.png')
 #
 """
 # I have copied in most of the parameters used by "self" as candidates to EK80DataContainer:
+# class Transceiver:
+# class Parameter:
+# class Transducer:
+# class Environment:
+# class FrequencyPar:
 
 # Sp:
-# Gfc = self.calc_G0_m(self.f_c)
-# PSIfc = self.PSI_f(self.f_c)
-# logSpCf = self.calculateCSpfdB(self.f_c)
-# r, _ = self.calcRange()
+# Gfc = self.calc_G0_m(self.f_c) -> Transducer class?
+# PSIfc = self.PSI_f(self.f_c) -> Transducer class?
+# logSpCf = self.calculateCSpfdB(self.f_c) -> EK80CalculationPaper
+# lf = self.lambda_f(f) -> ? 
+
+# r, _ = self.calcRange() -> EK80CalculationPaper
+# self.sampleInterval -> Transceiver?
+# self.c -> Environment
+
 # alpha_fc = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, self.f_c)
 
 # singleTarget:
-# r_n, _ = self.calcRange()
+# r_n, _ = self.calcRange() -> EK80CalculationPaper
 
 # CalcTSf:
-# L = self.n_f_points
-# y_mf_auto_red_n = self.alignAuto(self.y_mf_auto_n, y_pc_t_n)
-# Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m)
-# Y_mf_auto_red_m = self.freqtransf(_Y_mf_auto_red_m, self.f_s_dec, f_m)
-# G0_m = self.calc_G0_m(f_m)
-# B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m)
-# G_theta_phi_m = G0_m - B_theta_phi_m
-# alpha_m = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f_m)
-# logSpCf = self.calculateCSpfdB(f_m)
-# Y_tilde_pc_t_m = Y_pc_t_m / Y_mf_auto_red_m
-# P_rx_e_t_m = self.C1Prx * np.abs(Y_tilde_pc_t_m) ** 2
+# L = self.n_f_points -> Transceiver or Parameter?
+# y_mf_auto_red_n = self.alignAuto(self.y_mf_auto_n, y_pc_t_n) -> EK80CalculationPaper
+# Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m) -> ok as is?
+# Y_mf_auto_red_m = self.freqtransf(_Y_mf_auto_red_m, self.f_s_dec, f_m) -> ok as is?
+# G0_m = self.calc_G0_m(f_m) -> Transceiver?
+# B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m) -> ? 
+# alpha_m = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f_m) -> EK80CalculationPaper?
+# logSpCf = self.calculateCSpfdB(f_m) -> EK80CalculationPaper?
+# Y_tilde_pc_t_m = Y_pc_t_m / Y_mf_auto_red_m -> ok
+# P_rx_e_t_m = self.C1Prx * np.abs(Y_tilde_pc_t_m) ** 2 -> ?
 
 
 # Sp
