@@ -162,15 +162,15 @@ gamma_phi = EK80CalculationPaper.calcGamma(
     trdu.fnom)
 
 # Calculate the physical angles
-y_theta_n, y_phi_n = EK80CalculationPaper.calcAngles(
+theta_n, phi_n = EK80CalculationPaper.calcAngles(
     y_pc_halves_n,
     gamma_theta,
     gamma_phi)
 
 # Plot angles
 plt.figure()
-plt.plot(y_theta_n)
-plt.plot(y_phi_n)
+plt.plot(theta_n)
+plt.plot(phi_n)
 plt.title('The physical angles.')
 plt.xlabel(' ')
 plt.ylabel('angles')
@@ -179,9 +179,49 @@ plt.savefig('./Paper/Fig_theta_phi.png')
 #
 # Chapter III: TARGET STRENGTH
 #
+"""
+# I have copied in most of the parameters used by "self" as candidates to EK80DataContainer:
 
-#Sp_n, r_n = EK80CalculationPaper.calcSp(p_rx_e, args.r0, args.r1)
+# Sp:
+# Gfc = self.calc_G0_m(self.f_c)
+# PSIfc = self.PSI_f(self.f_c)
+# logSpCf = self.calculateCSpfdB(self.f_c)
+# r, _ = self.calcRange()
+# alpha_fc = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, self.f_c)
 
+# singleTarget:
+# r_n, _ = self.calcRange()
+
+# CalcTSf:
+# L = self.n_f_points
+# y_mf_auto_red_n = self.alignAuto(self.y_mf_auto_n, y_pc_t_n)
+# Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m)
+# Y_mf_auto_red_m = self.freqtransf(_Y_mf_auto_red_m, self.f_s_dec, f_m)
+# G0_m = self.calc_G0_m(f_m)
+# B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m)
+# G_theta_phi_m = G0_m - B_theta_phi_m
+# alpha_m = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f_m)
+# logSpCf = self.calculateCSpfdB(f_m)
+# Y_tilde_pc_t_m = Y_pc_t_m / Y_mf_auto_red_m
+# P_rx_e_t_m = self.C1Prx * np.abs(Y_tilde_pc_t_m) ** 2
+
+
+# Sp
+r0 = 10
+r1 = 30
+before = 0.5
+after = 1
+
+# Calculate the point scattering strength (Sp)
+Sp_n, r_n = EK80CalculationPaper.calcSp(p_rx_e_n, r0, r1)
+
+# Extract single target
+r, theta, phi, y_pc_t_n = EK80CalculationPaper.singleTarget(
+    y_pc_n, p_rx_e_n, theta_n, phi_n,
+    r0, r1, before, after)
+
+# Calculate the target strength of the single target
+TS_m, f_m,  = EK80CalculationPaper.calcTSf(r, theta, phi, y_pc_t_n)
 
 #
 # Chapter IV: VOLUME BACKSCATTERING STRENGTH
@@ -191,7 +231,4 @@ plt.savefig('./Paper/Fig_theta_phi.png')
 # Sv =
 
 
-
-
-
-
+"""
