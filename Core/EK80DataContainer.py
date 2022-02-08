@@ -6,16 +6,17 @@ from Core.FIL1 import FIL1
 
 class Derived:
     def __init__(self, frqp, parm, trdu):
-        import pdb
-        pdb.set_trace()
+        # Calculate Gfc
         if frqp.isCalibrated:
-            import pdb
-            pdb.set_trace()
             # Calibrated case
             self.Gfc = np.interp(parm.f_c, frqp.frequencies, frqp.gain)
         else:
             # Uncalibrated case
             self.Gfc = trdu.G_fnom + 20 * np.log10(frqp.frequencies/trdu.fnom)
+        
+        # Calculate PSI_f
+        self.PSI_f = trdu.PSI_fnom + 20 * np.log10(trdu.fnom/frqp.frequencies)
+
 
 
 class Constants:
