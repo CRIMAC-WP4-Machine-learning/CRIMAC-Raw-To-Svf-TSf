@@ -4,11 +4,26 @@ import json
 from Core.FIL1 import FIL1
 
 
+class Derived:
+    def __init__(self, frqp, parm, trdu):
+        import pdb
+        pdb.set_trace()
+        if frqp.isCalibrated:
+            import pdb
+            pdb.set_trace()
+            # Calibrated case
+            self.Gfc = np.interp(parm.f_c, frqp.frequencies, frqp.gain)
+        else:
+            # Uncalibrated case
+            self.Gfc = trdu.G_fnom + 20 * np.log10(frqp.frequencies/trdu.fnom)
+
+
 class Constants:
-    def __init__(self, z_td_e,f_s,n_f_points):
+    def __init__(self, z_td_e, f_s, n_f_points):
         self.z_td_e = z_td_e
         self.f_s = f_s
         self.n_f_points = n_f_points
+
 
 class Transceiver:
     def __init__(self, xml):
@@ -129,6 +144,7 @@ class EK80DataContainer:
             self.frqp = FrequencyPar(self.jdict['XML0']['FrequencyPar'])
             self.filt = Filters(self.jdict)
             self.raw3 = Raw3(self.jdict['RAW3'])
+            self.deriv = Derived(self.frqp, self.parm, self.trdu)
 
             self.isCalibrated = self.frqp.isCalibrated
 
