@@ -98,32 +98,32 @@ class EK80CalculationPaper(EK80DataContainer):
         
         return C1Prx * np.abs(y_pc) ** 2
 
-    def calcRange(self):
-        dr = self.sampleInterval * self.c * 0.5
-        r = np.array([(self.offset + i + 1) * dr for i in range(0, self.sampleCount)])
+    @staticmethod
+    def calcRange(sampleInterval, sampleCount, c, offset):
+        dr = sampleInterval * c * 0.5
+        r = np.array([(offset + i + 1) * dr for i in range(0, sampleCount)])
         return r, dr
 
-    def calcSp(self, power, r0=None, r1=None):
+    @staticmethod
+    def calcSp(power, Gfc, PSI_f, ptx, f_c, logSpCf, r, alpha_fc, r0=None, r1=None):
+        # Note from Nils Olav: Isuggest that
+        # we are more true to the paper. It is difficult to read the smaller
+        # print here when some units are in dB whereas others are not.
+        # May I suggest to keep linear units all until we calculate the
+        # final Sp.
 
-        Gfc = self.calc_G0_m(self.f_c)
-        PSIfc = self.PSI_f(self.f_c)
-        logSpCf = self.calculateCSpfdB(self.f_c)
-        r, _ = self.calcRange()
-
-        alpha_fc = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, self.f_c)
-
+        # alpha_fc = self.calcAbsorption(self.temperature, self.salinity,
+        # self.depth, self.acidity, self.c, self.f_c)
         if r0 is not None and r1 is not None:
             Idx = np.where((r >= r0) & (r <= r1))
             r = r[Idx]
             power = power[Idx]
-
+        
         Sp = 10.0 * np.log10(power) + \
              40.0 * np.log10(r) + \
              2.0 * alpha_fc * r - \
              logSpCf - \
              2 * Gfc
-
-        return Sp, r
 
         return Sp, r
 
@@ -455,10 +455,10 @@ class EK80CalculationPaper(EK80DataContainer):
     def calculateTVGdB(alpha, r):
         return 20.0 * np.log10(r) + 2.0 * alpha * r
 
-    def calculateCSpfdB(self, f):
-        lf = self.lambda_f(f)
-        return 10 * np.log10((self.ptx * lf ** 2) / (16.0 * np.pi * np.pi))
-
+    @staticmethod
+    def calculateCSpfdB(f_c, ptx):
+        return 10 * np.log10((ptx * f_c ** 2) / (16.0 * np.pi * np.pi))
+    
     def calculateCSvfdB(self, f):
         lf = self.lambda_f(f)
         return 10 * np.log10((self.ptx * self.c * lf ** 2) / (32.0 * np.pi * np.pi))

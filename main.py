@@ -189,27 +189,28 @@ before = 0.5
 after = 1
 ptx = parm.ptx
 f_c = parm.f_c
-
-# Sp:
-# Gfc = self.calc_G0_m(self.f_c) -> Transducer class?
 Gfc = data.deriv.Gfc
-# PSIfc = self.PSI_f(self.f_c) -> Transducer class?
 PSI_f = data.deriv.PSI_f
-# logSpCf = self.calculateCSpfdB(self.f_c) -> EK80CalculationPaper
 logSpCf = EK80CalculationPaper.calculateCSpfdB(f_c, ptx)
+r, _ = EK80CalculationPaper.calcRange(parm.sampleInterval,
+                                      raw3.sampleCount,
+                                      envr.c,
+                                      raw3.offset)
 
-# lf = self.lambda_f(f) -> ?
-
-# r, _ = self.calcRange() -> EK80CalculationPaper
-# self.sampleInterval -> Transceiver?
-# self.c -> Environment
+# alpha_fc = self.calcAbsorption(self.temperature, self.salinity,
+# self.depth, self.acidity, self.c, self.f_c)
+alpha_fc = EK80CalculationPaper.calcAbsorption(
+    envr.temperature,
+    envr.salinity,
+    envr.depth,
+    envr.acidity,
+    envr.c,
+    parm.f_c)
 
 # Calculate the point scattering strength (Sp)
 Sp_n, r_n = EK80CalculationPaper.calcSp(
-    p_rx_e_n, Gfc, PSI_f, ptx, f_c, logSpCf, r0, r1)
+    p_rx_e_n, Gfc, PSI_f, ptx, f_c, logSpCf, r, alpha_fc, r0, r1)
 
-
-# alpha_fc = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, self.f_c)
 
 # singleTarget:
 # r_n, _ = self.calcRange() -> EK80CalculationPaper
@@ -230,12 +231,12 @@ Sp_n, r_n = EK80CalculationPaper.calcSp(
 # P_rx_e_t_m = self.C1Prx * np.abs(Y_tilde_pc_t_m) ** 2 -> ?
 
 # Extract single target
-#r, theta, phi, y_pc_t_n = EK80CalculationPaper.singleTarget(
+# r, theta, phi, y_pc_t_n = EK80CalculationPaper.singleTarget(
 #    y_pc_n, p_rx_e_n, theta_n, phi_n,
 #    r0, r1, before, after)
 
 # Calculate the target strength of the single target
-#TS_m, f_m,  = EK80CalculationPaper.calcTSf(r, theta, phi, y_pc_t_n)
+# TS_m, f_m,  = EK80CalculationPaper.calcTSf(r, theta, phi, y_pc_t_n)
 
 #
 # Chapter IV: VOLUME BACKSCATTERING STRENGTH
