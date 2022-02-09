@@ -14,6 +14,8 @@ envr = data.envr
 frqp = data.frqp
 filt = data.filt
 raw3 = data.raw3
+deriv = data.deriv
+
 #
 # Chapter IIB: Signal generation
 #
@@ -179,23 +181,33 @@ plt.savefig('./Paper/Fig_theta_phi.png')
 #
 # Chapter III: TARGET STRENGTH
 #
-"""
-# I have copied in most of the parameters used by "self" as candidates to EK80DataContainer:
-# class Transceiver:
-# class Parameter:
-# class Transducer:
-# class Environment:
-# class FrequencyPar:
+
+# Get parameters
+r0 = 10
+r1 = 30
+before = 0.5
+after = 1
+ptx = parm.ptx
+f_c = parm.f_c
 
 # Sp:
 # Gfc = self.calc_G0_m(self.f_c) -> Transducer class?
+Gfc = data.deriv.Gfc
 # PSIfc = self.PSI_f(self.f_c) -> Transducer class?
+PSI_f = data.deriv.PSI_f
 # logSpCf = self.calculateCSpfdB(self.f_c) -> EK80CalculationPaper
-# lf = self.lambda_f(f) -> ? 
+logSpCf = EK80CalculationPaper.calculateCSpfdB(f_c, ptx)
+
+# lf = self.lambda_f(f) -> ?
 
 # r, _ = self.calcRange() -> EK80CalculationPaper
 # self.sampleInterval -> Transceiver?
 # self.c -> Environment
+
+# Calculate the point scattering strength (Sp)
+Sp_n, r_n = EK80CalculationPaper.calcSp(
+    p_rx_e_n, Gfc, PSI_f, ptx, f_c, logSpCf, r0, r1)
+
 
 # alpha_fc = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, self.f_c)
 
@@ -204,33 +216,26 @@ plt.savefig('./Paper/Fig_theta_phi.png')
 
 # CalcTSf:
 # L = self.n_f_points -> Transceiver or Parameter?
-# y_mf_auto_red_n = self.alignAuto(self.y_mf_auto_n, y_pc_t_n) -> EK80CalculationPaper
+# y_mf_auto_red_n = self.alignAuto(self.y_mf_auto_n, y_pc_t_n)
+# -> EK80CalculationPaper
 # Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m) -> ok as is?
-# Y_mf_auto_red_m = self.freqtransf(_Y_mf_auto_red_m, self.f_s_dec, f_m) -> ok as is?
+# Y_mf_auto_red_m = self.freqtransf(_Y_mf_auto_red_m, self.f_s_dec, f_m)
+# -> ok as is?
 # G0_m = self.calc_G0_m(f_m) -> Transceiver?
-# B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m) -> ? 
-# alpha_m = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f_m) -> EK80CalculationPaper?
+# B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m) -> ?
+# alpha_m = self.calcAbsorption(self.temperature, self.salinity,
+# self.depth, self.acidity, self.c, f_m) -> EK80CalculationPaper?
 # logSpCf = self.calculateCSpfdB(f_m) -> EK80CalculationPaper?
 # Y_tilde_pc_t_m = Y_pc_t_m / Y_mf_auto_red_m -> ok
 # P_rx_e_t_m = self.C1Prx * np.abs(Y_tilde_pc_t_m) ** 2 -> ?
 
-
-# Sp
-r0 = 10
-r1 = 30
-before = 0.5
-after = 1
-
-# Calculate the point scattering strength (Sp)
-Sp_n, r_n = EK80CalculationPaper.calcSp(p_rx_e_n, r0, r1)
-
 # Extract single target
-r, theta, phi, y_pc_t_n = EK80CalculationPaper.singleTarget(
-    y_pc_n, p_rx_e_n, theta_n, phi_n,
-    r0, r1, before, after)
+#r, theta, phi, y_pc_t_n = EK80CalculationPaper.singleTarget(
+#    y_pc_n, p_rx_e_n, theta_n, phi_n,
+#    r0, r1, before, after)
 
 # Calculate the target strength of the single target
-TS_m, f_m,  = EK80CalculationPaper.calcTSf(r, theta, phi, y_pc_t_n)
+#TS_m, f_m,  = EK80CalculationPaper.calcTSf(r, theta, phi, y_pc_t_n)
 
 #
 # Chapter IV: VOLUME BACKSCATTERING STRENGTH
@@ -238,6 +243,3 @@ TS_m, f_m,  = EK80CalculationPaper.calcTSf(r, theta, phi, y_pc_t_n)
 
 # Calculate Sv
 # Sv =
-
-
-"""
