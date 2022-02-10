@@ -46,6 +46,10 @@ class Transceiver:
     def __init__(self, xml):
         self.z_rx_e = xml['z_rx_e']
 
+    def getParameters(self):
+        return self.z_rx_e
+
+
 class Parameter:
     def __init__(self, xml):
         self.f0 = xml['FrequencyStart']
@@ -54,7 +58,10 @@ class Parameter:
         self.tau = xml['PulseDuration']
         self.slope = xml['Slope']
         self.sampleInterval = xml['SampleInterval']
-        self.ptx = xml['TransmitPower']
+        self.p_tx_e = xml['TransmitPower']
+
+    def getParameters(self):
+        return self.f0, self.f1, self.f_c, self.tau, self.slope, self.sampleInterval, self.p_tx_e
 
 class Transducer:
     def __init__(self, xml):
@@ -69,6 +76,12 @@ class Transducer:
         self.beam_width_athwartship_fnom = xml['BeamWidthAthwartship']
         self.corrSa = xml['SaCorrection']
 
+    def getParameters(self):
+        return self.fnom, self.G_fnom, self.PSI_fnom, self.angle_offset_alongship_fnom, \
+               self.angle_offset_athwartship_fnom,self.angle_sensitivity_alongship_fnom, \
+               self.angle_sensitivity_athwartship_fnom, self.beam_width_alongship_fnom, \
+               self.beam_width_athwartship_fnom, self.corrSa
+
 class Environment:
     def __init__(self, xml):
         self.c = xml['SoundSpeed']
@@ -79,6 +92,10 @@ class Environment:
         self.latitude = xml['Latitude']
         self.depth = xml['Depth']
         self.dropKeelOffset = xml['DropKeelOffset']
+
+    def getParameters(self):
+        return self.c, self.alpha, self.temperature, self.salinity, \
+               self.acidity, self.latitude,self.depth, self.dropKeelOffset
 
 class FrequencyPar:
     def __init__(self, xml=None):
@@ -111,6 +128,10 @@ class FrequencyPar:
 
             self.frequencies = np.linspace(self.f0, self.f1, self.n_f_points)
 
+    def getParameters(self):
+        return self.frequencies, self.gain, self.angle_offset_athwartship, self.angle_offset_alongship, \
+               self.beam_width_athwartship, self.beam_width_alongship
+
 
 class Filters:
     def __init__(self, xml=None):
@@ -125,6 +146,9 @@ class Filters:
                 self.filter_v.append({"h_fl_i": h_fl_i, "D": D, "N_i": N_i})
             self.N_v = len(self.filter_v)
 
+    def getParameters(self):
+        return self.filter_v, self.N_v
+
 class Raw3:
     def __init__(self, xml=None):
         self.offset = xml['offset']
@@ -138,6 +162,8 @@ class Raw3:
 
             self.y_rx_nu = np.array(self.y_rx_nu)
 
+    def getParameters(self):
+        return self.offset, self.sampleCount, self.y_rx_nu, self.N_u, self.y_rx_nu
 
 class EK80DataContainer:
 

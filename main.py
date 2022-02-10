@@ -7,7 +7,7 @@ from Core.EK80DataContainer import EK80DataContainer
 data = EK80DataContainer('./data/pyEcholabEK80data.json')
 
 
-
+"""
 cont = data.cont
 trcv = data.trcv
 parm = data.parm
@@ -17,33 +17,46 @@ frqp = data.frqp
 filt = data.filt
 raw3 = data.raw3
 deriv = data.deriv
+"""
 # data.trdu.f_c
 # data.f_c -> I paper: $f_c$
 
+# Unpack variabels
+z_td_e, f_s, n_f_points = data.cont.getParameters()
 
+z_rx_e = data.trcv.getParameters()
+
+f0, f1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
+
+fnom, G_fnom, PSI_fnom, angle_offset_alongship_fnom, \
+angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
+angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
+beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
+
+c, alpha, temperature, salinity, \
+acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
+frequencies, gain, angle_offset_athwartship, angle_offset_alongship, \
+beam_width_athwartship, beam_width_alongship = data.frqp.getParameters()
+
+filter_v, N_v = data.filt.getParameters()
+
+offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
+
+g_0_f_c, lambda_f_c, PSI_f = data.deriv.getParameters()
 #
 # Chapter IIB: Signal generation
 #
 
 # Generate ideal send pulse
-y_tx_n, t = EK80CalculationPaper.generateIdealWindowedSendPulse(
-    parm.f0,
-    parm.f1,
-    parm.tau,
-    cont.f_s,
-    parm.slope)
+y_tx_n, t = EK80CalculationPaper.generateIdealWindowedSendPulse(f0, f1, tau, f_s, slope)
 
-y_tx_n05slope, t = EK80CalculationPaper.generateIdealWindowedSendPulse(
-    parm.f0,
-    parm.f1,
-    parm.tau,
-    cont.f_s, .5)
+y_tx_n05slope, t = EK80CalculationPaper.generateIdealWindowedSendPulse(f0, f1, tau, f_s, .5)
 
 plt.figure()
 plt.plot(t*1000, y_tx_n, t*1000, y_tx_n05slope)
 plt.title(
     'Ideal enveloped send pulse.{:.0f}kHz - {:.0f}kHz, slope {:.3f}'
-    .format(parm.f0/1000, parm.f1/1000, parm.slope))
+    .format(f0/1000, f1/1000, slope))
 plt.xlabel('time (ms)')
 plt.ylabel('amplitude')
 plt.savefig('./Paper/Fig_ytx.png')
@@ -62,23 +75,22 @@ plt.savefig('./Paper/Fig_ytx.png')
 # filter operates on the raw data [y_rx(N,u,0)=y_rx_org].
 
 # The filter coefficients 'h_fl_iv' are accessible through 'data.filter_v':
-filt.filter_v[0]["h_fl_i"]
-filt.filter_v[1]["h_fl_i"]
+filter_v[0]["h_fl_i"]
+filter_v[1]["h_fl_i"]
 
 # the corresponding decimation factors are available through
-filt.filter_v[0]["D"]
-filt.filter_v[1]["D"]
+filter_v[0]["D"]
+filter_v[1]["D"]
 
 # The sampling freq for each filter step
-f_s_dec_v = EK80CalculationPaper.calcDecmiatedSamplingRate(
-    filt.filter_v, cont.f_s)
+f_s_dec_v = EK80CalculationPaper.calcDecmiatedSamplingRate(filter_v, f_s)
 # The final sampling frequency
 f_s_dec = f_s_dec_v[-1]
 
 # The frequency response function of the filter is given by its
 # discrete time fourier transform:
-H0 = np.fft.fft(filt.filter_v[0]["h_fl_i"])
-H1 = np.fft.fft(filt.filter_v[1]["h_fl_i"])
+H0 = np.fft.fft(filter_v[0]["h_fl_i"])
+H1 = np.fft.fft(filter_v[1]["h_fl_i"])
 
 # Plot of the frequency response of the filters (power) (in dB)
 F0 = np.arange(len(H0))*f_s_dec_v[0]/(len(H0))
@@ -96,7 +108,7 @@ G1l = np.append(G1l, G1)
 plt.figure()
 plt.plot(F0, G0,
          F1l, G1l,
-         [parm.f0, parm.f1], [-140, -140])
+         [f0, f1], [-140, -140])
 plt.xlabel('frequency (Hz)')
 plt.ylabel('Gain (dB)')
 plt.xlim([0, 100000])
@@ -110,8 +122,7 @@ plt.savefig('./Paper/Fig_fir.png')
 y_tilde_tx_n = EK80CalculationPaper.calcNormalizedTransmitSignal(y_tx_n)
 
 # Passing the normalized and ideal transmit signal through the filter bank
-y_tilde_tx_nv = EK80CalculationPaper.calcFilteredAndDecimatedSignal(
-    y_tilde_tx_n, filt.filter_v)
+y_tilde_tx_nv = EK80CalculationPaper.calcFilteredAndDecimatedSignal(y_tilde_tx_n, filter_v)
 
 # Use the normalized, filtered and decimated transmit signal from the last
 # filter stage for the matched filter.
@@ -125,8 +136,7 @@ plt.ylabel('amplitude')
 plt.savefig('./Paper/Fig_y_mf_n.png')
 
 # The autocorrelation function and efficient pulse duration of the mathced filter
-y_mf_auto_n, tau_eff = EK80CalculationPaper.calcAutoCorrelation(
-    y_mf_n, f_s_dec)
+y_mf_auto_n, tau_eff = EK80CalculationPaper.calcAutoCorrelation(y_mf_n, f_s_dec)
 
 plt.figure()
 plt.plot(np.abs(y_mf_auto_n))
@@ -136,16 +146,13 @@ plt.ylabel('ACF')
 plt.savefig('./Paper/Fig_ACF.png')
 
 # Calculating the pulse compressed quadrant signals separately on each channel
-y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(
-    raw3.y_rx_nu,
-    y_mf_n)
+y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(y_rx_nu, y_mf_n)
 
 # Calculating the average signal over the channels
 y_pc_n = EK80CalculationPaper.calcAvgSumQuad(y_pc_nu)
 
 # Calculating the average signal over paired fore, aft, starboard, port channel
-y_pc_halves_n = EK80CalculationPaper.calcTransducerHalves(
-    y_pc_nu)
+y_pc_halves_n = EK80CalculationPaper.calcTransducerHalves(y_pc_nu)
 
 #
 # Chapter IIE: Power angles and samples
@@ -154,19 +161,19 @@ y_pc_halves_n = EK80CalculationPaper.calcTransducerHalves(
 # Calcuate the power across transducer channels
 p_rx_e_n = EK80CalculationPaper.calcPower(
     y_pc_n,
-    cont.z_td_e,
-    trcv.z_rx_e,
-    raw3.N_u)
+    z_td_e,
+    z_rx_e,
+    N_u)
 
 # Calculate the angle sensitivities
 gamma_theta = EK80CalculationPaper.calcGamma(
-    trdu.angle_sensitivity_alongship_fnom,
-    parm.f_c,
-    trdu.fnom)
+    angle_sensitivity_alongship_fnom,
+    f_c,
+    fnom)
 gamma_phi = EK80CalculationPaper.calcGamma(
-    trdu.angle_sensitivity_athwartship_fnom,
-    parm.f_c,
-    trdu.fnom)
+    angle_sensitivity_athwartship_fnom,
+    f_c,
+    fnom)
 
 # Calculate the physical angles
 theta_n, phi_n = EK80CalculationPaper.calcAngles(
@@ -193,11 +200,11 @@ r1 = 30
 before = 0.5
 after = 1
 
-p_tx_e = parm.ptx
-f_c = parm.f_c
-g_0_f_c = data.deriv.g_0_f_c
-PSI_f = data.deriv.PSI_f
-lambda_f_c = data.deriv.lambda_f_c
+#p_tx_e = parm.ptx
+#f_c = parm.f_c
+#g_0_f_c = data.deriv.g_0_f_c
+#PSI_f = data.deriv.PSI_f
+#lambda_f_c = data.deriv.lambda_f_c
 
 # logSpCf - > lambda_f_c
 # power -> p_tx_e
@@ -208,22 +215,23 @@ lambda_f_c = data.deriv.lambda_f_c
 # Will be written explicitly in EK80CalculationPaper and removed
 # logSpCf = EK80CalculationPaper.calculateCSpfdB(f_c, ptx)
 # Move to EK80DataContainer (Ruben)
-r_n, _ = EK80CalculationPaper.calcRange(parm.sampleInterval,
-                                        raw3.sampleCount,
-                                        envr.c,
-                                        raw3.offset)
+r_n, _ = EK80CalculationPaper.calcRange(
+    sampleInterval,
+    sampleCount,
+    c,
+    offset)
 
 # alpha_fc = self.calcAbsorption(self.temperature, self.salinity,
 # self.depth, self.acidity, self.c, self.f_c)
 
 # Move to EK80DataContainer (Ruben):
 alpha_f_c = EK80CalculationPaper.calcAbsorption(
-    envr.temperature,
-    envr.salinity,
-    envr.depth,
-    envr.acidity,
-    envr.c,
-    parm.f_c)
+    temperature,
+    salinity,
+    depth,
+    acidity,
+    c,
+    f_c)
 
 # Calculate the point scattering strength (Sp)
 Sp_n = EK80CalculationPaper.calcSp(
