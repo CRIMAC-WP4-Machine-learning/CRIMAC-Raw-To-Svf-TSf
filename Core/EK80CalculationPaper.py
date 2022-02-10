@@ -263,37 +263,36 @@ class EK80CalculationPaper(EK80DataContainer):
         new_auto = auto[idx_start_auto: idx_stop_auto]
 
         return new_auto
+    
+    @staticmethod
+    def singleTarget(y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
+                     r0, r1, before=0.5, after=0.5):
+        # This is a pseudo single target detector (SED) using the max peak
+        # within a range as the single target detection criteria
 
-    def singleTarget(self, y_pc_n, p_rx_e_n, theta_n, phi_n, r0, r1, before=0.5, after=0.5):
-
-        r_n, _ = self.calcRange()
-
-        # Extract samples for given range limits
-
+        # Get the samples within the sub range defined by before/after
         if r0 is not None and r1 is not None:
             Idx = np.where((r_n >= r0) & (r_n <= r1))
-            r_n = r_n[Idx]
-            y_pc_n = y_pc_n[Idx]
-            p_rx_e_n = p_rx_e_n[Idx]
-            theta_n = theta_n[Idx]
-            phi_n = phi_n[Idx]
+            r_n_sub = r_n[Idx]
+            y_pc_n_sub = y_pc_n[Idx]
+            p_rx_e_n_sub = p_rx_e_n[Idx]
+            theta_n_sub = theta_n[Idx]
+            phi_n_sub = phi_n[Idx]
 
         # Use peak power within given range limits as index for single target
-        # This assumes a single target detection algorithm has been used to
-        # detect a single target and define the range limits for the single target
+        # to get the range, theta and phi for the single target
+        idx_peak_p_rx = np.argmax(p_rx_e_n_sub)
+        r_t = r_n_sub[idx_peak_p_rx]
+        theta_t = theta_n_sub[idx_peak_p_rx]
+        phi_t = phi_n_sub[idx_peak_p_rx]
 
-        idx_peak_p_rx = np.argmax(p_rx_e_n)
-        r = r_n[idx_peak_p_rx]
-        theta = theta_n[idx_peak_p_rx]
-        phi = phi_n[idx_peak_p_rx]
+        # Extract pulse compressed samples "before" and "after" the peak power
+        r_t_begin = r_n_sub - before
+        r_t_end = r_n_sub + after
+        Idx2 = np.where((r_n_sub >= r_t_begin) & (r_n_sub <= r_t_end))
+        y_pc_t = y_pc_n_sub[Idx2]
 
-        # Extract pulse compressed samples before and after the peak power
-        r_t_begin = r - before
-        r_t_end = r + after
-        Idx = np.where((r_n >= r_t_begin) & (r_n <= r_t_end))
-        y_pc_t_n = y_pc_n[Idx]
-
-        return r, theta, phi, y_pc_t_n
+        return r_t, theta_t, phi_t, y_pc_t
 
     def calcTSf(self, r, theta, phi, y_pc_t_n):
 

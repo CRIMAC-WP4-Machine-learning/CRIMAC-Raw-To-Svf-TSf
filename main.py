@@ -236,8 +236,28 @@ Sp_n = EK80CalculationPaper.calcSp(
     r0,
     r1)
 
-# singleTarget:
-# r_n, _ = self.calcRange() -> EK80CalculationPaper
+# Pick samples from a single target (_t denotes data from single target)
+r_t_n, theta_t_n, phi_t_n, y_pc_t_n = EK80CalculationPaper.singleTarget(
+    y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
+    r0, r1, before, after)
+
+# Pick the reduced number of samples from the mathed filtered decimated send pulse
+# y_mf_auto_red =
+
+# Do the FFT of the pulse compressed signal corresponding to the target
+
+# Do the FFT of the pulse compressed send pulse signal rediced mathed filtered
+# decimated send pulse
+# Y_pc_t_m, Y_mf_auto_red =
+# Y_tilde_pc_t_m =
+
+
+# P_rx_e_t_m
+
+# Calculate the target strength
+# TS_m, f_m = CalcTS
+
+# The
 
 # CalcTSf:
 # L = self.n_f_points -> Transceiver or Parameter?
