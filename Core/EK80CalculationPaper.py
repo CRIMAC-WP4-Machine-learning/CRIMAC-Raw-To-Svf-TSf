@@ -384,10 +384,6 @@ class EK80CalculationPaper(EK80DataContainer):
             beam_width_athwartship_m = self.beam_width_athwartship_fnom * self.fnom / f
         return beam_width_alongship_m, beam_width_athwartship_m
 
-
-    def lambda_f(self, f):
-        return self.c / f
-
     @staticmethod
     def calcTransducerHalves(y_pc_nu):
         y_pc_fore_n = 0.5 * (y_pc_nu[2, :] + y_pc_nu[3, :])

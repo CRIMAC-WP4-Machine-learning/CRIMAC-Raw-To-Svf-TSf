@@ -195,9 +195,9 @@ after = 1
 
 p_tx_e = parm.ptx
 f_c = parm.f_c
-g_0_f_c = data.deriv.Gfc
+g_0_f_c = data.deriv.g_0_f_c
 PSI_f = data.deriv.PSI_f
-lambda_f_c = 1
+lambda_f_c = data.deriv.lambda_f_c
 
 # logSpCf - > lambda_f_c
 # power -> p_tx_e
