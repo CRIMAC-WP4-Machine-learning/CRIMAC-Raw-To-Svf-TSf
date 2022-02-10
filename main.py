@@ -6,7 +6,7 @@ from Core.EK80DataContainer import EK80DataContainer
 # Test data
 data = EK80DataContainer('./data/pyEcholabEK80data.json')
 
-# Unpack parameters (Ruben)
+
 
 cont = data.cont
 trcv = data.trcv
@@ -192,10 +192,12 @@ r0 = 10
 r1 = 30
 before = 0.5
 after = 1
-ptx = parm.ptx
+
+p_tx_e = parm.ptx
 f_c = parm.f_c
-Gfc = data.deriv.Gfc
+g_0_f_c = data.deriv.Gfc
 PSI_f = data.deriv.PSI_f
+lambda_f_c = 1
 
 # logSpCf - > lambda_f_c
 # power -> p_tx_e
@@ -204,18 +206,18 @@ PSI_f = data.deriv.PSI_f
 # Sp -> S_p_n
 
 # Will be written explicitly in EK80CalculationPaper and removed
-logSpCf = EK80CalculationPaper.calculateCSpfdB(f_c, ptx)
+# logSpCf = EK80CalculationPaper.calculateCSpfdB(f_c, ptx)
 # Move to EK80DataContainer (Ruben)
-r, _ = EK80CalculationPaper.calcRange(parm.sampleInterval,
-                                      raw3.sampleCount,
-                                      envr.c,
-                                      raw3.offset)
+r_n, _ = EK80CalculationPaper.calcRange(parm.sampleInterval,
+                                        raw3.sampleCount,
+                                        envr.c,
+                                        raw3.offset)
 
 # alpha_fc = self.calcAbsorption(self.temperature, self.salinity,
 # self.depth, self.acidity, self.c, self.f_c)
 
 # Move to EK80DataContainer (Ruben):
-alpha_fc = EK80CalculationPaper.calcAbsorption(
+alpha_f_c = EK80CalculationPaper.calcAbsorption(
     envr.temperature,
     envr.salinity,
     envr.depth,
@@ -224,9 +226,15 @@ alpha_fc = EK80CalculationPaper.calcAbsorption(
     parm.f_c)
 
 # Calculate the point scattering strength (Sp)
-Sp_n, r_n = EK80CalculationPaper.calcSp(
-    p_rx_e_n, Gfc, PSI_f, ptx, f_c, logSpCf, r, alpha_fc, r0, r1)
-
+Sp_n = EK80CalculationPaper.calcSp(
+    p_rx_e_n,
+    r_n,
+    alpha_f_c,
+    p_tx_e,
+    lambda_f_c,
+    g_0_f_c,
+    r0,
+    r1)
 
 # singleTarget:
 # r_n, _ = self.calcRange() -> EK80CalculationPaper

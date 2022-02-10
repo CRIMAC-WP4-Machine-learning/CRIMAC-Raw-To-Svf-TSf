@@ -105,32 +105,27 @@ class EK80CalculationPaper(EK80DataContainer):
         return r, dr
 
     @staticmethod
-    def calcSp(power, Gfc, PSI_f, ptx, f_c, logSpCf, r, alpha_fc, r0=None, r1=None):
-        # Note from Nils Olav: Isuggest that
-        # we are more true to the paper. It is difficult to read the smaller
-        # print here when some units are in dB whereas others are not.
-        # May I suggest to keep linear units all until we calculate the
-        # final Sp.
-
-        # alpha_fc = self.calcAbsorption(self.temperature, self.salinity,
-        # self.depth, self.acidity, self.c, self.f_c)
+    def calcSp(
+            p_rx_e_n,
+            r_n,
+            alpha_f_c,
+            p_tx_e,
+            lambda_f_c,
+            g_0_f_c,
+            r0=None,
+            r1=None):
+        # Pick a range of the data
         if r0 is not None and r1 is not None:
-            Idx = np.where((r >= r0) & (r <= r1))
-            r = r[Idx]
-            power = power[Idx]
-        # logSpCf - > lambda_f_c
-        # power -> p_tx_e
-        # Gfc -> g_0_f_c
-        # r -> r_n
-        # Sp -> S_p_n
-        
-        Sp = 10.0 * np.log10(power) + \
-             40.0 * np.log10(r) + \
-             2.0 * alpha_fc * r - \
-             logSpCf - \
-             2 * Gfc
+            Idx = np.where((r_n >= r0) & (r_n <= r1))
+            r_n = r_n[Idx]
+            p_rx_e_n = p_rx_e_n[Idx]
+        # Calculate Sp
+        S_p_n = 10.0 * np.log10(p_rx_e_n) + 40.0 * np.log10(r_n) + \
+            2.0 * alpha_f_c * r_n - \
+            10 * np.log10((p_tx_e * lambda_f_c ** 2 * g_0_f_c ** 2)
+                          / (16.0 * np.pi ** 2))
 
-        return Sp, r
+        return S_p_n
 
     def calcSv(self, power, r0=None, r1=None):
 
@@ -459,10 +454,6 @@ class EK80CalculationPaper(EK80DataContainer):
     @staticmethod
     def calculateTVGdB(alpha, r):
         return 20.0 * np.log10(r) + 2.0 * alpha * r
-
-    @staticmethod
-    def calculateCSpfdB(f_c, ptx):
-        return 10 * np.log10((ptx * f_c ** 2) / (16.0 * np.pi * np.pi))
     
     def calculateCSvfdB(self, f):
         lf = self.lambda_f(f)
