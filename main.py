@@ -21,6 +21,10 @@ deriv = data.deriv
 # data.trdu.f_c
 # data.f_c -> I paper: $f_c$
 
+# To be considered:
+# f0 -> f_0
+# f1 -> f_1
+
 # Unpack variabels
 z_td_e, f_s, n_f_points = data.cont.getParameters()
 
@@ -43,6 +47,7 @@ filter_v, N_v = data.filt.getParameters()
 offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 
 g_0_f_c, lambda_f_c, PSI_f = data.deriv.getParameters()
+
 #
 # Chapter IIB: Signal generation
 #
@@ -244,48 +249,33 @@ Sp_n = EK80CalculationPaper.calcSp(
     r0,
     r1)
 
-# Pick samples from a single target (_t denotes data from single target)
-r_t_n, theta_t_n, phi_t_n, y_pc_t_n = EK80CalculationPaper.singleTarget(
+# Data from a single target (_t denotes data from single target)
+r_t, theta_t, phi_t, y_pc_t_n = EK80CalculationPaper.singleTarget(
     y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
     r0, r1, before, after)
 
-# Pick the reduced number of samples from the mathed filtered decimated send pulse
-# y_mf_auto_red =
+# Pick the reduced samples from the mathed filtered decimated send pulse
+y_mf_auto_red_n = EK80CalculationPaper.alignAuto(y_mf_auto_n, y_pc_t_n)
+# NB: In the example these are the same. Perhaps chose differently for
+# illustrative purposes?
 
-# Do the FFT of the pulse compressed signal corresponding to the target
+# DFT on the pulse compressed received signal and the pulse compressed
+# send pulse signal rediced mathed filtered
 
-# Do the FFT of the pulse compressed send pulse signal rediced mathed filtered
-# decimated send pulse
-# Y_pc_t_m, Y_mf_auto_red =
-# Y_tilde_pc_t_m =
+Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, f_m_t = EK80CalculationPaper.calcDFTforTS(
+    y_pc_t_n, y_mf_auto_red_n, n_f_points, f0, f1, f_s_dec)
 
+fig, axs = plt.subplots(3)
+fig.suptitle('Normalized DFT')
+axs[0].plot(f_m_t, np.abs(Y_pc_t_m))
+axs[0].set_ylabel('Y_tilde_pc_t_m')
+axs[1].plot(f_m_t, np.abs(Y_mf_auto_red_m))
+axs[1].set_ylabel('Y_mf_auto_red_m')
+axs[2].plot(f_m_t, np.abs(Y_tilde_pc_t_m))
+axs[2].set_xlabel('f (Hz)')
+axs[2].set_ylabel('Y_tilde_pc_t_m')
+plt.savefig('./Paper/Fig_normalizedDFT.png')
 
-# P_rx_e_t_m
-
-# Calculate the target strength
-# TS_m, f_m = CalcTS
-
-# The
-
-# CalcTSf:
-# L = self.n_f_points -> Transceiver or Parameter?
-# y_mf_auto_red_n = self.alignAuto(self.y_mf_auto_n, y_pc_t_n)
-# -> EK80CalculationPaper
-# Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m) -> ok as is?
-# Y_mf_auto_red_m = self.freqtransf(_Y_mf_auto_red_m, self.f_s_dec, f_m)
-# -> ok as is?
-# G0_m = self.calc_G0_m(f_m) -> Transceiver?
-# B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m) -> ?
-# alpha_m = self.calcAbsorption(self.temperature, self.salinity,
-# self.depth, self.acidity, self.c, f_m) -> EK80CalculationPaper?
-# logSpCf = self.calculateCSpfdB(f_m) -> EK80CalculationPaper?
-# Y_tilde_pc_t_m = Y_pc_t_m / Y_mf_auto_red_m -> ok
-# P_rx_e_t_m = self.C1Prx * np.abs(Y_tilde_pc_t_m) ** 2 -> ?
-
-# Extract single target
-# r, theta, phi, y_pc_t_n = EK80CalculationPaper.singleTarget(
-#    y_pc_n, p_rx_e_n, theta_n, phi_n,
-#    r0, r1, before, after)
 
 # Calculate the target strength of the single target
 # TS_m, f_m,  = EK80CalculationPaper.calcTSf(r, theta, phi, y_pc_t_n)

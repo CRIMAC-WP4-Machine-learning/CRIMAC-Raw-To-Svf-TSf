@@ -249,20 +249,20 @@ class EK80CalculationPaper(EK80DataContainer):
         return Svf, svf_range, f
 
     @staticmethod
-    def alignAuto(auto, y_pc_t_n):
-
-        idx_peak_auto = np.argmax(np.abs(auto))
+    def alignAuto(y_mf_auto_n, y_pc_t_n):
+        # The equivalent samples around the peak in the decimated tx signal
+        idx_peak_auto = np.argmax(np.abs(y_mf_auto_n))
         idx_peak_y_pc_t_n = np.argmax(np.abs(y_pc_t_n))
 
         left_samples = idx_peak_y_pc_t_n
         right_samples = len(y_pc_t_n) - idx_peak_y_pc_t_n
 
         idx_start_auto = max(0, idx_peak_auto - left_samples)
-        idx_stop_auto = min(len(auto), idx_peak_auto + right_samples)
+        idx_stop_auto = min(len(y_mf_auto_n), idx_peak_auto + right_samples)
 
-        new_auto = auto[idx_start_auto: idx_stop_auto]
+        y_mf_auto_red_n = y_mf_auto_n[idx_start_auto: idx_stop_auto]
 
-        return new_auto
+        return y_mf_auto_red_n
     
     @staticmethod
     def singleTarget(y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
@@ -294,6 +294,33 @@ class EK80CalculationPaper(EK80DataContainer):
 
         return r_t, theta_t, phi_t, y_pc_t
 
+    @staticmethod
+    def calcDFTforTS(y_pc_t_n, y_mf_auto_red_n, n_f_points, f0, f1, f_s_dec):
+
+        # The number of DFT points inpower of 2
+        N_DFT = int(2 ** np.ceil(np.log2(n_f_points)))
+        # Lars: Is this correct? Why not N_DFT instead of n_f_points, which is
+        # before the 2**n conversion. I think this should be spelled out in the
+        # paper and possibly be rewritten for clarity.
+        f_m_t = np.linspace(f0, f1, n_f_points)
+        # Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m)
+        # def freqtransf(FFTvecin, fsdec, fvec=None):
+        idxtmp = np.floor(f_m_t / f_s_dec * N_DFT).astype('int')
+        idx = np.mod(idxtmp, N_DFT) + 1
+
+        # DFT for the target signal
+        _Y_pc_t_m = np.fft.fft(y_pc_t_n, n=N_DFT)
+        Y_pc_t_m = _Y_pc_t_m[idx]
+
+        # DFT for the transmit signal
+        _Y_mf_auto_red_m = np.fft.fft(y_mf_auto_red_n, n=N_DFT)
+        Y_mf_auto_red_m = _Y_mf_auto_red_m[idx]
+        
+        # The Normalized DFT
+        Y_tilde_pc_t_m = Y_pc_t_m/Y_mf_auto_red_m
+        
+        return Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, f_m_t
+        
     def calcTSf(self, r, theta, phi, y_pc_t_n):
 
         # L = len(y_pc_t_n)
