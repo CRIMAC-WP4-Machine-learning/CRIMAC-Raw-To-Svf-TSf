@@ -13,7 +13,7 @@ from Core.FIL1 import FIL1
 
 
 class Derived:
-    def __init__(self, frqp, parm, trdu):
+    def __init__(self, frqp, parm, trdu, envr):
         # Calculate Gfc
         if frqp.isCalibrated:
             # Calibrated case
@@ -25,6 +25,11 @@ class Derived:
         # Calculate PSI_f
         self.PSI_f = trdu.PSI_fnom + 20 * np.log10(trdu.fnom/frqp.frequencies)
 
+        self.g_0_f_c = np.power(self.Gfc/10, 10)
+        self.lambda_f_c = envr.c/parm.f_c
+
+    def getParameters(self):
+        return self.g_0_f_c, self.lambda_f_c, self.PSI_f
 
 
 class Constants:
@@ -33,10 +38,17 @@ class Constants:
         self.f_s = f_s
         self.n_f_points = n_f_points
 
+    def getParameters(self):
+        return self.z_td_e, self.f_s, self.n_f_points
+
 
 class Transceiver:
     def __init__(self, xml):
         self.z_rx_e = xml['z_rx_e']
+
+    def getParameters(self):
+        return self.z_rx_e
+
 
 class Parameter:
     def __init__(self, xml):
@@ -46,7 +58,10 @@ class Parameter:
         self.tau = xml['PulseDuration']
         self.slope = xml['Slope']
         self.sampleInterval = xml['SampleInterval']
-        self.ptx = xml['TransmitPower']
+        self.p_tx_e = xml['TransmitPower']
+
+    def getParameters(self):
+        return self.f0, self.f1, self.f_c, self.tau, self.slope, self.sampleInterval, self.p_tx_e
 
 class Transducer:
     def __init__(self, xml):
@@ -61,6 +76,12 @@ class Transducer:
         self.beam_width_athwartship_fnom = xml['BeamWidthAthwartship']
         self.corrSa = xml['SaCorrection']
 
+    def getParameters(self):
+        return self.fnom, self.G_fnom, self.PSI_fnom, self.angle_offset_alongship_fnom, \
+               self.angle_offset_athwartship_fnom,self.angle_sensitivity_alongship_fnom, \
+               self.angle_sensitivity_athwartship_fnom, self.beam_width_alongship_fnom, \
+               self.beam_width_athwartship_fnom, self.corrSa
+
 class Environment:
     def __init__(self, xml):
         self.c = xml['SoundSpeed']
@@ -71,6 +92,10 @@ class Environment:
         self.latitude = xml['Latitude']
         self.depth = xml['Depth']
         self.dropKeelOffset = xml['DropKeelOffset']
+
+    def getParameters(self):
+        return self.c, self.alpha, self.temperature, self.salinity, \
+               self.acidity, self.latitude,self.depth, self.dropKeelOffset
 
 class FrequencyPar:
     def __init__(self, xml=None):
@@ -103,6 +128,10 @@ class FrequencyPar:
 
             self.frequencies = np.linspace(self.f0, self.f1, self.n_f_points)
 
+    def getParameters(self):
+        return self.frequencies, self.gain, self.angle_offset_athwartship, self.angle_offset_alongship, \
+               self.beam_width_athwartship, self.beam_width_alongship
+
 
 class Filters:
     def __init__(self, xml=None):
@@ -117,6 +146,9 @@ class Filters:
                 self.filter_v.append({"h_fl_i": h_fl_i, "D": D, "N_i": N_i})
             self.N_v = len(self.filter_v)
 
+    def getParameters(self):
+        return self.filter_v, self.N_v
+
 class Raw3:
     def __init__(self, xml=None):
         self.offset = xml['offset']
@@ -130,6 +162,8 @@ class Raw3:
 
             self.y_rx_nu = np.array(self.y_rx_nu)
 
+    def getParameters(self):
+        return self.offset, self.sampleCount, self.y_rx_nu, self.N_u, self.y_rx_nu
 
 class EK80DataContainer:
 
@@ -153,92 +187,8 @@ class EK80DataContainer:
             self.frqp = FrequencyPar(self.jdict['XML0']['FrequencyPar'])
             self.filt = Filters(self.jdict)
             self.raw3 = Raw3(self.jdict['RAW3'])
-            self.deriv = Derived(self.frqp, self.parm, self.trdu)
+            self.deriv = Derived(self.frqp, self.parm, self.trdu, self.envr)
 
             self.isCalibrated = self.frqp.isCalibrated
 
-            #self.parseEK80JSON(self.jdict)
 
-    """
-    def parseEK80JSON(self, jdict) :
-        xml0 = jdict['XML0']
-        self.z_rx_e = xml0['Transceiver']['z_rx_e']
-        self.f0 = xml0['Parameter']['FrequencyStart']
-        self.fnom = xml0['Transducer']['Frequency']  # nominal design frequency for the transducer
-        self.f1 = xml0['Parameter']['FrequencyEnd']
-        self.f_c = (self.f0 + self.f1) / 2.0
-        self.tau = xml0['Parameter']['PulseDuration']
-        self.slope = xml0['Parameter']['Slope']
-        self.sampleInterval = xml0['Parameter']['SampleInterval']
-        self.c = xml0['Environment']['SoundSpeed']
-        self.ptx = xml0['Parameter']['TransmitPower']
-        self.G_fnom = xml0['Transducer']['GainNom']
-        self.PSI_fnom = xml0['Transducer']['EquivalentBeamAngle']
-        self.angle_offset_alongship_fnom=xml0['Transducer']['AngleOffsetAlongship']
-        self.angle_offset_athwartship_fnom=xml0['Transducer']['AngleOffsetAthwartship']
-        self.angle_sensitivity_alongship_fnom=xml0['Transducer']['AngleSensitivityAlongship']
-        self.angle_sensitivity_athwartship_fnom=xml0['Transducer']['AngleSensitivityAthwartship']
-        self.beam_width_alongship_fnom=xml0['Transducer']['BeamWidthAlongship']
-        self.beam_width_athwartship_fnom=xml0['Transducer']['BeamWidthAthwartship']
-        self.corrSa = xml0['Transducer']['SaCorrection']
-        self.alpha = xml0['Environment']['Alpha']
-        self.temperature = xml0['Environment']['Temperature']
-        self.salinity = xml0['Environment']['Salinity']
-        self.acidity = xml0['Environment']['Acidity']
-        self.latitude = xml0['Environment']['Latitude']
-        self.depth = xml0['Environment']['Depth']
-
-        self.dropKeelOffset = xml0['Environment']['DropKeelOffset']
-
-        # Test if broadband calibration values exists, if not use nominal values and extrapolate
-        if xml0['FrequencyPar']['frequencies']:
-            print("Broadband calibration values exists")
-            self.frequencies = xml0['FrequencyPar']['frequencies']
-            self.gain = xml0['FrequencyPar']['gain']
-            self.angle_offset_athwartship = xml0['FrequencyPar']['angle_offset_alongship']
-            self.angle_offset_alongship = xml0['FrequencyPar']['angle_offset_alongship']
-            self.beam_width_athwartship = xml0['FrequencyPar']['beam_width_athwartship']
-            self.beam_width_alongship = xml0['FrequencyPar']['beam_width_alongship']
-            self.isCalibrated = True
-        elif not xml0['FrequencyPar']['frequencies']:
-            print("Broadband calibration values does not exist - use nominal and fit function")
-            self.frequencies = None
-            self.gain = None
-            self.angle_offset_athwartship = None
-            self.angle_offset_alongship = None
-            self.beam_width_athwartship = None
-            self.beam_width_alongship = None
-            self.isCalibrated = False
-        # Calibration data (copied from EK80CalculationPaper)
-        if self.frequencies is not None:
-            self.frequencies = np.array(self.frequencies)
-        else:
-            # If no calibration make a frequency vector
-            # This is used to calculate correct frequencies after signal
-            # decimation
-
-            self.frequencies = np.linspace(self.f0, self.f1, self.n_f_points)
-            
-        self.filter_v = None
-        if 'FIL1' in jdict and 'NaN' not in jdict['FIL1']:
-            self.filter_v = []
-            for v in jdict['FIL1'].values():
-                c = v['coefficients']
-                h_fl_i = np.array(c['real']) + np.array(c['imag']) * 1j
-                D = v['decimationFactor']
-                N_i = v['noOfCoefficients']
-                self.filter_v.append({"h_fl_i": h_fl_i, "D": D, "N_i": N_i})
-            self.N_v = len(self.filter_v)
-            
-        raw3 = jdict['RAW3']
-        self.offset = raw3['offset']
-        self.sampleCount = raw3['sampleCount']
-        self.y_rx_nu = None
-        if 'quadrant_signals' in raw3 and 'NaN' not in raw3['quadrant_signals']:
-            self.y_rx_nu = []
-            self.N_u = len(raw3['quadrant_signals'].values())
-            for v in raw3['quadrant_signals'].values():
-                self.y_rx_nu.append(np.array(v['real']) + np.array(v['imag']) * 1j)
-
-            self.y_rx_nu = np.array(self.y_rx_nu)
-    """
