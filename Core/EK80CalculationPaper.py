@@ -118,6 +118,11 @@ class EK80CalculationPaper(EK80DataContainer):
             Idx = np.where((r >= r0) & (r <= r1))
             r = r[Idx]
             power = power[Idx]
+        # logSpCf - > lambda_f_c
+        # power -> p_tx_e
+        # Gfc -> g_0_f_c
+        # r -> r_n
+        # Sp -> S_p_n
         
         Sp = 10.0 * np.log10(power) + \
              40.0 * np.log10(r) + \

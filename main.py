@@ -6,6 +6,8 @@ from Core.EK80DataContainer import EK80DataContainer
 # Test data
 data = EK80DataContainer('./data/pyEcholabEK80data.json')
 
+# Unpack parameters (Ruben)
+
 cont = data.cont
 trcv = data.trcv
 parm = data.parm
@@ -15,6 +17,9 @@ frqp = data.frqp
 filt = data.filt
 raw3 = data.raw3
 deriv = data.deriv
+# data.trdu.f_c
+# data.f_c -> I paper: $f_c$
+
 
 #
 # Chapter IIB: Signal generation
@@ -191,7 +196,16 @@ ptx = parm.ptx
 f_c = parm.f_c
 Gfc = data.deriv.Gfc
 PSI_f = data.deriv.PSI_f
+
+# logSpCf - > lambda_f_c
+# power -> p_tx_e
+# Gfc -> g_0_f_c
+# r -> r_n
+# Sp -> S_p_n
+
+# Will be written explicitly in EK80CalculationPaper and removed
 logSpCf = EK80CalculationPaper.calculateCSpfdB(f_c, ptx)
+# Move to EK80DataContainer (Ruben)
 r, _ = EK80CalculationPaper.calcRange(parm.sampleInterval,
                                       raw3.sampleCount,
                                       envr.c,
@@ -199,6 +213,8 @@ r, _ = EK80CalculationPaper.calcRange(parm.sampleInterval,
 
 # alpha_fc = self.calcAbsorption(self.temperature, self.salinity,
 # self.depth, self.acidity, self.c, self.f_c)
+
+# Move to EK80DataContainer (Ruben):
 alpha_fc = EK80CalculationPaper.calcAbsorption(
     envr.temperature,
     envr.salinity,

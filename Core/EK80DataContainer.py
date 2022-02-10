@@ -3,6 +3,14 @@ import json
 
 from Core.FIL1 import FIL1
 
+# Ruben: Create a logic that separate derived variables and .raw variables.
+# required changes:
+# logSpCf - > lambda_f_c
+# power -> p_tx_e
+# Gfc -> g_0_f_c
+# r -> r_n
+# Sp -> S_p_n
+
 
 class Derived:
     def __init__(self, frqp, parm, trdu):
