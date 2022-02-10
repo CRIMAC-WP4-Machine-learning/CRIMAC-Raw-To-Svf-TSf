@@ -262,8 +262,9 @@ y_mf_auto_red_n = EK80CalculationPaper.alignAuto(y_mf_auto_n, y_pc_t_n)
 # DFT on the pulse compressed received signal and the pulse compressed
 # send pulse signal rediced mathed filtered
 
-Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, f_m_t = EK80CalculationPaper.calcDFTforTS(
-    y_pc_t_n, y_mf_auto_red_n, n_f_points, f0, f1, f_s_dec)
+Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, f_m_t = \
+    EK80CalculationPaper.calcDFTforTS(y_pc_t_n, y_mf_auto_red_n,
+                                      n_f_points, f0, f1, f_s_dec)
 
 fig, axs = plt.subplots(3)
 fig.suptitle('Normalized DFT')
@@ -277,7 +278,14 @@ axs[2].set_ylabel('Y_tilde_pc_t_m')
 plt.savefig('./Paper/Fig_normalizedDFT.png')
 
 
-# Calculate the target strength of the single target
+# Calculate the power by frequency from a single target
+P_rx_e_t_m = EK80CalculationPaper.calcPowerFreq(
+    N_u,
+    Y_tilde_pc_t_m,
+    z_td_e,
+    z_rx_e)
+
+# Calculate the target strength
 # TS_m, f_m,  = EK80CalculationPaper.calcTSf(r, theta, phi, y_pc_t_n)
 
 #

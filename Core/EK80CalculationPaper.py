@@ -320,6 +320,12 @@ class EK80CalculationPaper(EK80DataContainer):
         Y_tilde_pc_t_m = Y_pc_t_m/Y_mf_auto_red_m
         
         return Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, f_m_t
+    
+    @staticmethod
+    def calcPowerFreq(N_u, Y_tilde_pc_t_m, z_td_e, z_rx_e):
+        imp = (np.abs(z_rx_e + z_td_e) / np.abs(z_rx_e)) ** 2 / np.abs(z_td_e)
+        P_rx_e_t_m = N_u * (np.abs(Y_tilde_pc_t_m)/(2 * np.sqrt(2))) ** 2 * imp
+        return P_rx_e_t_m
         
     def calcTSf(self, r, theta, phi, y_pc_t_n):
 
