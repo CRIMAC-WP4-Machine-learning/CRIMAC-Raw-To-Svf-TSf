@@ -326,7 +326,34 @@ class EK80CalculationPaper(EK80DataContainer):
         imp = (np.abs(z_rx_e + z_td_e) / np.abs(z_rx_e)) ** 2 / np.abs(z_td_e)
         P_rx_e_t_m = N_u * (np.abs(Y_tilde_pc_t_m)/(2 * np.sqrt(2))) ** 2 * imp
         return P_rx_e_t_m
+
+    @staticmethod
+    def calcTSf_2(P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
+                  gain, theta_t, phi_t):
+        # Look up gain from angles and freq
         
+        dum = p_tx_e * lambda_f_c**2 
+        TS_m = 10*np.log10(P_rx_e_t_m) + 40*np.log10(r_t) + 2*alpha*r_t +\
+            10*np.log10(dum)
+        return TS_m
+    """
+        \begin{equation}
+        \label{eq:TS_f}
+        \ts(\samplesymf) = 10\log_{10}(\prxetf(\samplesymf)) + 40\log_{10}(\range) + 2\absorp(\samplesymf)\range 
+        - 10\log_{10}\left( \frac{\ptxe \wlen_\samplesymf^2 \gain^2(\along,\athw,\samplesymf)}{16\pi^2} \right).
+        \end{equation}
+
+           logSpCf = self.calculateCSpfdB(f_m)
+
+TS_m = 10 * np.log10(P_rx_e_t_m) + \
+               40 * np.log10(r) + \
+               2 * alpha_m * r - \
+               2 * G_theta_phi_m - \
+               logSpCf
+        
+        return TS_m
+
+        """
     def calcTSf(self, r, theta, phi, y_pc_t_n):
 
         # L = len(y_pc_t_n)

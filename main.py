@@ -53,9 +53,11 @@ g_0_f_c, lambda_f_c, PSI_f = data.deriv.getParameters()
 #
 
 # Generate ideal send pulse
-y_tx_n, t = EK80CalculationPaper.generateIdealWindowedSendPulse(f0, f1, tau, f_s, slope)
+y_tx_n, t = EK80CalculationPaper.generateIdealWindowedSendPulse(
+    f0, f1, tau, f_s, slope)
 
-y_tx_n05slope, t = EK80CalculationPaper.generateIdealWindowedSendPulse(f0, f1, tau, f_s, .5)
+y_tx_n05slope, t = EK80CalculationPaper.generateIdealWindowedSendPulse(
+    f0, f1, tau, f_s, .5)
 
 plt.figure()
 plt.plot(t*1000, y_tx_n, t*1000, y_tx_n05slope)
@@ -127,7 +129,8 @@ plt.savefig('./Paper/Fig_fir.png')
 y_tilde_tx_n = EK80CalculationPaper.calcNormalizedTransmitSignal(y_tx_n)
 
 # Passing the normalized and ideal transmit signal through the filter bank
-y_tilde_tx_nv = EK80CalculationPaper.calcFilteredAndDecimatedSignal(y_tilde_tx_n, filter_v)
+y_tilde_tx_nv = EK80CalculationPaper.calcFilteredAndDecimatedSignal(
+    y_tilde_tx_n, filter_v)
 
 # Use the normalized, filtered and decimated transmit signal from the last
 # filter stage for the matched filter.
@@ -140,8 +143,10 @@ plt.xlabel('samples ()')
 plt.ylabel('amplitude')
 plt.savefig('./Paper/Fig_y_mf_n.png')
 
-# The autocorrelation function and efficient pulse duration of the mathced filter
-y_mf_auto_n, tau_eff = EK80CalculationPaper.calcAutoCorrelation(y_mf_n, f_s_dec)
+# The autocorrelation function and efficient pulse duration of the mathced
+# filter
+y_mf_auto_n, tau_eff = EK80CalculationPaper.calcAutoCorrelation(
+    y_mf_n, f_s_dec)
 
 plt.figure()
 plt.plot(np.abs(y_mf_auto_n))
@@ -285,8 +290,17 @@ P_rx_e_t_m = EK80CalculationPaper.calcPowerFreq(
     z_td_e,
     z_rx_e)
 
+#if isCalibrated:
+#    # Calibrated case
+#    G = np.interp(f, self.frequencies, self.gain)
+#else:
+#    # Uncalibrated case
+#    G = G_fnom + 20 * np.log10(f / self.fnom)
+
 # Calculate the target strength
-# TS_m, f_m,  = EK80CalculationPaper.calcTSf(r, theta, phi, y_pc_t_n)
+TS_m = EK80CalculationPaper.calcTSf_2(
+    P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
+    gain, theta_t, phi_t)
 
 #
 # Chapter IV: VOLUME BACKSCATTERING STRENGTH
@@ -294,3 +308,8 @@ P_rx_e_t_m = EK80CalculationPaper.calcPowerFreq(
 
 # Calculate Sv
 # Sv =
+
+# G0_m = self.calc_G0_m(f_m)
+# B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m)
+# G_theta_phi_m = G0_m - B_theta_phi_m
+
