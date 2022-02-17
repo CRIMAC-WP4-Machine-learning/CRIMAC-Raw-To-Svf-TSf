@@ -186,12 +186,7 @@ show()
 ###############################################################################
 data={
         'COMMENTS': {
-                "Free text1": "Experiment file from CRIMAC 2020 cruise, FM 38 kHz (channel 1) with two spheres ",
-                "Free text2": "Calibration sphere WC22 mm at 21.7 meter depth +/-",
-                "Free text3": "Calibration sphere WC57.2 mm at 27.8 meter depth +/-",
-                "Free text4": "Seaflor at 41 meter depth +/-",
-                "Free text5": "Start range/depth 8m +/-",
-                "Free text": "Single ping (see PingNo / PingTime for identifier)",
+                "Free text": "See Readme.txt",
                 "Raw file": args.inputFile,
                 "json file": args.outputFile
                 },
