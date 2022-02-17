@@ -194,7 +194,7 @@ data={
         'XML0': {
                 'Transceiver': {
                 "fs": fs,
-                "z_rx_e": np.float(Zrecieve),
+                "z_rx_e": float(Zrecieve),
                 },
                 
                 'Channels': {
@@ -219,7 +219,7 @@ data={
                 "BeamWidthAthwartship": BeamWidthAthwartship,
                 "GainNom": GainNom,
                 "Nu": 4,
-                "z_trd": np.float(Ztransducer),
+                "z_trd": float(Ztransducer),
                     },
                 
                 'FrequencyPar': {
@@ -237,10 +237,10 @@ data={
                     "Salinity": Salinity,
                     "Alpha": Alpha,
                     "SoundSpeed": SoundSpeed,
-                    "DropKeelOffset": np.float(dropKeelOffset),
-                    "Depth": np.float(Depth),
-                    "Acidity": np.float(Acidity),
-                    "Latitude": np.float(Latitude),
+                    "DropKeelOffset": float(dropKeelOffset),
+                    "Depth": float(Depth),
+                    "Acidity": float(Acidity),
+                    "Latitude": float(Latitude),
                     },
 
                 'Parameter': {
