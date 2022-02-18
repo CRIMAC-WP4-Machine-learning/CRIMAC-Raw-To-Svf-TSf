@@ -269,4 +269,4 @@ class EK80DataContainer:
 
         B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f)
         G0_m = self.calc_G0_m(f)
-        return G0_m - B_theta_phi_m
+        return np.power(10,(G0_m - B_theta_phi_m)/10)
