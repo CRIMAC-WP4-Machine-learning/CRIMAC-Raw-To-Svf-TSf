@@ -309,12 +309,13 @@ axs[1].plot(f_m_t, np.abs(Y_mf_auto_red_m))
 axs[1].set_ylabel('Y_mf_auto_red_m')
 axs[2].plot(f_m_t, np.abs(Y_tilde_pc_t_m))
 axs[2].set_ylabel('Y_tilde_pc_t_m')
-axs[3].plot(f_m_t, g_theta_t_phi_t_f_t)
+axs[3].plot(f_m_t, g_theta_t_phi_t_f_t) # weird gain might be tracked down to  xml['angle_offset_alongship'] and xml['angle_offset_alongship']
 axs[3].set_ylabel('gain')
 axs[4].plot(f_m_t, TS_m)
 axs[4].set_xlabel('f (Hz)')
 axs[4].set_ylabel('TS(f)')
 plt.savefig('./Paper/Fig_TS.png')
+
 
 
 #
