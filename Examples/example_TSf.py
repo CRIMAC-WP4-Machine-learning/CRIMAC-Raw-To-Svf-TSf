@@ -121,12 +121,9 @@ if __name__ == '__main__':
 
     # Calculate the target strength
     g_theta_phi_m = data.calc_g(theta_t, phi_t, f_m_t)
-    TS_m = EK80CalculationPaper.calcTSf(
-        P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
-        g_theta_phi_m)
-
-    plt.figure()
-    plt.plot(g_theta_phi_m)
+    lambda_m = data.calc_lambda_f(f_m_t)
+    alpha_m = data.calc_alpha_f(f_m_t)
+    TS_m = EK80CalculationPaper.calcTSf(P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m, g_theta_phi_m)
 
     plt.figure()
     plt.title('Tsf for target in layer from {:.1f} m to {:.1f} m'.format(args.r0, args.r1))
