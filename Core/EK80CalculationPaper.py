@@ -98,12 +98,13 @@ class EK80CalculationPaper(EK80DataContainer):
         
         return C1Prx * np.abs(y_pc) ** 2
 
+    """
     @staticmethod
     def calcRange(sampleInterval, sampleCount, c, offset):
         dr = sampleInterval * c * 0.5
         r = np.array([(offset + i + 1) * dr for i in range(0, sampleCount)])
         return r, dr
-
+    """
     @staticmethod
     def calcSp(
             p_rx_e_n,
@@ -335,6 +336,8 @@ class EK80CalculationPaper(EK80DataContainer):
     def calcTSf(P_rx_e_t_m, r_t, alpha, p_tx_e,
                 lambda_f_c, g_theta_t_phi_t_f_t):
 
+
+
         TS_m = 10*np.log10(P_rx_e_t_m) + 40*np.log10(r_t) + 2*alpha*r_t -\
             10*np.log10(
             (p_tx_e * lambda_f_c**2 * g_theta_t_phi_t_f_t ** 2) /
@@ -523,6 +526,7 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
         lf = self.lambda_f(f)
         return 10 * np.log10((self.ptx * self.c * lf ** 2) / (32.0 * np.pi * np.pi))
 
+    """
     @staticmethod
     def calcAbsorption(t, s, d, ph, c, f):
         f = f / 1000
@@ -544,4 +548,4 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
         a = f ** 2 * (a1 * p1 * f1 / (f1 ** 2 + f ** 2) + a2 * p2 * f2 / (f2 ** 2 + f ** 2) + a3 * p3)
 
         return a / 1000
-
+    """

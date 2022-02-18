@@ -193,6 +193,34 @@ class EK80DataContainer:
 
             self.isCalibrated = self.frqp.isCalibrated
 
+    @staticmethod
+    def calcAbsorption(t, s, d, ph, c, f):
+        f = f / 1000
+
+        a1 = (8.86 / c) * 10 ** (0.78 * ph - 5)
+        p1 = 1
+        f1 = 2.8 * (s / 35) ** 0.5 * 10 ** (4 - 1245 / (t + 273))
+
+        a2 = 21.44 * (s / c) * (1 + 0.025 * t)
+        p2 = 1 - 1.37e-4 * d + 6.62e-9 * d ** 2
+        f2 = 8.17 * 10 ** (8 - 1990 / (t + 273)) / (1 + 0.0018 * (s - 35))
+
+        p3 = 1 - 3.83e-5 * d + 4.9e-10 * d ** 2
+
+        a3l = 4.937e-4 - 2.59e-5 * t + 9.11e-7 * t ** 2 - 1.5e-8 * t ** 3
+        a3h = 3.964e-4 - 1.146e-5 * t + 1.45e-7 * t ** 2 - 6.5e-10 * t ** 3
+        a3 = a3l * (t <= 20) + a3h * (t > 20)
+
+        a = f ** 2 * (a1 * p1 * f1 / (f1 ** 2 + f ** 2) + a2 * p2 * f2 / (f2 ** 2 + f ** 2) + a3 * p3)
+
+        return a / 1000
+
+    @staticmethod
+    def  calcRange(sampleInterval, sampleCount, c, offset) :
+        dr = sampleInterval * c * 0.5
+        r = np.array([(offset + i + 1) * dr for i in range(0, sampleCount)])
+        return r, dr
+
     def calc_angle_offsets_m(self, f):
         if self.isCalibrated:
             # Calibrated case
@@ -215,6 +243,14 @@ class EK80DataContainer:
             beam_width_athwartship_m = self.trdu.beam_width_athwartship_fnom * self.trdu.fnom / f
         return beam_width_alongship_m, beam_width_athwartship_m
 
+    def calc_G0_m(self, f):
+        if self.isCalibrated:
+            # Calibrated case
+            return np.interp(f, self.frqp.frequencies, self.frqp.gain)
+        else:
+            # Uncalibrated case
+            return self.trdu.G_fnom + 20 * np.log10(f / self.trdu.fnom)
+
     def calc_B_theta_phi_m(self, theta, phi, f):
         angle_offset_alongship_m, angle_offset_athwartship_m = self.calc_angle_offsets_m(f)
         beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
@@ -228,3 +264,9 @@ class EK80DataContainer:
                                                             beam_width_athwartship_m / 2)) ** 2))
 
         return B_theta_phi_m
+
+    def calc_g(self, theta, phi, f):
+
+        B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f)
+        G0_m = self.calc_G0_m(f)
+        return G0_m - B_theta_phi_m
