@@ -7,17 +7,6 @@ from Core.EK80DataContainer import EK80DataContainer
 data = EK80DataContainer('./data/pyEcholabEK80data.json')
 
 
-"""
-cont = data.cont
-trcv = data.trcv
-parm = data.parm
-trdu = data.trdu
-envr = data.envr
-frqp = data.frqp
-filt = data.filt
-raw3 = data.raw3
-deriv = data.deriv
-"""
 # data.trdu.f_c
 # data.f_c -> I paper: $f_c$
 
