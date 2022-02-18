@@ -222,6 +222,11 @@ after = 1
 # r -> r_n
 # Sp -> S_p_n
 
+#
+# <RUBEN!
+#
+
+
 # Will be written explicitly in EK80CalculationPaper and removed
 # logSpCf = EK80CalculationPaper.calculateCSpfdB(f_c, ptx)
 # Move to EK80DataContainer (Ruben)
@@ -242,6 +247,14 @@ alpha_f_c = EK80CalculationPaper.calcAbsorption(
     acidity,
     c,
     f_c)
+
+# Move to data container (Ruben)
+# g_theta_phi_f
+
+#
+# RUBEN>
+#
+
 
 # Calculate the point scattering strength (Sp)
 Sp_n = EK80CalculationPaper.calcSp(
@@ -265,7 +278,7 @@ y_mf_auto_red_n = EK80CalculationPaper.alignAuto(y_mf_auto_n, y_pc_t_n)
 # illustrative purposes?
 
 # DFT on the pulse compressed received signal and the pulse compressed
-# send pulse signal rediced mathed filtered
+# send pulse signal (reduced and matched filtered)
 
 Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, f_m_t = \
     EK80CalculationPaper.calcDFTforTS(y_pc_t_n, y_mf_auto_red_n,
@@ -290,17 +303,12 @@ P_rx_e_t_m = EK80CalculationPaper.calcPowerFreq(
     z_td_e,
     z_rx_e)
 
-#if isCalibrated:
-#    # Calibrated case
-#    G = np.interp(f, self.frequencies, self.gain)
-#else:
-#    # Uncalibrated case
-#    G = G_fnom + 20 * np.log10(f / self.fnom)
 
 # Calculate the target strength
 TS_m = EK80CalculationPaper.calcTSf_2(
     P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
-    gain, theta_t, phi_t)
+    gain, theta_t, phi_t, f_m_t)
+
 
 #
 # Chapter IV: VOLUME BACKSCATTERING STRENGTH
@@ -308,8 +316,4 @@ TS_m = EK80CalculationPaper.calcTSf_2(
 
 # Calculate Sv
 # Sv =
-
-# G0_m = self.calc_G0_m(f_m)
-# B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m)
-# G_theta_phi_m = G0_m - B_theta_phi_m
 
