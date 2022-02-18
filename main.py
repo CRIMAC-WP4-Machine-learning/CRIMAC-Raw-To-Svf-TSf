@@ -249,7 +249,7 @@ alpha_f_c = EK80CalculationPaper.calcAbsorption(
     f_c)
 
 # Move to data container (Ruben)
-# g_theta_phi_f
+# G = np.interp1(X, g_theta_phi_f, Y)
 
 #
 # RUBEN>
@@ -268,9 +268,11 @@ Sp_n = EK80CalculationPaper.calcSp(
     r1)
 
 # Data from a single target (_t denotes data from single target)
-r_t, theta_t, phi_t, y_pc_t_n = EK80CalculationPaper.singleTarget(
-    y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
-    r0, r1, before, after)
+r_t, theta_t, phi_t, y_pc_t_n, dum_p, dum_theta, dum_phi = \
+    EK80CalculationPaper.singleTarget(
+        y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
+        r0, r1, before, after)
+
 
 # Pick the reduced samples from the mathed filtered decimated send pulse
 y_mf_auto_red_n = EK80CalculationPaper.alignAuto(y_mf_auto_n, y_pc_t_n)
@@ -303,11 +305,11 @@ P_rx_e_t_m = EK80CalculationPaper.calcPowerFreq(
     z_td_e,
     z_rx_e)
 
-
 # Calculate the target strength
-TS_m = EK80CalculationPaper.calcTSf_2(
-    P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
-    gain, theta_t, phi_t, f_m_t)
+g_theta_phi_f = 1
+#TS_m = EK80CalculationPaper.calcTSf(
+#    P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
+#    g_theta_phi_f, theta_t, phi_t, f_m_t)
 
 
 #
