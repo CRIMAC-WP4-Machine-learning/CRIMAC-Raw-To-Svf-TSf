@@ -239,23 +239,28 @@ r_t, theta_t, phi_t, y_pc_t_n, dum_p, dum_theta, dum_phi, dum_r = \
         y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
         r0, r1, before, after)
 
-fig, axs = plt.subplots(2)
-fig.suptitle('Single target')
-axs[0].plot(dum_r, dum_p)
-axs[0].set_ylabel('Power')
-axs[1].plot(dum_r, dum_theta)
-axs[1].plot([r_t, r_t], [-2, 2])
-axs[1].plot(dum_r, dum_phi)
-axs[1].plot(r_t, phi_t)
-axs[1].set_ylabel('Angles')
-axs[1].set_xlabel('range (m)')
-plt.savefig('./Paper/Fig_singleTarget.png')
-
-
 # Pick the reduced samples from the mathed filtered decimated send pulse
 y_mf_auto_red_n = EK80CalculationPaper.alignAuto(y_mf_auto_n, y_pc_t_n)
 # NB: In the example these are the same. Perhaps chose differently for
 # illustrative purposes?
+
+fig, axs = plt.subplots(3)
+fig.suptitle('Single target')
+axs[0].plot(dum_r, dum_p)
+axs[0].set_ylabel('Power')
+line1, = axs[1].plot(dum_r, dum_theta, label='$\\theta$')
+axs[1].plot([r_t, r_t], [-2, 2])
+line2, = axs[1].plot(dum_r, dum_phi, label='$\phi$')
+axs[1].plot(r_t, phi_t)
+axs[1].legend(handles=[line1, line2])
+axs[1].set_ylabel('Angles')
+axs[2].plot(dum_r, y_mf_auto_red_n)
+axs[2].set_ylabel(' ')
+axs[2].set_xlabel('range (m)')
+plt.savefig('./Paper/Fig_singleTarget.png')
+
+plt.plot(r_t, y_mf_auto_red_n)
+plt.show_fig()
 
 # DFT on the pulse compressed received signal and the pulse compressed
 # send pulse signal (reduced and matched filtered)
