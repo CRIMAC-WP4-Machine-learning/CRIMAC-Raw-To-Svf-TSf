@@ -215,6 +215,12 @@ class EK80DataContainer:
 
         return a / 1000
 
+    def calc_alpha_f(self, f):
+        return self.calcAbsorption(self.envr.temperature, self.envr.salinity, self.envr.depth,self.envr.acidity,self.envr.c,f)
+
+    def calc_lambda_f(self, f):
+        return self.envr.c/f
+
     @staticmethod
     def  calcRange(sampleInterval, sampleCount, c, offset) :
         dr = sampleInterval * c * 0.5
@@ -258,13 +264,12 @@ class EK80DataContainer:
         angle_offset_alongship_m, angle_offset_athwartship_m = self.calc_angle_offsets_m(f)
         beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
 
-        B_theta_phi_m = 0.5 * 6.0206 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 + \
-                                        (np.abs(phi - angle_offset_athwartship_m) / (
-                                                    beam_width_athwartship_m / 2)) ** 2 - \
-                                        0.18 * ((np.abs(theta - angle_offset_alongship_m) / (
-                            beam_width_alongship_m / 2)) ** 2 * \
-                                                (np.abs(phi - angle_offset_athwartship_m) / (
-                                                            beam_width_athwartship_m / 2)) ** 2))
+        B_theta_phi_m = 0.5 \
+                        * 6.0206 \
+                        * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2
+                        + (np.abs(phi - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2
+                        - 0.18 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2
+                        * (np.abs(phi - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2))
 
 
         return np.power(10, B_theta_phi_m / 10)

@@ -336,12 +336,10 @@ class EK80CalculationPaper(EK80DataContainer):
     def calcTSf(P_rx_e_t_m, r_t, alpha_m, p_tx_e,
                 lambda_m, g_theta_t_phi_t_f_t):
 
-
-
-        TS_m = 10*np.log10(P_rx_e_t_m) + 40*np.log10(r_t) + 2*alpha_m*r_t -\
-            10*np.log10(
-            (p_tx_e * lambda_m**2 * g_theta_t_phi_t_f_t ** 2) /
-                (16 * np.pi ** 2))
+        TS_m = 10*np.log10(P_rx_e_t_m) \
+               + 40*np.log10(r_t) \
+               + 2*alpha_m*r_t \
+               - 10*np.log10((p_tx_e * lambda_m**2 * g_theta_t_phi_t_f_t ** 2) / (16 * np.pi ** 2))
         return TS_m
     
     """

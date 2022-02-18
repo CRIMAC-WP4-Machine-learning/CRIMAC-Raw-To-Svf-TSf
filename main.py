@@ -259,8 +259,8 @@ axs[2].set_ylabel(' ')
 axs[2].set_xlabel('range (m)')
 plt.savefig('./Paper/Fig_singleTarget.png')
 
-plt.plot(r_t, y_mf_auto_red_n)
-plt.show_fig()
+#plt.plot(r_t, y_mf_auto_red_n)
+#plt.show_fig()
 
 # DFT on the pulse compressed received signal and the pulse compressed
 # send pulse signal (reduced and matched filtered)
@@ -284,6 +284,8 @@ G0_m = data.calc_G0_m(f_m_t)
 G_theta_phi_m = G0_m - g_theta_t_phi_t_f_t
 """
 g_theta_phi_m = data.calc_g(theta_t, phi_t, f_m_t)
+lambda_m = data.calc_lambda_f(f_m_t)
+alpha_m =  data.calc_alpha_f(f_m_t)
 TS_m = EK80CalculationPaper.calcTSf(
     P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m,
     g_theta_phi_m)
