@@ -14,19 +14,21 @@ from Core.FIL1 import FIL1
 
 class Derived:
     def __init__(self, frqp, parm, trdu, envr):
-        # Calculate Gfc
-        if frqp.isCalibrated:
-            # Calibrated case
-            self.Gfc = np.interp(parm.f_c, frqp.frequencies, frqp.gain)
-        else:
-            # Uncalibrated case
-            self.Gfc = trdu.G_fnom + 20 * np.log10(frqp.frequencies/trdu.fnom)
-        
-        # Calculate PSI_f
-        self.PSI_f = trdu.PSI_fnom + 20 * np.log10(trdu.fnom/frqp.frequencies)
 
+        self.Gfc = self.calc_Gfc(frqp, parm,trdu)
+        self.PSI_f = trdu.PSI_fnom + 20 * np.log10(trdu.fnom/frqp.frequencies)
         self.g_0_f_c = np.power(self.Gfc/10, 10)
         self.lambda_f_c = envr.c/parm.f_c
+
+    @staticmethod
+    def calc_Gfc(frqp, parm, trdu):
+        if frqp.isCalibrated:
+            # Calibrated case
+            return np.interp(parm.f_c, frqp.frequencies, frqp.gain)
+        else:
+            # Uncalibrated case
+            return trdu.G_fnom + 20 * np.log10(frqp.frequencies / trdu.fnom)
+
 
     def getParameters(self):
         return self.g_0_f_c, self.lambda_f_c, self.PSI_f
@@ -191,4 +193,36 @@ class EK80DataContainer:
 
             self.isCalibrated = self.frqp.isCalibrated
 
+    def calc_angle_offsets_m(self, f):
+        if self.isCalibrated:
+            # Calibrated case
+            angle_offset_alongship_m = np.interp(f, self.frqp.frequencies, self.frqp.angle_offset_alongship)
+            angle_offset_athwartship_m = np.interp(f, self.frqp.frequencies, self.frqp.angle_offset_athwartship)
+        else:
+            # Uncalibrated case
+            angle_offset_alongship_m = self.trdu.angle_offset_alongship_fnom * np.ones(len(f))
+            angle_offset_athwartship_m = self.trdu.angle_offset_athwartship_fnom * np.ones(len(f))
+        return angle_offset_alongship_m, angle_offset_athwartship_m
 
+    def calc_beam_widths_m(self, f):
+        if self.isCalibrated:
+            # Calibrated case
+            beam_width_alongship_m = np.interp(f, self.frqp.frequencies, self.frqp.beam_width_alongship)
+            beam_width_athwartship_m = np.interp(f, self.frqp.frequencies, self.frqp.beam_width_athwartship)
+        else:
+            # Uncalibrated case
+            beam_width_alongship_m = self.trdu.beam_width_alongship_fnom * self.trdu.fnom / f
+            beam_width_athwartship_m = self.trdu.beam_width_athwartship_fnom * self.trdu.fnom / f
+        return beam_width_alongship_m, beam_width_athwartship_m
+
+    def calc_B_theta_phi_m(self, theta, phi, f):
+        angle_offset_alongship_m, angle_offset_athwartship_m = self.calc_angle_offsets_m(f)
+        beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
+
+        B_theta_phi_m = 0.5 * 6.0206 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 + \
+                                        (np.abs(phi - angle_offset_athwartship_m) / (
+                                                    beam_width_athwartship_m / 2)) ** 2 - \
+                                        0.18 * ((np.abs(theta - angle_offset_alongship_m) / (
+                            beam_width_alongship_m / 2)) ** 2 * \
+                                                (np.abs(phi - angle_offset_athwartship_m) / (
+                                                            beam_width_athwartship_m / 2)) ** 2))

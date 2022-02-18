@@ -295,10 +295,10 @@ P_rx_e_t_m = EK80CalculationPaper.calcPowerFreq(
     z_rx_e)
 
 # Calculate the target strength
-g_theta_phi_f = 1
-#TS_m = EK80CalculationPaper.calcTSf(
-#    P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
-#    g_theta_phi_f, theta_t, phi_t, f_m_t)
+g_theta_t_phi_t_f_t = data.calc_B_theta_phi_m(theta_t, phi_t, f_m_t)
+TS_m = EK80CalculationPaper.calcTSf(
+    P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
+    g_theta_t_phi_t_f_t)
 
 
 #
