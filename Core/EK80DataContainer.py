@@ -226,3 +226,5 @@ class EK80DataContainer:
                             beam_width_alongship_m / 2)) ** 2 * \
                                                 (np.abs(phi - angle_offset_athwartship_m) / (
                                                             beam_width_athwartship_m / 2)) ** 2))
+
+        return B_theta_phi_m
