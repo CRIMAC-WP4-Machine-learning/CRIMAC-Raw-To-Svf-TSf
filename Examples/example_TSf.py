@@ -126,6 +126,9 @@ if __name__ == '__main__':
         g_theta_phi_m)
 
     plt.figure()
+    plt.plot(g_theta_phi_m)
+
+    plt.figure()
     plt.title('Tsf for target in layer from {:.1f} m to {:.1f} m'.format(args.r0, args.r1))
     plt.plot(TS_m)
     plt.xlabel('kHz')

@@ -280,7 +280,7 @@ G_theta_phi_m = G0_m - g_theta_t_phi_t_f_t
 """
 g_theta_phi_m = data.calc_g(theta_t, phi_t, f_m_t)
 TS_m = EK80CalculationPaper.calcTSf(
-    P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
+    P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m,
     g_theta_phi_m)
 
 
