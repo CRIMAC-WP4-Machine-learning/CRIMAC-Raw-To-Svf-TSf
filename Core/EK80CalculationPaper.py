@@ -268,9 +268,10 @@ class EK80CalculationPaper(EK80DataContainer):
     def singleTarget(y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
                      r0, r1, before=0.5, after=0.5):
         # This is a pseudo single target detector (SED) using the max peak
-        # within a range as the single target detection criteria
+        # power within the range interval [r0 r1] as the single target
+        # detection criteria
 
-        # Get the samples within the sub range defined by before/after
+        # Get the samples within the sub range defined by the range interval
         if r0 is not None and r1 is not None:
             Idx = np.where((r_n >= r0) & (r_n <= r1))
             r_n_sub = r_n[Idx]
@@ -287,12 +288,15 @@ class EK80CalculationPaper(EK80DataContainer):
         phi_t = phi_n_sub[idx_peak_p_rx]
 
         # Extract pulse compressed samples "before" and "after" the peak power
-        r_t_begin = r_n_sub - before
-        r_t_end = r_n_sub + after
+        r_t_begin = r_t - before
+        r_t_end = r_t + after
         Idx2 = np.where((r_n_sub >= r_t_begin) & (r_n_sub <= r_t_end))
         y_pc_t = y_pc_n_sub[Idx2]
-
-        return r_t, theta_t, phi_t, y_pc_t
+        p_rx_t = p_rx_e_n_sub[Idx2]
+        theta_t_n = theta_n_sub[Idx2]
+        phi_t_n = phi_n_sub[Idx2]
+        
+        return r_t, theta_t, phi_t, y_pc_t, p_rx_t, theta_t_n, phi_t_n
 
     @staticmethod
     def calcDFTforTS(y_pc_t_n, y_mf_auto_red_n, n_f_points, f0, f1, f_s_dec):
@@ -328,14 +332,16 @@ class EK80CalculationPaper(EK80DataContainer):
         return P_rx_e_t_m
 
     @staticmethod
-    def calcTSf_2(P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
-                  gain, theta_t, phi_t):
-        # Look up gain from angles and freq
-        
-        dum = p_tx_e * lambda_f_c**2 
-        TS_m = 10*np.log10(P_rx_e_t_m) + 40*np.log10(r_t) + 2*alpha*r_t +\
-            10*np.log10(dum)
+    def calcTSf(P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
+                  g_theta_phi_f, theta_t, phi_t):
+        # Look up gain from angles and freq (TBA)
+        G = 1
+        TS_m = 10*np.log10(P_rx_e_t_m) + 40*np.log10(r_t) + 2*alpha*r_t -\
+            10*np.log10(
+            (p_tx_e * lambda_f_c**2 * G ** 2) / (16 * np.pi ** 2)
+            )
         return TS_m
+    
     """
         \begin{equation}
         \label{eq:TS_f}
@@ -354,7 +360,7 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
         return TS_m
 
         """
-    def calcTSf(self, r, theta, phi, y_pc_t_n):
+    def calcTSf_old(self, r, theta, phi, y_pc_t_n):
 
         # L = len(y_pc_t_n)
         L = self.n_f_points
