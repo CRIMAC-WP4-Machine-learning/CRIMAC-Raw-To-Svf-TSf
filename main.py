@@ -287,17 +287,6 @@ Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, f_m_t = \
     EK80CalculationPaper.calcDFTforTS(y_pc_t_n, y_mf_auto_red_n,
                                       n_f_points, f0, f1, f_s_dec)
 
-fig, axs = plt.subplots(3)
-fig.suptitle('Normalized DFT')
-axs[0].plot(f_m_t, np.abs(Y_pc_t_m))
-axs[0].set_ylabel('Y_tilde_pc_t_m')
-axs[1].plot(f_m_t, np.abs(Y_mf_auto_red_m))
-axs[1].set_ylabel('Y_mf_auto_red_m')
-axs[2].plot(f_m_t, np.abs(Y_tilde_pc_t_m))
-axs[2].set_xlabel('f (Hz)')
-axs[2].set_ylabel('Y_tilde_pc_t_m')
-plt.savefig('./Paper/Fig_normalizedDFT.png')
-
 
 # Calculate the power by frequency from a single target
 P_rx_e_t_m = EK80CalculationPaper.calcPowerFreq(
@@ -311,6 +300,21 @@ g_theta_t_phi_t_f_t = data.calc_B_theta_phi_m(theta_t, phi_t, f_m_t)
 TS_m = EK80CalculationPaper.calcTSf(
     P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
     g_theta_t_phi_t_f_t)
+
+
+fig, axs = plt.subplots(5)
+axs[0].plot(f_m_t, np.abs(Y_pc_t_m))
+axs[0].set_ylabel('Y_tilde_pc_t_m')
+axs[1].plot(f_m_t, np.abs(Y_mf_auto_red_m))
+axs[1].set_ylabel('Y_mf_auto_red_m')
+axs[2].plot(f_m_t, np.abs(Y_tilde_pc_t_m))
+axs[2].set_ylabel('Y_tilde_pc_t_m')
+axs[3].plot(f_m_t, g_theta_t_phi_t_f_t)
+axs[3].set_ylabel('gain')
+axs[4].plot(f_m_t, TS_m)
+axs[4].set_xlabel('f (Hz)')
+axs[4].set_ylabel('TS(f)')
+plt.savefig('./Paper/Fig_TS.png')
 
 
 #

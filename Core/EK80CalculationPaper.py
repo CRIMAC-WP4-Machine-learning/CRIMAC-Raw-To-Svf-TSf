@@ -332,13 +332,13 @@ class EK80CalculationPaper(EK80DataContainer):
         return P_rx_e_t_m
 
     @staticmethod
-    def calcTSf(P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c, g_theta_t_phi_t_f_t):
-        # Look up gain from angles and freq (TBA)
-        G = 1
+    def calcTSf(P_rx_e_t_m, r_t, alpha, p_tx_e,
+                lambda_f_c, g_theta_t_phi_t_f_t):
+
         TS_m = 10*np.log10(P_rx_e_t_m) + 40*np.log10(r_t) + 2*alpha*r_t -\
             10*np.log10(
-            (p_tx_e * lambda_f_c**2 * G ** 2) / (16 * np.pi ** 2)
-            )
+            (p_tx_e * lambda_f_c**2 * g_theta_t_phi_t_f_t ** 2) /
+                (16 * np.pi ** 2))
         return TS_m
     
     """
