@@ -7,17 +7,6 @@ from Core.EK80DataContainer import EK80DataContainer
 data = EK80DataContainer('./data/pyEcholabEK80data.json')
 
 
-"""
-cont = data.cont
-trcv = data.trcv
-parm = data.parm
-trdu = data.trdu
-envr = data.envr
-frqp = data.frqp
-filt = data.filt
-raw3 = data.raw3
-deriv = data.deriv
-"""
 # data.trdu.f_c
 # data.f_c -> I paper: $f_c$
 
@@ -318,11 +307,10 @@ P_rx_e_t_m = EK80CalculationPaper.calcPowerFreq(
     z_rx_e)
 
 # Calculate the target strength
-#g_theta_t_phi_t_f_t = data.calcGain(theta_t, phi_t, f_m_t)
-
-#TS_m = EK80CalculationPaper.calcTSf(
-#    P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
-#    g_theta_phi_f, theta_t, phi_t, f_m_t)
+g_theta_t_phi_t_f_t = data.calc_B_theta_phi_m(theta_t, phi_t, f_m_t)
+TS_m = EK80CalculationPaper.calcTSf(
+    P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
+    g_theta_t_phi_t_f_t)
 
 
 #

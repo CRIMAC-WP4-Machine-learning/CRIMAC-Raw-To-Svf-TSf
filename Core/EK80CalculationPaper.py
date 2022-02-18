@@ -332,8 +332,7 @@ class EK80CalculationPaper(EK80DataContainer):
         return P_rx_e_t_m
 
     @staticmethod
-    def calcTSf(P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
-                  g_theta_phi_f, theta_t, phi_t):
+    def calcTSf(P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c, g_theta_t_phi_t_f_t):
         # Look up gain from angles and freq (TBA)
         G = 1
         TS_m = 10*np.log10(P_rx_e_t_m) + 40*np.log10(r_t) + 2*alpha*r_t -\
@@ -405,6 +404,7 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
             # Calibrated case
             return np.interp(f, self.frequencies, self.gain)
 
+    """
     def calc_B_theta_phi_m(self, theta, phi, f):
         angle_offset_alongship_m, angle_offset_athwartship_m = self.calc_angle_offsets_m(f)
         beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
@@ -418,6 +418,7 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
                                                             beam_width_athwartship_m / 2)) ** 2))
 
         return B_theta_phi_m
+    """
 
     def calc_G0_m(self, f):
         if self.isCalibrated:
@@ -427,6 +428,7 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
             # Uncalibrated case
             return self.G_fnom + 20 * np.log10(f / self.fnom)
 
+    """
     def calc_angle_offsets_m(self, f):
         if self.isCalibrated:
             # Calibrated case
@@ -448,6 +450,7 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
             beam_width_alongship_m = self.beam_width_alongship_fnom * self.fnom / f
             beam_width_athwartship_m = self.beam_width_athwartship_fnom * self.fnom / f
         return beam_width_alongship_m, beam_width_athwartship_m
+    """
 
     @staticmethod
     def calcTransducerHalves(y_pc_nu):
