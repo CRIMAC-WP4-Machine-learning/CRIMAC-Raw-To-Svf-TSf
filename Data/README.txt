@@ -1,16 +1,33 @@
-**********dataSvf.json***********
+**********CRIMAC_Svf.json***********
 D:\\CRIMAC\\CRIMAC_WP1\\Svf\\2020116_PS4-D20201121-T132554.raw
 School
 PingNo 56
 Depth 60-70m
 120 kHz
 
-***********dataTSf.json***********
+***********CRIMAC_TSf.json***********
 D:\CRIMAC\CRIMAC_WP1\TSf\2021111-D20211113-T114244.raw
 Single fish
 Ping no 392
 Range/depth 12 m
 Seafloor 25 m
+120 kHz
+
+***********CRIMAC_SphereCentre.json***********
+D:\CRIMAC\CRIMAC_WP1\SphereCentre\IMR123-D20211215-T094621.raw
+Single sphere - WC35
+Ping no 31
+Range/depth 4.5 m
+Seafloor 12/13 m
+120 kHz
+
+***********CRIMAC_SphereBeam.json***********
+D:\CRIMAC\CRIMAC_WP1\SphereCentre\IMR123-D20211215-T094621.raw
+Single sphere - WC35
+Ping no 510
+Range/depth 4.5 m
+Off axis 2 deg
+Seafloor 12/13 m
 120 kHz
 
 ***********pyEcholabEK80data.json***********
