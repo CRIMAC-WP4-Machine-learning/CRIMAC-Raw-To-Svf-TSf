@@ -257,10 +257,22 @@ Sp_n = EK80CalculationPaper.calcSp(
     r1)
 
 # Data from a single target (_t denotes data from single target)
-r_t, theta_t, phi_t, y_pc_t_n, dum_p, dum_theta, dum_phi = \
+r_t, theta_t, phi_t, y_pc_t_n, dum_p, dum_theta, dum_phi, dum_r = \
     EK80CalculationPaper.singleTarget(
         y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
         r0, r1, before, after)
+
+fig, axs = plt.subplots(2)
+fig.suptitle('Single target')
+axs[0].plot(dum_r, dum_p)
+axs[0].set_ylabel('Power')
+axs[1].plot(dum_r, dum_theta)
+axs[1].plot([r_t, r_t], [-2, 2])
+axs[1].plot(dum_r, dum_phi)
+axs[1].plot(r_t, phi_t)
+axs[1].set_ylabel('Angles')
+axs[1].set_xlabel('range (m)')
+plt.savefig('./Paper/Fig_singleTarget.png')
 
 
 # Pick the reduced samples from the mathed filtered decimated send pulse

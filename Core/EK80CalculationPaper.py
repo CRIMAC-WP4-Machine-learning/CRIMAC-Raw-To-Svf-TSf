@@ -293,19 +293,19 @@ class EK80CalculationPaper(EK80DataContainer):
         Idx2 = np.where((r_n_sub >= r_t_begin) & (r_n_sub <= r_t_end))
         y_pc_t = y_pc_n_sub[Idx2]
         p_rx_t = p_rx_e_n_sub[Idx2]
-        theta_t_n = theta_n_sub[Idx2]
-        phi_t_n = phi_n_sub[Idx2]
+        dum_theta = theta_n_sub[Idx2]
+        dum_phi = phi_n_sub[Idx2]
+        dum_r = r_n_sub[Idx2]
         
-        return r_t, theta_t, phi_t, y_pc_t, p_rx_t, theta_t_n, phi_t_n
+        return r_t, theta_t, phi_t, y_pc_t, p_rx_t, dum_theta, dum_phi, dum_r 
 
     @staticmethod
     def calcDFTforTS(y_pc_t_n, y_mf_auto_red_n, n_f_points, f0, f1, f_s_dec):
 
         # The number of DFT points inpower of 2
         N_DFT = int(2 ** np.ceil(np.log2(n_f_points)))
-        # Lars: Is this correct? Why not N_DFT instead of n_f_points, which is
-        # before the 2**n conversion. I think this should be spelled out in the
-        # paper and possibly be rewritten for clarity.
+        # Corresponding frequency vector
+        
         f_m_t = np.linspace(f0, f1, n_f_points)
         # Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m)
         # def freqtransf(FFTvecin, fsdec, fvec=None):

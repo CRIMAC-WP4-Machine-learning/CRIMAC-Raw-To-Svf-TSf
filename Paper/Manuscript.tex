@@ -341,11 +341,13 @@ The point scattering strength, $\mysp(\samplesymt)$, is estimated by applying Eq
 %
 noting that $\mysp(\samplesymt)$ is an average over frequency of all echoes from single or multiple targets received at sample $\samplesymt$.
 
+Lars: The peak in the send pulse needs to match with the peak in the signal.
+
 Based on the point scattering strength samples and the phase angle samples, single targets can be detected, and range and bearing to the single targets can be estimated. This is typically achieved through a single echo detection algorithm (SED). Here we will assume that the samples from the pulse compressed data $\ypc(\samplesymt)$ originating from single target already have been identified, noting that the number of samples after the detected target may be higher than those those before the peak to include scattering processes for beyond ideal point targets. The alongship angle $\along_n$, athwartship angle $\athw_n$ and range $r_n$ at the \emph{peak} $\ypc(\samplesymt)$ (or peak $S_p(n)$?? current code uses $\ypc$) is used as estimates for $\along_t$, $\athw_t$ and $r_t$, respectively. A simple pseudo SED algorithm is implemented in the code for illustrative purposes.
 %
 \begin{figure}
-%\includegraphics[width=\reprintcolumnwidth]{'Fig_SED'}
-\caption{\label{fi:SED}Illustrate the single target data somehow.}
+\includegraphics[width=16cm]{Fig_singleTarget}
+\caption{\label{fi:SED} The power (upper) and split beam angles (lower) for the single target. The vertical line corresponds to the range and angles for the single target.}
 \end{figure}
 
 From the autocorrelation function of the matched filter signal, $\ymfauto(\samplesymt)$, the equivalent samples around the peak are extracted to create the reduced autocorrelation signal of the matched filter signal, $\ymfautored(\samplesymt)$. Depending on the target scattering characteristics and the distance to any adjacent single targets, the number of samples around the peak echo level in $\ypctarget(\samplesymt)$ that contain the majority of the echo energy can be more or less than the total number of samples around the peak of $\ymfauto(\samplesymt)$. If the number of samples around the target is more than the total number of samples around the peak of $\ymfauto(\samplesymt)$ all samples around the peak of $\ymfauto(\samplesymt)$ are used. If the number of samples around the target is less than the total number of samples around the peak of $\ymfauto(\samplesymt)$, this lower number is used to create a reduced autocorrelation signal, $\ymfautored(\samplesymt)$.
@@ -384,9 +386,11 @@ noting that any variation of impedance with frequency will be reflected in the $
 Target strength can then be estimated using Eq. \ref{eq:TS}, but with $\freqsym$ replaced by the discrete index of frequency, $\samplesymf$:
 \begin{equation}
 \label{eq:TS_f}
-\ts(\samplesymf) = 10\log_{10}(\prxetf(\samplesymf)) + 40\log_{10}(\range) + 2\absorp(\samplesymf)\range 
-- 10\log_{10}\left( \frac{\ptxe \wlen_\samplesymf^2 \gain^2(\along,\athw,\samplesymf)}{16\pi^2} \right).
+\ts(\samplesymf) = 10\log_{10}(\prxetf(\samplesymf)) + 40\log_{10}(\range_t) + 2\absorp(\samplesymf)\range_t 
+- 10\log_{10}\left( \frac{\ptxe \wlen_\samplesymf^2 \gain^2(\along_t,\athw_t,f_\samplesymf)}{16\pi^2} \right).
 \end{equation}
+
+Usikker på om vi skal bruka indeksar eller variablar for gain.
 
 \section{Volume backscattering strength}
 
