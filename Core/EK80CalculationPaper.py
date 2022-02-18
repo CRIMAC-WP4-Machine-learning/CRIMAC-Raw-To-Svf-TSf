@@ -378,8 +378,8 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
         _Y_mf_auto_red_m = np.fft.fft(y_mf_auto_red_n, n=N_DFT)
         Y_mf_auto_red_m = self.freqtransf(_Y_mf_auto_red_m, self.f_s_dec, f_m)
 
-        G0_m = self.calc_G0_m(f_m)
-        B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m)
+        G0_m = self.calc_g0_m(f_m)
+        B_theta_phi_m = self.calc_b_theta_phi_m(theta, phi, f_m)
         G_theta_phi_m = G0_m - B_theta_phi_m
         alpha_m = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f_m)
         logSpCf = self.calculateCSpfdB(f_m)
@@ -423,7 +423,7 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
         return B_theta_phi_m
     """
 
-    def calc_G0_m(self, f):
+    def calc_g0_m(self, f):
         if self.isCalibrated:
             # Calibrated case
             return np.interp(f, self.frequencies, self.gain)

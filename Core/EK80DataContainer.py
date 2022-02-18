@@ -243,7 +243,7 @@ class EK80DataContainer:
             beam_width_athwartship_m = self.trdu.beam_width_athwartship_fnom * self.trdu.fnom / f
         return beam_width_alongship_m, beam_width_athwartship_m
 
-    def calc_G0_m(self, f):
+    def calc_g0_m(self, f):
         if self.isCalibrated:
             # Calibrated case
             dB_G0 = np.interp(f, self.frqp.frequencies, self.frqp.gain)
@@ -254,7 +254,7 @@ class EK80DataContainer:
         return np.power(10,dB_G0/10)
 
 
-    def calc_B_theta_phi_m(self, theta, phi, f):
+    def calc_b_theta_phi_m(self, theta, phi, f):
         angle_offset_alongship_m, angle_offset_athwartship_m = self.calc_angle_offsets_m(f)
         beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
 
@@ -271,6 +271,6 @@ class EK80DataContainer:
 
     def calc_g(self, theta, phi, f):
 
-        B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f)
-        G0_m = self.calc_G0_m(f)
-        return G0_m - B_theta_phi_m
+        b_theta_phi_m = self.calc_b_theta_phi_m(theta, phi, f)
+        g0_m = self.calc_g0_m(f)
+        return g0_m / b_theta_phi_m
