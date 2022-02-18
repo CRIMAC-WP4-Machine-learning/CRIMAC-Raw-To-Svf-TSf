@@ -147,7 +147,7 @@ class EK80Calculation(EK80DataContainer):
 
     def calcSp(self, power, r0=None, r1=None):
 
-        Gfc = self.calc_G0_m(self.f_c)
+        Gfc = self.calc_g0_m(self.f_c)
         PSIfc = self.PSI_f(self.f_c)
         logSpCf = self.calculateCSpfdB(self.f_c)
         r, _ = self.calcRange()
@@ -170,7 +170,7 @@ class EK80Calculation(EK80DataContainer):
 
     def calcSv(self, power, r0=None, r1=None):
 
-        Gfc = self.calc_G0_m(self.f_c)
+        Gfc = self.calc_g0_m(self.f_c)
         PSIfc = self.PSI_f(self.f_c)
         logSvCf = self.calculateCSvfdB(self.f_c)
         r, _ = self.calcRange()
@@ -235,7 +235,7 @@ class EK80Calculation(EK80DataContainer):
         _FFTytxauto = np.fft.fft(self.y_mf_auto_n, n=Nw)
         FFTytxauto = self.freqtransf(_FFTytxauto, self.f_s_dec, f)
 
-        Gf = self.calc_G0_m(f)    # Used only if not calibrated
+        Gf = self.calc_g0_m(f)    # Used only if not calibrated
         PSIf = self.PSI_f(f)
         alpha_f = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f)
         logSvCf = self.calculateCSvfdB(f)
@@ -355,8 +355,8 @@ class EK80Calculation(EK80DataContainer):
         _Y_mf_auto_red_m = np.fft.fft(y_mf_auto_red_n, n=N_DFT)
         Y_mf_auto_red_m = self.freqtransf(_Y_mf_auto_red_m, self.f_s_dec, f_m)
 
-        G0_m = self.calc_G0_m(f_m)
-        B_theta_phi_m = self.calc_B_theta_phi_m(theta, phi, f_m)
+        G0_m = self.calc_g0_m(f_m)
+        B_theta_phi_m = self.calc_b_theta_phi_m(theta, phi, f_m)
         G_theta_phi_m = G0_m - B_theta_phi_m
         alpha_m = self.calcAbsorption(self.temperature, self.salinity, self.depth, self.acidity, self.c, f_m)
         logSpCf = self.calculateCSpfdB(f_m)
@@ -376,7 +376,7 @@ class EK80Calculation(EK80DataContainer):
     def PSI_f(self, f):
         return self.PSI_fnom + 20 * np.log10(self.fnom / f)
 
-    def calc_B_theta_phi_m(self, theta, phi, f):
+    def calc_b_theta_phi_m(self, theta, phi, f):
         angle_offset_alongship_m, angle_offset_athwartship_m = self.calc_angle_offsets_m(f)
         beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
 
@@ -387,7 +387,7 @@ class EK80Calculation(EK80DataContainer):
 
         return B_theta_phi_m
 
-    def calc_G0_m(self, f):
+    def calc_g0_m(self, f):
         if self.isCalibrated:
             # Calibrated case
             return np.interp(f, self.frequencies, self.gain)

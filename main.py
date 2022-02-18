@@ -278,10 +278,10 @@ g_theta_t_phi_t_f_t = data.calc_B_theta_phi_m(theta_t, phi_t, f_m_t)
 G0_m = data.calc_G0_m(f_m_t)
 G_theta_phi_m = G0_m - g_theta_t_phi_t_f_t
 """
-G_theta_phi_m = data.calc_g(theta_t, phi_t, f_m_t)
+g_theta_phi_m = data.calc_g(theta_t, phi_t, f_m_t)
 TS_m = EK80CalculationPaper.calcTSf(
     P_rx_e_t_m, r_t, alpha, p_tx_e, lambda_f_c,
-    G_theta_phi_m)
+    g_theta_phi_m)
 
 
 
@@ -292,7 +292,7 @@ axs[1].plot(f_m_t, np.abs(Y_mf_auto_red_m))
 axs[1].set_ylabel('Y_mf_auto_red_m')
 axs[2].plot(f_m_t, np.abs(Y_tilde_pc_t_m))
 axs[2].set_ylabel('Y_tilde_pc_t_m')
-axs[3].plot(f_m_t, G_theta_phi_m) # weird gain might be tracked down to  xml['angle_offset_alongship'] and xml['angle_offset_alongship']
+axs[3].plot(f_m_t, g_theta_phi_m) # weird gain might be tracked down to  xml['angle_offset_alongship'] and xml['angle_offset_alongship']
 axs[3].set_ylabel('gain')
 axs[4].plot(f_m_t, TS_m)
 axs[4].set_xlabel('f (Hz)')
