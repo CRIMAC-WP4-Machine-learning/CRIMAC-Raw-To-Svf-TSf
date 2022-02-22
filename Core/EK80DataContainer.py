@@ -16,7 +16,7 @@ class Derived:
     def __init__(self, frqp, parm, trdu, envr):
 
         self.Gfc = self.calc_Gfc(frqp, parm,trdu)
-        self.PSI_f = trdu.PSI_fnom + 20 * np.log10(trdu.fnom/frqp.frequencies)
+        self.PSI_f = trdu.PSI_fnom + 20 * np.log10(trdu.f_n / frqp.frequencies)
         self.g_0_f_c = np.power(self.Gfc/10, 10)
         self.lambda_f_c = envr.c/parm.f_c
 
@@ -27,7 +27,7 @@ class Derived:
             return np.interp(parm.f_c, frqp.frequencies, frqp.gain)
         else:
             # Uncalibrated case
-            return trdu.G_fnom + 20 * np.log10(frqp.frequencies / trdu.fnom)
+            return trdu.G_fnom + 20 * np.log10(frqp.frequencies / trdu.f_n)
 
 
     def getParameters(self):
@@ -67,7 +67,7 @@ class Parameter:
 
 class Transducer:
     def __init__(self, xml):
-        self.fnom = xml['Frequency']  # nominal design frequency for the transducer
+        self.f_n = xml['Frequency']  # nominal design frequency for the transducer
         self.G_fnom = xml['GainNom']
         self.PSI_fnom = xml['EquivalentBeamAngle']
         self.angle_offset_alongship_fnom = xml['AngleOffsetAlongship']
@@ -79,8 +79,8 @@ class Transducer:
         self.corrSa = xml['SaCorrection']
 
     def getParameters(self):
-        return self.fnom, self.G_fnom, self.PSI_fnom, self.angle_offset_alongship_fnom, \
-               self.angle_offset_athwartship_fnom,self.angle_sensitivity_alongship_fnom, \
+        return self.f_n, self.G_fnom, self.PSI_fnom, self.angle_offset_alongship_fnom, \
+               self.angle_offset_athwartship_fnom, self.angle_sensitivity_alongship_fnom, \
                self.angle_sensitivity_athwartship_fnom, self.beam_width_alongship_fnom, \
                self.beam_width_athwartship_fnom, self.corrSa
 
@@ -245,8 +245,8 @@ class EK80DataContainer:
             beam_width_athwartship_m = np.interp(f, self.frqp.frequencies, self.frqp.beam_width_athwartship)
         else:
             # Uncalibrated case
-            beam_width_alongship_m = self.trdu.beam_width_alongship_fnom * self.trdu.fnom / f
-            beam_width_athwartship_m = self.trdu.beam_width_athwartship_fnom * self.trdu.fnom / f
+            beam_width_alongship_m = self.trdu.beam_width_alongship_fnom * self.trdu.f_n / f
+            beam_width_athwartship_m = self.trdu.beam_width_athwartship_fnom * self.trdu.f_n / f
         return beam_width_alongship_m, beam_width_athwartship_m
 
     def calc_g0_m(self, f):
@@ -255,7 +255,7 @@ class EK80DataContainer:
             dB_G0 = np.interp(f, self.frqp.frequencies, self.frqp.gain)
         else:
             # Uncalibrated case
-            dB_G0 = self.trdu.G_fnom + 20 * np.log10(f / self.trdu.fnom)
+            dB_G0 = self.trdu.G_fnom + 20 * np.log10(f / self.trdu.f_n)
 
         return np.power(10,dB_G0/10)
 
