@@ -539,10 +539,22 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
         y_pc_s_n = y_pc_n * r_c_n
         return y_pc_s_n
 
-    #@staticmethod
-    #def = calcHanning(t, pulseduration):
-    #    w_tilde_i = t + pulseduration
-    #    return w_tilde_i
+    @staticmethod
+    def defHanningWindow(c, tau, dr, f_s_dec):
+        """
+            Length of Hanning window currently chosen as 2^k samples for
+            lowest k where 2^k >= 2 * No of samples in pulse
+        """
+        L = ((c * 2 * tau) / dr)  # Number of samples in 2 x pulse duration
+        
+        N_w = int(2 ** np.ceil(np.log2(L)))
+        # or : N_w = np.ceil(2 ** np.log2(L)) - Length of Hanning window
+        t_w = np.arange(0, N_w) * f_s_dec
+        
+        w_i = EK80CalculationPaper.hann(N_w)
+        w_tilde_i = w_i / (np.linalg.norm(w_i) / np.sqrt(N_w))
+        
+        return w_tilde_i, N_w, t_w
 
     
     def calculateCSvfdB(self, f):

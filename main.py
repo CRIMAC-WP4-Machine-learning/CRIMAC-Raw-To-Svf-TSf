@@ -39,7 +39,9 @@ filter_v, N_v = data.filt.getParameters()
 
 offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 
-# Ruben: the Psi should be the Psi_e_f, check paper and rewrite the data class.
+# Ruben: the Psi should be the Psi_e_f_n, check paper and rewrite the data
+# class. The difference is the (f_n/f)**2 term. It should be Psi_e not Psi.
+# Check paper.
 g_0_f_c, lambda_f_c, Psi_e_f_n = data.deriv.getParameters()
 
 #
@@ -326,6 +328,7 @@ Psi_f = EK80CalculationPaper.calc_Psi_f(Psi_e_f_n, f_n, frequencies)
 # Calculate average Sv
 # TODO: I get zero power in the p_rx_e_n. Fails when doing log10. "Quickfix":
 p_rx_e_n = p_rx_e_n + .0000000000000001
+
 Sv_n = EK80CalculationPaper.calc_Sv(p_rx_e_n, r_c_n, lambda_f_c,
                                     p_tx_e, alpha_f_c, c, tau_eff,
                                     Psi_f_c, g_0_f_c)
@@ -334,10 +337,23 @@ Sv_n = EK80CalculationPaper.calc_Sv(p_rx_e_n, r_c_n, lambda_f_c,
 y_pc_s_n = EK80CalculationPaper.calc_PulseCompSphericalSpread(y_pc_n, r_c_n)
 
 # Hanning window
-# w_tilde_i = EK80CalculationPaper.calcHanning(t, pulseduration)
+# TODO: This needs attention:
+dr = np.median(np.diff(r_c_n))
 
-# calculate the DFT on the pulse compressed signal
+w_tilde_i, N_w, t_w = EK80CalculationPaper.defHanningWindow(c, tau, dr,
+                                                            f_s_dec)
+
+
+# Calculate the DFT on the pulse compressed signal
 # Y_pc_v_m, Y_mf_auto_m, Y_tilde_pc_v_m = EK80CalculationPaper.calcDFTforSv(y_pc_s_n, w_tilde_i, y_mf_auto_n)
+
+fig, axs = plt.subplots(2)
+axs[0].plot(t_w, w_tilde_i)
+axs[0].set_ylabel('w_tilde_i')
+axs[1].plot(t_w, w_tilde_i)
+axs[1].set_ylabel('w_tilde_i')
+axs[1].set_xlabel('t (s)')
+plt.savefig('./Paper/Fig_Svf.png')
 
 # Calculate the power
 # P_rx_e_t_m = EK80CalculationPaper.calcPowerFreqforSv(Y_tilde_pc_v_m, N_u, z_rx_e, z_td_e)
