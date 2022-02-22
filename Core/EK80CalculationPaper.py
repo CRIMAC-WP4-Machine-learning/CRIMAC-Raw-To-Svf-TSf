@@ -519,6 +519,31 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
     @staticmethod
     def calculateTVGdB(alpha, r):
         return 20.0 * np.log10(r) + 2.0 * alpha * r
+
+    @staticmethod
+    def calc_Psi_f(Psi_e_f_n, f_n, f_m_t):
+        return Psi_e_f_n * (f_n / f_m_t)**2
+
+    @staticmethod
+    def calc_Sv(p_rx_e_n, r_c_n, lambda_f_c,
+                p_tx_e, alpha_f_c, c, tau_eff,
+                Psi_f_c, g_0_f_c):
+        G = (p_tx_e * lambda_f_c ** 2 * c * tau_eff * Psi_f_c *
+             g_0_f_c ** 2) / (32 * np.pi ** 2)
+        Sv_n = 10*np.log10(p_rx_e_n) + 20*np.log10(
+            r_c_n) + 2 * alpha_f_c * r_c_n - 10*np.log10(G)
+        return Sv_n
+
+    @staticmethod
+    def calc_PulseCompSphericalSpread(y_pc_n, r_c_n):
+        y_pc_s_n = y_pc_n * r_c_n
+        return y_pc_s_n
+
+    #@staticmethod
+    #def = calcHanning(t, pulseduration):
+    #    w_tilde_i = t + pulseduration
+    #    return w_tilde_i
+
     
     def calculateCSvfdB(self, f):
         lf = self.lambda_f(f)

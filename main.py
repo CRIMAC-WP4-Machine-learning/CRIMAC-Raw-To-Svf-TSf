@@ -20,11 +20,15 @@ z_td_e, f_s, n_f_points = data.cont.getParameters()
 z_rx_e = data.trcv.getParameters()
 
 f0, f1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
+# Ruben: change fnom -> f_n in data class to conform with paper
+# Ruben: change PSI_nom -> Psi_f_c in data class to conform with paper
 
-fnom, G_fnom, PSI_fnom, angle_offset_alongship_fnom, \
+f_n, G_fnom, Psi_f_c, angle_offset_alongship_fnom, \
     angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
     angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
     beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
+# Ruben: Psi_f_c must be linear!
+Psi_f_c = 10 ** (Psi_f_c/10)
 
 c, alpha, temperature, salinity, \
     acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
@@ -35,7 +39,8 @@ filter_v, N_v = data.filt.getParameters()
 
 offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 
-g_0_f_c, lambda_f_c, PSI_f = data.deriv.getParameters()
+# Ruben: the Psi should be the Psi_e_f, check paper and rewrite the data class.
+g_0_f_c, lambda_f_c, Psi_e_f_n = data.deriv.getParameters()
 
 #
 # Chapter IIB: Signal generation
@@ -168,11 +173,11 @@ p_rx_e_n = EK80CalculationPaper.calcPower(
 gamma_theta = EK80CalculationPaper.calcGamma(
     angle_sensitivity_alongship_fnom,
     f_c,
-    fnom)
+    f_n)
 gamma_phi = EK80CalculationPaper.calcGamma(
     angle_sensitivity_athwartship_fnom,
     f_c,
-    fnom)
+    f_n)
 
 # Calculate the physical angles
 theta_n, phi_n = EK80CalculationPaper.calcAngles(
@@ -252,7 +257,7 @@ line2, = axs[1].plot(dum_r, dum_phi, label='$\phi$')
 axs[1].plot(r_t, phi_t)
 axs[1].legend(handles=[line1, line2])
 axs[1].set_ylabel('Angles')
-axs[2].plot(dum_r, y_mf_auto_red_n)
+axs[2].plot(dum_r, np.abs(y_mf_auto_red_n))
 axs[2].set_ylabel(' ')
 axs[2].set_xlabel('range (m)')
 plt.savefig('./Paper/Fig_singleTarget.png')
@@ -305,15 +310,28 @@ plt.savefig('./Paper/Fig_TS.png')
 # Chapter IV: VOLUME BACKSCATTERING STRENGTH
 #
 
-# Psi_f = EK80CalculationPaper.calc_Psi_f(Psi_f_n,f_n,f_m_t)
+# <Ruben>: Variables that we need:
+#
+# r_c_n : The range vector. Use r_n as dummy for now:
+r_c_n = r_n
+#
+#
+# </Ruben>
+
+# Denne er rekna ut i Linje 19 i dataklassen, men er flytta hit sidan
+# den er i artikkelen
+# TBD: Should we change 'frequencies'? The paper uses 'f'.
+Psi_f = EK80CalculationPaper.calc_Psi_f(Psi_e_f_n, f_n, frequencies)
 
 # Calculate average Sv
-# Sv_n =  EK80CalculationPaper.calc_Sv(p_rx_e_n, r_c_n, alpha_f_c,
-#                                     p_tx_e, alpha_f_c, c, tau_eff,
-#                                     Psi_f_c, g_0_f_c)
+# TODO: I get zero power in the p_rx_e_n. Fails when doing log10. "Quickfix":
+p_rx_e_n = p_rx_e_n + .0000000000000001
+Sv_n = EK80CalculationPaper.calc_Sv(p_rx_e_n, r_c_n, lambda_f_c,
+                                    p_tx_e, alpha_f_c, c, tau_eff,
+                                    Psi_f_c, g_0_f_c)
 
 # Calculate the pulse compressed signal adjusted for spherical loss
-# y_pc_s_n = EK80CalculationPaper.calc_PulseCompSphericalSpread(y_pc_n, r_c_n)
+y_pc_s_n = EK80CalculationPaper.calc_PulseCompSphericalSpread(y_pc_n, r_c_n)
 
 # Hanning window
 # w_tilde_i = EK80CalculationPaper.calcHanning(t, pulseduration)
