@@ -169,7 +169,7 @@ class EK80CalculationPaper(EK80DataContainer):
 
         return FFTvecin[idx]
 
-    def calcSvf(self, y_pc, r0, r1, overlap=0.5):
+    def calcSvf_old(self, y_pc, r0, r1, overlap=0.5):
 
         r, dr = self.calcRange()
         yspread = y_pc * r
@@ -626,6 +626,25 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
         
         return P_rx_e_v_m_n
 
+    def calcSvf(P_rx_e_t_m_n, alpha_m, p_tx_e, lambda_m, t_w,
+                Psi_f, g_0_m, c, svf_range):
+        
+        # Initialize list of Svf by range
+        Sv_m_n = []
+
+        G = (p_tx_e * lambda_m ** 2 * c * t_w * Psi_f * g_0_m ** 2)/(
+            32 * np.pi ** 2)
+        n = 0
+        # Loop over list of power values along range
+        for P_rx_e_t_m in P_rx_e_t_m_n:
+            Sv_m = 10 * np.log10(
+                P_rx_e_t_m) + 2 * alpha_m * svf_range[n] - 10 * np.log10(G)
+            # Append power to list
+            n += 1
+            Sv_m_n.append(Sv_m)
+        
+        return Sv_m_n
+
     @staticmethod
     def defHanningWindow(c, tau, dr, f_s_dec):
         """
@@ -636,12 +655,13 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
         
         N_w = int(2 ** np.ceil(np.log2(L)))
         # or : N_w = np.ceil(2 ** np.log2(L)) - Length of Hanning window
-        t_w = np.arange(0, N_w) * f_s_dec
+        t_w_n = np.arange(0, N_w) * f_s_dec
+        t_w = N_w * f_s_dec
         
         w_i = EK80CalculationPaper.hann(N_w)
         w_tilde_i = w_i / (np.linalg.norm(w_i) / np.sqrt(N_w))
         
-        return w_tilde_i, N_w, t_w
+        return w_tilde_i, N_w, t_w, t_w_n
 
     
     def calculateCSvfdB(self, f):

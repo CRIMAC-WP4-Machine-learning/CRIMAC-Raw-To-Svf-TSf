@@ -25,6 +25,8 @@ f_n, G_fnom, Psi_f_c, angle_offset_alongship_fnom, \
     angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
     angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
     beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
+# Ruben: is G_fnom the same as g_0_m?
+g_0_m = G_fnom
 
 c, alpha, temperature, salinity, \
     acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
@@ -308,13 +310,9 @@ plt.savefig('./Paper/Fig_TS.png')
 # Chapter IV: VOLUME BACKSCATTERING STRENGTH
 #
 
-# <Ruben>: Variables that we need:
-#
-# r_c_n : The range vector. Use r_n as dummy for now:
+# TODO: r_c_n : The range vector. Use r_n as dummy for now:
 r_c_n = r_n
 #
-#
-# </Ruben>
 
 # Denne er rekna ut i Linje 19 i dataklassen, men er flytta hit sidan
 # den er i artikkelen
@@ -336,8 +334,8 @@ y_pc_s_n = EK80CalculationPaper.calc_PulseCompSphericalSpread(y_pc_n, r_c_n)
 # TODO: This needs attention:
 dr = np.median(np.diff(r_c_n))
 
-w_tilde_i, N_w, t_w = EK80CalculationPaper.defHanningWindow(c, tau, dr,
-                                                            f_s_dec)
+w_tilde_i, N_w, t_w, t_w_n = EK80CalculationPaper.defHanningWindow(c, tau, dr,
+                                                                   f_s_dec)
 
 
 # Calculate the DFT on the pulse compressed signal
@@ -353,13 +351,19 @@ P_rx_e_t_m_n = EK80CalculationPaper.calcPowerFreqforSv(
     Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
 
 # Calculate the Sv(f)
-# Sv_m = EK80CalculationPaper.calcSvf(P_rx_e_t_m, alpha_m, p_tx_e, lambda_m, t_w, Psi_f, g_0_m)
+# TODO: alpha_m and lambda_m ok length, Psi_f needs interpolation. Make
+# it scalar for now (it is also negative???, change sign to make the code run):
+Psi_f_dum = -Psi_f[55]
 
+Sv_m_n = EK80CalculationPaper.calcSvf(P_rx_e_t_m_n,
+                                      alpha_m, p_tx_e, lambda_m, t_w,
+                                      Psi_f_dum, g_0_m, c, svf_range)
+        
 
 fig, axs = plt.subplots(2)
-axs[0].plot(t_w, w_tilde_i)
+axs[0].plot(t_w_n, w_tilde_i)
 axs[0].set_ylabel('w_tilde_i')
-axs[1].plot(t_w, w_tilde_i)
+axs[1].plot(t_w_n, w_tilde_i)
 axs[1].set_ylabel('w_tilde_i')
 axs[1].set_xlabel('t (s)')
 plt.savefig('./Paper/Fig_Svf.png')
