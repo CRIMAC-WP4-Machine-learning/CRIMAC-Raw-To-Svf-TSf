@@ -20,15 +20,11 @@ z_td_e, f_s, n_f_points = data.cont.getParameters()
 z_rx_e = data.trcv.getParameters()
 
 f0, f1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
-# Ruben: change fnom -> f_n in data class to conform with paper
-# Ruben: change PSI_nom -> Psi_f_c in data class to conform with paper
 
 f_n, G_fnom, Psi_f_c, angle_offset_alongship_fnom, \
     angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
     angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
     beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
-# Ruben: Psi_f_c must be linear!
-Psi_f_c = 10 ** (Psi_f_c/10)
 
 c, alpha, temperature, salinity, \
     acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
