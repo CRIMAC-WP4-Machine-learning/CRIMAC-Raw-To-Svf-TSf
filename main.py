@@ -22,14 +22,14 @@ z_rx_e = data.trcv.getParameters()
 f0, f1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
 
 fnom, G_fnom, PSI_fnom, angle_offset_alongship_fnom, \
-angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
-angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
-beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
+    angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
+    angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
+    beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
 
 c, alpha, temperature, salinity, \
-acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
+    acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
 frequencies, gain, angle_offset_athwartship, angle_offset_alongship, \
-beam_width_athwartship, beam_width_alongship = data.frqp.getParameters()
+    beam_width_athwartship, beam_width_alongship = data.frqp.getParameters()
 
 filter_v, N_v = data.filt.getParameters()
 
@@ -241,8 +241,6 @@ r_t, theta_t, phi_t, y_pc_t_n, dum_p, dum_theta, dum_phi, dum_r = \
 
 # Pick the reduced samples from the mathed filtered decimated send pulse
 y_mf_auto_red_n = EK80CalculationPaper.alignAuto(y_mf_auto_n, y_pc_t_n)
-# NB: In the example these are the same. Perhaps chose differently for
-# illustrative purposes?
 
 fig, axs = plt.subplots(3)
 fig.suptitle('Single target')
@@ -259,16 +257,12 @@ axs[2].set_ylabel(' ')
 axs[2].set_xlabel('range (m)')
 plt.savefig('./Paper/Fig_singleTarget.png')
 
-#plt.plot(r_t, y_mf_auto_red_n)
-#plt.show_fig()
 
 # DFT on the pulse compressed received signal and the pulse compressed
 # send pulse signal (reduced and matched filtered)
-
 Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, f_m_t = \
     EK80CalculationPaper.calcDFTforTS(y_pc_t_n, y_mf_auto_red_n,
                                       n_f_points, f0, f1, f_s_dec)
-
 
 # Calculate the power by frequency from a single target
 P_rx_e_t_m = EK80CalculationPaper.calcPowerFreq(
@@ -285,11 +279,11 @@ G_theta_phi_m = G0_m - g_theta_t_phi_t_f_t
 """
 g_theta_phi_m = data.calc_g(theta_t, phi_t, f_m_t)
 lambda_m = data.calc_lambda_f(f_m_t)
-alpha_m =  data.calc_alpha_f(f_m_t)
+alpha_m = data.calc_alpha_f(f_m_t)
+
 TS_m = EK80CalculationPaper.calcTSf(
     P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m,
     g_theta_phi_m)
-
 
 
 fig, axs = plt.subplots(5)
@@ -307,11 +301,28 @@ axs[4].set_ylabel('TS(f)')
 plt.savefig('./Paper/Fig_TS.png')
 
 
-
 #
 # Chapter IV: VOLUME BACKSCATTERING STRENGTH
 #
 
-# Calculate Sv
-# Sv =
+# Psi_f = EK80CalculationPaper.calc_Psi_f(Psi_f_n,f_n,f_m_t)
 
+# Calculate average Sv
+# Sv_n =  EK80CalculationPaper.calc_Sv(p_rx_e_n, r_c_n, alpha_f_c,
+#                                     p_tx_e, alpha_f_c, c, tau_eff,
+#                                     Psi_f_c, g_0_f_c)
+
+# Calculate the pulse compressed signal adjusted for spherical loss
+# y_pc_s_n = EK80CalculationPaper.calc_PulseCompSphericalSpread(y_pc_n, r_c_n)
+
+# Hanning window
+# w_tilde_i = EK80CalculationPaper.calcHanning(t, pulseduration)
+
+# calculate the DFT on the pulse compressed signal
+# Y_pc_v_m, Y_mf_auto_m, Y_tilde_pc_v_m = EK80CalculationPaper.calcDFTforSv(y_pc_s_n, w_tilde_i, y_mf_auto_n)
+
+# Calculate the power
+# P_rx_e_t_m = EK80CalculationPaper.calcPowerFreqforSv(Y_tilde_pc_v_m, N_u, z_rx_e, z_td_e)
+
+# Calculate the Sv(f)
+# Sv_m = EK80CalculationPaper.calcSvf(P_rx_e_t_m, alpha_m, p_tx_e, lambda_m, t_w, Psi_f, g_0_m)
