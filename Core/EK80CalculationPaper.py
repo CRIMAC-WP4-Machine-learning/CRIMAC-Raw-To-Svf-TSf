@@ -609,6 +609,24 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
         return Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range
 
     @staticmethod
+    def calcPowerFreqforSv(Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e):
+
+        # Initialize list of power values by range
+        P_rx_e_v_m_n = []
+
+        # Impedances
+        Z = (np.abs(z_rx_e + z_td_e)/np.abs(z_rx_e)) ** 2 / np.abs(z_td_e)
+        
+        # Loop over list of FFTs along range
+        for Y_tilde_pc_v_m in Y_tilde_pc_v_m_n:
+            P_rx_e_v_m = N_u * (
+                np.abs(Y_tilde_pc_v_m) / (2 * np.sqrt(2))) ** 2 * Z
+            # Append power to list
+            P_rx_e_v_m_n.append(P_rx_e_v_m)
+        
+        return P_rx_e_v_m_n
+
+    @staticmethod
     def defHanningWindow(c, tau, dr, f_s_dec):
         """
             Length of Hanning window currently chosen as 2^k samples for

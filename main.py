@@ -348,6 +348,14 @@ Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range \
         y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f0, f1, f_s_dec,
         r_c_n, step)
 
+# Calculate the power
+P_rx_e_t_m_n = EK80CalculationPaper.calcPowerFreqforSv(
+    Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
+
+# Calculate the Sv(f)
+# Sv_m = EK80CalculationPaper.calcSvf(P_rx_e_t_m, alpha_m, p_tx_e, lambda_m, t_w, Psi_f, g_0_m)
+
+
 fig, axs = plt.subplots(2)
 axs[0].plot(t_w, w_tilde_i)
 axs[0].set_ylabel('w_tilde_i')
@@ -356,8 +364,3 @@ axs[1].set_ylabel('w_tilde_i')
 axs[1].set_xlabel('t (s)')
 plt.savefig('./Paper/Fig_Svf.png')
 
-# Calculate the power
-# P_rx_e_t_m = EK80CalculationPaper.calcPowerFreqforSv(Y_tilde_pc_v_m, N_u, z_rx_e, z_td_e)
-
-# Calculate the Sv(f)
-# Sv_m = EK80CalculationPaper.calcSvf(P_rx_e_t_m, alpha_m, p_tx_e, lambda_m, t_w, Psi_f, g_0_m)
