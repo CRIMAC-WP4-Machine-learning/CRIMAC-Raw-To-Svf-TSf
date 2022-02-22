@@ -403,10 +403,10 @@ where $V$ is the volume occupied by the scattering targets. The power-budget equ
 - 10\log_{10}\left( \frac{\ptxe \wlen^2 \cw \tslide \eqang(\freqsym) \gainzero^2(\freqsym)}{32\pi^2} \right), 
 \end{equation}
 %
-where $\prxevf(\freqsym)$ is the received electric power in a matched load for the signal from a volume at frequency $\freqsym$, $\cw$ the sound speed, $\tslide$ the duration of the time window, excluding the zero-padded portion if applied, used for evaluating the frequency spectrum, $\range_c$ is the range to the centre of the range volume covered by $\tslide$, and $\eqang$ is the two-way equivalent beam angle. The two-way equivalent beam angle is a function of frequency that is derived from an empirical estimate of $\eqang$ at the nominal frequency, $\fn$:
+where $\prxevf(\freqsym)$ is the received electric power in a matched load for the signal from a volume at frequency $\freqsym$, $\cw$ the sound speed, $\tslide$ the duration of the time window, excluding the zero-padded portion if applied, used for evaluating the frequency spectrum, $\range_c$ is the range to the centre of the range volume covered by $\tslide$, and $\eqang$ is the two-way equivalent beam angle. The two-way equivalent beam angle is a function of frequency that is derived from an empirical estimate of $\eqang_e$ at the nominal frequency, $\fn$:
 \begin{equation}
 \label{eq:PsiFc}
-\eqang(f) = \eqang(\fn)\left(\frac{\fn}{f}\right)^2.
+\eqang(f) = \eqang_e(\fn)\left(\frac{\fn}{f}\right)^2.
 \end{equation}
 
 Volume backscattering samples compressed over the operational frequency band are estimated by applying Eq. \ref{eq:sv_f} to the received digitized power samples using the on-axis gain value with $f$ set to the centre frequency of the broadband pulse, $\fc$:
@@ -427,6 +427,8 @@ Compensation of spherical spreading loss requires compensation of received power
 \end{equation}
 %
 where $\ypcspread(\samplesymt)$ is the pulse compressed signal compensated for spherical spreading. A discrete Fourier transform is performed on the range compensated pulse compressed sample data using a normalized sliding Hanning window, $\hannw(\genidxsym)$. The duration, $\tslide$, of the sliding window is chosen as a compromise between along-beam range resolution and frequency resolution. We suggest that it be at least twice the pulse duration and for computational efficiency reasons should result in a number of samples, $\nw$, which is a power of 2.
+
+TODO: Explain edge cases.
 
 The normalised Hanning window, $\hannwnorm$, is given by: 
 %
