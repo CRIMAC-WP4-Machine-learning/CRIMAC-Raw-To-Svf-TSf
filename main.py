@@ -25,8 +25,6 @@ f_n, G_fnom, Psi_f_c, angle_offset_alongship_fnom, \
     angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
     angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
     beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
-# Ruben: Psi_f_c must be linear!
-Psi_f_c = 10 ** (Psi_f_c/10)
 
 c, alpha, temperature, salinity, \
     acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
