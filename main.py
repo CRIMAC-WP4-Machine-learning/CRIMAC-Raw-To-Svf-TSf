@@ -341,7 +341,12 @@ w_tilde_i, N_w, t_w = EK80CalculationPaper.defHanningWindow(c, tau, dr,
 
 
 # Calculate the DFT on the pulse compressed signal
-# Y_pc_v_m, Y_mf_auto_m, Y_tilde_pc_v_m = EK80CalculationPaper.calcDFTforSv(y_pc_s_n, w_tilde_i, y_mf_auto_n)
+
+step = 1  # Needs some thoughts...
+Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range \
+    = EK80CalculationPaper.calcDFTforSv(
+        y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f0, f1, f_s_dec,
+        r_c_n, step)
 
 fig, axs = plt.subplots(2)
 axs[0].plot(t_w, w_tilde_i)
