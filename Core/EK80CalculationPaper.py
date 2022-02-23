@@ -307,7 +307,7 @@ class EK80CalculationPaper(EK80DataContainer):
         N_DFT = int(2 ** np.ceil(np.log2(n_f_points)))
         # Corresponding frequency vector
         
-        f_m_t = np.linspace(f0, f1, n_f_points)
+        f_m_t = np.linspace(f0, f1, n_f_points) # Ta ut denne og legg til f_m_t i argument
         # Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m)
         # def freqtransf(FFTvecin, fsdec, fvec=None):
         idxtmp = np.floor(f_m_t / f_s_dec * N_DFT).astype('int')
@@ -521,8 +521,8 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
         return 20.0 * np.log10(r) + 2.0 * alpha * r
 
     @staticmethod
-    def calc_Psi_f(Psi_e_f_n, f_n, f_m_t):
-        return Psi_e_f_n * (f_n / f_m_t)**2
+    def calc_Psi_f(Psi_f_n, f_n, f_m_t):
+        return Psi_f_n * (f_n / f_m_t)**2
 
     @staticmethod
     def calc_Sv(p_rx_e_n, r_c_n, lambda_f_c,

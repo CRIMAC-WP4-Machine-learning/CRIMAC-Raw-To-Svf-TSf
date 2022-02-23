@@ -26,7 +26,8 @@ f_n, G_fnom, Psi_f_c, angle_offset_alongship_fnom, \
     angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
     beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
 # Ruben: is G_fnom the same as g_0_m?
-g_0_m = G_fnom
+# g_0_f_c # Senterverdi chirp, det er denne som er brukt
+# G_fnom # Senterverdi av svingar
 
 c, alpha, temperature, salinity, \
     acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
@@ -40,7 +41,7 @@ offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 # Ruben: the Psi should be the Psi_e_f_n, check paper and rewrite the data
 # class. The difference is the (f_n/f)**2 term. It should be Psi_e not Psi.
 # Check paper.
-g_0_f_c, lambda_f_c, Psi_e_f_n = data.deriv.getParameters()
+g_0_f_c, lambda_f_c, Psi_f_n = data.deriv.getParameters()
 
 #
 # Chapter IIB: Signal generation
@@ -310,29 +311,24 @@ plt.savefig('./Paper/Fig_TS.png')
 # Chapter IV: VOLUME BACKSCATTERING STRENGTH
 #
 
-# TODO: r_c_n : The range vector. Use r_n as dummy for now:
-r_c_n = r_n
-#
 
-# Denne er rekna ut i Linje 19 i dataklassen, men er flytta hit sidan
-# den er i artikkelen
-# TBD: Should we change 'frequencies'? The paper uses 'f'.
-Psi_f = EK80CalculationPaper.calc_Psi_f(Psi_e_f_n, f_n, frequencies)
+# Calculate Psi
+Psi_f_c = EK80CalculationPaper.calc_Psi_f(Psi_f_n, f_n, f_c)
 
 # Calculate average Sv
 # TODO: I get zero power in the p_rx_e_n. Fails when doing log10. "Quickfix":
 p_rx_e_n = p_rx_e_n + .0000000000000001
 
-Sv_n = EK80CalculationPaper.calc_Sv(p_rx_e_n, r_c_n, lambda_f_c,
+Sv_n = EK80CalculationPaper.calc_Sv(p_rx_e_n, r_n, lambda_f_c,
                                     p_tx_e, alpha_f_c, c, tau_eff,
                                     Psi_f_c, g_0_f_c)
 
 # Calculate the pulse compressed signal adjusted for spherical loss
-y_pc_s_n = EK80CalculationPaper.calc_PulseCompSphericalSpread(y_pc_n, r_c_n)
+y_pc_s_n = EK80CalculationPaper.calc_PulseCompSphericalSpread(y_pc_n, r_n)
 
 # Hanning window
 # TODO: This needs attention:
-dr = np.median(np.diff(r_c_n))
+dr = np.median(np.diff(r_n))
 
 w_tilde_i, N_w, t_w, t_w_n = EK80CalculationPaper.defHanningWindow(c, tau, dr,
                                                                    f_s_dec)
@@ -340,11 +336,12 @@ w_tilde_i, N_w, t_w, t_w_n = EK80CalculationPaper.defHanningWindow(c, tau, dr,
 
 # Calculate the DFT on the pulse compressed signal
 
-step = 1  # Needs some thoughts...
+step = 1  # Needs some thoughts... 50% overlapp
+# Sjekk at n_f_ponts er 2 pulslengder, det er det vi vil ha
 Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range \
     = EK80CalculationPaper.calcDFTforSv(
         y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f0, f1, f_s_dec,
-        r_c_n, step)
+        r_n, step)
 
 # Calculate the power
 P_rx_e_t_m_n = EK80CalculationPaper.calcPowerFreqforSv(
