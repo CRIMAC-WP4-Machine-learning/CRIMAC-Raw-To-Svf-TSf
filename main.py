@@ -26,6 +26,7 @@ f_n, G_fnom, Psi_f_c, angle_offset_alongship_fnom, \
     angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
     beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
 # Ruben: is G_fnom the same as g_0_m? is g_0_m same as xml['GainNom']?
+# g_0_m - vektor med m som frekvens indeks
 g_0_m = G_fnom
 
 c, alpha, temperature, salinity, \
@@ -40,8 +41,9 @@ offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 # Ruben: the Psi should be the Psi_e_f_n, check paper and rewrite the data
 # class. The difference is the (f_n/f)**2 term. It should be Psi_e not Psi.
 # Check paper.
-# Psi_e_f_n - shoud be calculated here ? se eq. 28
+# Psi_e_f_n - shoud be calculated here, in main ? se eq. 28
 # xml['EquivalentBeamAngle'] . is this Psi_f_n?
+# We need to discuss the Psi_e  - e is often us for electrical
 g_0_f_c, lambda_f_c, Psi_e_f_n = data.deriv.getParameters()
 
 
