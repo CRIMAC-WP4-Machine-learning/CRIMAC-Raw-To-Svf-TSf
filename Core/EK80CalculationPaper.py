@@ -294,16 +294,15 @@ class EK80CalculationPaper(EK80DataContainer):
         return r_t, theta_t, phi_t, y_pc_t, p_rx_t, dum_theta, dum_phi, dum_r 
 
     @staticmethod
-    def calcDFTforTS(y_pc_t_n, y_mf_auto_red_n, n_f_points, f0, f1, f_s_dec):
+    def calcDFTforTS(y_pc_t_n, y_mf_auto_red_n, n_f_points, f_m, f_s_dec):
 
         # The number of DFT points inpower of 2
         N_DFT = int(2 ** np.ceil(np.log2(n_f_points)))
         # Corresponding frequency vector
         
-        f_m_t = np.linspace(f0, f1, n_f_points) # Ta ut denne og legg til f_m_t i argument
         # Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m)
         # def freqtransf(FFTvecin, fsdec, fvec=None):
-        idxtmp = np.floor(f_m_t / f_s_dec * N_DFT).astype('int')
+        idxtmp = np.floor(f_m / f_s_dec * N_DFT).astype('int')
         idx = np.mod(idxtmp, N_DFT) + 1
 
         # DFT for the target signal
@@ -317,7 +316,7 @@ class EK80CalculationPaper(EK80DataContainer):
         # The Normalized DFT
         Y_tilde_pc_t_m = Y_pc_t_m/Y_mf_auto_red_m
         
-        return Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, f_m_t
+        return Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m
     
     @staticmethod
     def calcPowerFreq(N_u, Y_tilde_pc_t_m, z_td_e, z_rx_e):
@@ -476,8 +475,8 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
         return 20.0 * np.log10(r) + 2.0 * alpha * r
 
     @staticmethod
-    def calc_Psi_f(Psi_f_n, f_n, f_m_t):
-        return Psi_f_n * (f_n / f_m_t)**2
+    def calc_Psi_f(Psi_f_n, f_n, f_m):
+        return Psi_f_n * (f_n / f_m)**2
 
     @staticmethod
     def calc_Sv(p_rx_e_n, r_c_n, lambda_f_c,
@@ -496,19 +495,16 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
 
     @staticmethod
     def calcDFTforSv(y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w,
-                     n_f_points, f0, f1, f_s_dec, r_c_n, step):
-
-        # The frequency vector for the windowed signal
-        f = np.linspace(f0, f1, n_f_points)
+                     n_f_points, f_m, f_s_dec, r_c_n, step):
 
         # Initialize the fft as list (and append for each depth bin)
         Y_pc_v_m_n = []
         Y_tilde_pc_v_m_n = []
 
-        
         # The DFT of the ACf of the mathced filter signal
         _Y_mf_auto_m = np.fft.fft(y_mf_auto_n, n=N_w)
-        Y_mf_auto_m = EK80CalculationPaper.freqtransf(_Y_mf_auto_m, f_s_dec, f)
+        Y_mf_auto_m = EK80CalculationPaper.freqtransf(_Y_mf_auto_m,
+                                                      f_s_dec, f_m)
 
         svf_range = []
         min_sample = 0  # int(r0 / dr)
@@ -546,7 +542,7 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
 
             # Calculate the dft of the windowed signal
             _Y_pc_v_m = np.fft.fft(yspread_bin, n=N_w)
-            Y_pc_v_m = EK80CalculationPaper.freqtransf(_Y_pc_v_m, f_s_dec, f)
+            Y_pc_v_m = EK80CalculationPaper.freqtransf(_Y_pc_v_m, f_s_dec, f_m)
 
             # Scale the DFT with the acf of the mathed filter signal
             Y_tilde_pc_v_m = Y_pc_v_m / Y_mf_auto_m

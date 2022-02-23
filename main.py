@@ -6,10 +6,6 @@ from Core.EK80DataContainer import EK80DataContainer
 # Test data
 data = EK80DataContainer('./data/pyEcholabEK80data.json')
 
-
-# data.trdu.f_c
-# data.f_c -> I paper: $f_c$
-
 # Unpack variabels
 z_td_e, f_s, n_f_points = data.cont.getParameters()
 
@@ -17,18 +13,13 @@ z_rx_e = data.trcv.getParameters()
 
 f_0, f_1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
 
-# To be refactored:
-f0 = f_0
-f1 = f_1
+# The frequency vector for both Ts and Sv (grid for index m)
+f_m = np.linspace(f_0, f_1, n_f_points)
 
 f_n, G_fnom, Psi_f_c, angle_offset_alongship_fnom, \
     angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
     angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
     beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
-
-# g_0_f_c # Gain senterverdi chirp, det er denne som er brukt
-# G_fnom # Gain senterverdi av svingar
-g_0_m = G_fnom
 
 c, alpha, temperature, salinity, \
     acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
@@ -39,18 +30,16 @@ filter_v, N_v = data.filt.getParameters()
 
 offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 
-# Ruben: the Psi should be the Psi_e_f_n, check paper and rewrite the data
-# class. The difference is the (f_n/f)**2 term. It should be Psi_e not Psi.
-# Check paper.
-<<<<<<< HEAD
-g_0_f_c, lambda_f_c, Psi_f_n = data.deriv.getParameters()
-=======
-# Psi_e_f_n - shoud be calculated here, in main ? se eq. 28
-# xml['EquivalentBeamAngle'] . is this Psi_f_n?
-# We need to discuss the Psi_e  - e is often us for electrical
-g_0_f_c, lambda_f_c, Psi_e_f_n = data.deriv.getParameters()
->>>>>>> ac008b83790dfef61791b86af233c4d048228dbe
+# Ruben: the Psi should be the Psi_f_n, i.e. the Psi at the nominal frequency
+# for the transducer. The function EK80CalculationPaper.calc_Psi_f will convert
+# to Psi_f_c, which is the center freq for the chirp. g and lambda are already
+# converted to f_c. We also need Psi_m on the f grid.
 
+g_0_f_c, lambda_f_c, Psi_m = data.deriv.getParameters()
+# xml['EquivalentBeamAngle'] . is this Psi_f_n?
+# we need Psi_m, which is on the f_m grid
+# and lamdba_m on the same grid
+Psi_f_n = Psi_m[10]  # TODO: Fix this.
 
 #
 # Chapter IIB: Signal generation
@@ -58,16 +47,16 @@ g_0_f_c, lambda_f_c, Psi_e_f_n = data.deriv.getParameters()
 
 # Generate ideal send pulse
 y_tx_n, t = EK80CalculationPaper.generateIdealWindowedSendPulse(
-    f0, f1, tau, f_s, slope)
+    f_0, f_1, tau, f_s, slope)
 
 y_tx_n05slope, t = EK80CalculationPaper.generateIdealWindowedSendPulse(
-    f0, f1, tau, f_s, .5)
+    f_0, f_1, tau, f_s, .5)
 
 plt.figure()
 plt.plot(t*1000, y_tx_n, t*1000, y_tx_n05slope)
 plt.title(
     'Ideal enveloped send pulse.{:.0f}kHz - {:.0f}kHz, slope {:.3f}'
-    .format(f0/1000, f1/1000, slope))
+    .format(f_0/1000, f_1/1000, slope))
 plt.xlabel('time (ms)')
 plt.ylabel('amplitude')
 plt.savefig('./Paper/Fig_ytx.png')
@@ -119,7 +108,7 @@ G1l = np.append(G1l, G1)
 plt.figure()
 plt.plot(F0, G0,
          F1l, G1l,
-         [f0, f1], [-140, -140])
+         [f_0, f_1], [-140, -140])
 plt.xlabel('frequency (Hz)')
 plt.ylabel('Gain (dB)')
 plt.xlim([0, 100000])
@@ -275,9 +264,9 @@ plt.savefig('./Paper/Fig_singleTarget.png')
 
 # DFT on the pulse compressed received signal and the pulse compressed
 # send pulse signal (reduced and matched filtered)
-Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, f_m_t = \
+Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m = \
     EK80CalculationPaper.calcDFTforTS(y_pc_t_n, y_mf_auto_red_n,
-                                      n_f_points, f0, f1, f_s_dec)
+                                      n_f_points, f_m, f_s_dec)
 
 # Calculate the power by frequency from a single target
 P_rx_e_t_m = EK80CalculationPaper.calcPowerFreq(
@@ -288,13 +277,13 @@ P_rx_e_t_m = EK80CalculationPaper.calcPowerFreq(
 
 # Calculate the target strength
 """
-g_theta_t_phi_t_f_t = data.calc_B_theta_phi_m(theta_t, phi_t, f_m_t)
-G0_m = data.calc_G0_m(f_m_t)
+g_theta_t_phi_t_f_t = data.calc_B_theta_phi_m(theta_t, phi_t, f_m)
+G0_m = data.calc_G0_m(f_m)
 G_theta_phi_m = G0_m - g_theta_t_phi_t_f_t
 """
-g_theta_phi_m = data.calc_g(theta_t, phi_t, f_m_t)
-lambda_m = data.calc_lambda_f(f_m_t)
-alpha_m = data.calc_alpha_f(f_m_t)
+g_theta_phi_m = data.calc_g(theta_t, phi_t, f_m)
+lambda_m = data.calc_lambda_f(f_m)
+alpha_m = data.calc_alpha_f(f_m)
 
 TS_m = EK80CalculationPaper.calcTSf(
     P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m,
@@ -302,15 +291,15 @@ TS_m = EK80CalculationPaper.calcTSf(
 
 
 fig, axs = plt.subplots(5)
-axs[0].plot(f_m_t, np.abs(Y_pc_t_m))
+axs[0].plot(f_m, np.abs(Y_pc_t_m))
 axs[0].set_ylabel('Y_tilde_pc_t_m')
-axs[1].plot(f_m_t, np.abs(Y_mf_auto_red_m))
+axs[1].plot(f_m, np.abs(Y_mf_auto_red_m))
 axs[1].set_ylabel('Y_mf_auto_red_m')
-axs[2].plot(f_m_t, np.abs(Y_tilde_pc_t_m))
+axs[2].plot(f_m, np.abs(Y_tilde_pc_t_m))
 axs[2].set_ylabel('Y_tilde_pc_t_m')
-axs[3].plot(f_m_t, g_theta_phi_m) # weird gain might be tracked down to  xml['angle_offset_alongship'] and xml['angle_offset_alongship']
+axs[3].plot(f_m, g_theta_phi_m) # weird gain might be tracked down to  xml['angle_offset_alongship'] and xml['angle_offset_alongship']
 axs[3].set_ylabel('gain')
-axs[4].plot(f_m_t, TS_m)
+axs[4].plot(f_m, TS_m)
 axs[4].set_xlabel('f (Hz)')
 axs[4].set_ylabel('TS(f)')
 plt.savefig('./Paper/Fig_TS.png')
@@ -349,7 +338,7 @@ step = 1  # Needs some thoughts... 50% overlapp
 # Sjekk at n_f_ponts er 2 pulslengder, det er det vi vil ha
 Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range \
     = EK80CalculationPaper.calcDFTforSv(
-        y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f0, f1, f_s_dec,
+        y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec,
         r_n, step)
 
 # Calculate the power
@@ -359,7 +348,8 @@ P_rx_e_t_m_n = EK80CalculationPaper.calcPowerFreqforSv(
 # Calculate the Sv(f)
 # TODO: alpha_m and lambda_m ok length, Psi_f needs interpolation. Make
 # it scalar for now (it is also negative???, change sign to make the code run):
-Psi_f_dum = -Psi_f[55]
+Psi_f_dum = 1  # TODO: Fix this
+g_0_m = 1
 
 Sv_m_n = EK80CalculationPaper.calcSvf(P_rx_e_t_m_n,
                                       alpha_m, p_tx_e, lambda_m, t_w,
