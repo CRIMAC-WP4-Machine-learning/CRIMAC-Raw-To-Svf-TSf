@@ -225,7 +225,7 @@ class EK80DataContainer:
     @staticmethod
     def  calcRange(sampleInterval, sampleCount, c, offset) :
         dr = sampleInterval * c * 0.5
-        r = np.array([(offset + i + 1) * dr for i in range(0, sampleCount)])
+        r = np.array([(offset + i) * dr for i in range(0, sampleCount)])
         return r, dr
 
     def calc_angle_offsets_m(self, f):
