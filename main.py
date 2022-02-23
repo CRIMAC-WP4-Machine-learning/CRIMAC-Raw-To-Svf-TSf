@@ -16,7 +16,8 @@ f_0, f_1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
 # The frequency vector for both Ts and Sv (grid for index m)
 f_m = np.linspace(f_0, f_1, n_f_points)
 
-f_n, G_fnom, Psi_f_c, angle_offset_alongship_fnom, \
+# TODO: Double check that it is Psi_f_n and no Psi_f_c
+f_n, G_fnom, Psi_f_n, angle_offset_alongship_fnom, \
     angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
     angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
     beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
@@ -33,13 +34,18 @@ offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 # Ruben: the Psi should be the Psi_f_n, i.e. the Psi at the nominal frequency
 # for the transducer. The function EK80CalculationPaper.calc_Psi_f will convert
 # to Psi_f_c, which is the center freq for the chirp. g and lambda are already
-# converted to f_c. We also need Psi_m on the f grid.
+# converted to f_c.
 
 g_0_f_c, lambda_f_c, Psi_m = data.deriv.getParameters()
-# xml['EquivalentBeamAngle'] . is this Psi_f_n?
-# we need Psi_m, which is on the f_m grid
-# and lamdba_m on the same grid
-Psi_f_n = Psi_m[10]  # TODO: Fix this.
+
+# Cacluate lambda and alpha on the f_m grid
+lambda_m = data.calc_lambda_f(f_m)
+alpha_m = data.calc_alpha_f(f_m)
+
+# Calculate Psi for f_c and on the f_m grid
+Psi_f_c = EK80CalculationPaper.calc_Psi_f(Psi_f_n, f_n, f_c)
+# TODO: double check this. I think it is ok:
+Psi_m = EK80CalculationPaper.calc_Psi_f(Psi_f_n, f_n, f_m)
 
 #
 # Chapter IIB: Signal generation
@@ -282,8 +288,6 @@ G0_m = data.calc_G0_m(f_m)
 G_theta_phi_m = G0_m - g_theta_t_phi_t_f_t
 """
 g_theta_phi_m = data.calc_g(theta_t, phi_t, f_m)
-lambda_m = data.calc_lambda_f(f_m)
-alpha_m = data.calc_alpha_f(f_m)
 
 TS_m = EK80CalculationPaper.calcTSf(
     P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m,
@@ -309,9 +313,6 @@ plt.savefig('./Paper/Fig_TS.png')
 # Chapter IV: VOLUME BACKSCATTERING STRENGTH
 #
 
-
-# Calculate Psi
-Psi_f_c = EK80CalculationPaper.calc_Psi_f(Psi_f_n, f_n, f_c)
 
 # Calculate average Sv
 # TODO: I get zero power in the p_rx_e_n. Fails when doing log10. "Quickfix":
