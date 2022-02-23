@@ -10,24 +10,25 @@ data = EK80DataContainer('./data/pyEcholabEK80data.json')
 # data.trdu.f_c
 # data.f_c -> I paper: $f_c$
 
-# To be considered:
-# f0 -> f_0
-# f1 -> f_1
-
 # Unpack variabels
 z_td_e, f_s, n_f_points = data.cont.getParameters()
 
 z_rx_e = data.trcv.getParameters()
 
-f0, f1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
+f_0, f_1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
+
+# To be refactored:
+f0 = f_0
+f1 = f_1
 
 f_n, G_fnom, Psi_f_c, angle_offset_alongship_fnom, \
     angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
     angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
     beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
-# Ruben: is G_fnom the same as g_0_m?
-# g_0_f_c # Senterverdi chirp, det er denne som er brukt
-# G_fnom # Senterverdi av svingar
+
+# g_0_f_c # Gain senterverdi chirp, det er denne som er brukt
+# G_fnom # Gain senterverdi av svingar
+g_0_m = G_fnom
 
 c, alpha, temperature, salinity, \
     acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
@@ -41,7 +42,15 @@ offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 # Ruben: the Psi should be the Psi_e_f_n, check paper and rewrite the data
 # class. The difference is the (f_n/f)**2 term. It should be Psi_e not Psi.
 # Check paper.
+<<<<<<< HEAD
 g_0_f_c, lambda_f_c, Psi_f_n = data.deriv.getParameters()
+=======
+# Psi_e_f_n - shoud be calculated here, in main ? se eq. 28
+# xml['EquivalentBeamAngle'] . is this Psi_f_n?
+# We need to discuss the Psi_e  - e is often us for electrical
+g_0_f_c, lambda_f_c, Psi_e_f_n = data.deriv.getParameters()
+>>>>>>> ac008b83790dfef61791b86af233c4d048228dbe
+
 
 #
 # Chapter IIB: Signal generation

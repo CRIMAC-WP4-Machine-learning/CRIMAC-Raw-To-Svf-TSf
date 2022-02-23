@@ -98,13 +98,6 @@ class EK80CalculationPaper(EK80DataContainer):
         
         return C1Prx * np.abs(y_pc) ** 2
 
-    """
-    @staticmethod
-    def calcRange(sampleInterval, sampleCount, c, offset):
-        dr = sampleInterval * c * 0.5
-        r = np.array([(offset + i + 1) * dr for i in range(0, sampleCount)])
-        return r, dr
-    """
     @staticmethod
     def calcSp(
             p_rx_e_n,
@@ -405,22 +398,6 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
             # Calibrated case
             return np.interp(f, self.frequencies, self.gain)
 
-    """
-    def calc_B_theta_phi_m(self, theta, phi, f):
-        angle_offset_alongship_m, angle_offset_athwartship_m = self.calc_angle_offsets_m(f)
-        beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
-
-        B_theta_phi_m = 0.5 * 6.0206 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2 + \
-                                        (np.abs(phi - angle_offset_athwartship_m) / (
-                                                    beam_width_athwartship_m / 2)) ** 2 - \
-                                        0.18 * ((np.abs(theta - angle_offset_alongship_m) / (
-                            beam_width_alongship_m / 2)) ** 2 * \
-                                                (np.abs(phi - angle_offset_athwartship_m) / (
-                                                            beam_width_athwartship_m / 2)) ** 2))
-
-        return B_theta_phi_m
-    """
-
     def calc_g0_m(self, f):
         if self.isCalibrated:
             # Calibrated case
@@ -429,29 +406,7 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
             # Uncalibrated case
             return self.G_fnom + 20 * np.log10(f / self.fnom)
 
-    """
-    def calc_angle_offsets_m(self, f):
-        if self.isCalibrated:
-            # Calibrated case
-            angle_offset_alongship_m = np.interp(f, self.frequencies, self.angle_offset_alongship)
-            angle_offset_athwartship_m = np.interp(f, self.frequencies, self.angle_offset_athwartship)
-        else:
-            # Uncalibrated case
-            angle_offset_alongship_m = self.angle_offset_alongship_fnom * np.ones(len(f))
-            angle_offset_athwartship_m = self.angle_offset_athwartship_fnom * np.ones(len(f))
-        return angle_offset_alongship_m, angle_offset_athwartship_m
 
-    def calc_beam_widths_m(self, f):
-        if self.isCalibrated:
-            # Calibrated case
-            beam_width_alongship_m = np.interp(f, self.frequencies, self.beam_width_alongship)
-            beam_width_athwartship_m = np.interp(f, self.frequencies, self.beam_width_athwartship)
-        else:
-            # Uncalibrated case
-            beam_width_alongship_m = self.beam_width_alongship_fnom * self.fnom / f
-            beam_width_athwartship_m = self.beam_width_athwartship_fnom * self.fnom / f
-        return beam_width_alongship_m, beam_width_athwartship_m
-    """
 
     @staticmethod
     def calcTransducerHalves(y_pc_nu):
@@ -668,26 +623,3 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
         lf = self.lambda_f(f)
         return 10 * np.log10((self.ptx * self.c * lf ** 2) / (32.0 * np.pi * np.pi))
 
-    """
-    @staticmethod
-    def calcAbsorption(t, s, d, ph, c, f):
-        f = f / 1000
-
-        a1 = (8.86 / c) * 10 ** (0.78 * ph - 5)
-        p1 = 1
-        f1 = 2.8 * (s / 35) ** 0.5 * 10 ** (4 - 1245 / (t + 273))
-
-        a2 = 21.44 * (s / c) * (1 + 0.025 * t)
-        p2 = 1 - 1.37e-4 * d + 6.62e-9 * d ** 2
-        f2 = 8.17 * 10 ** (8 - 1990 / (t + 273)) / (1 + 0.0018 * (s - 35))
-
-        p3 = 1 - 3.83e-5 * d + 4.9e-10 * d ** 2
-
-        a3l = 4.937e-4 - 2.59e-5 * t + 9.11e-7 * t ** 2 - 1.5e-8 * t ** 3
-        a3h = 3.964e-4 - 1.146e-5 * t + 1.45e-7 * t ** 2 - 6.5e-10 * t ** 3
-        a3 = a3l * (t <= 20) + a3h * (t > 20)
-
-        a = f ** 2 * (a1 * p1 * f1 / (f1 ** 2 + f ** 2) + a2 * p2 * f2 / (f2 ** 2 + f ** 2) + a3 * p3)
-
-        return a / 1000
-    """
