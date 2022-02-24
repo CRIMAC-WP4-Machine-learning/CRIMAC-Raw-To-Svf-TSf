@@ -46,6 +46,20 @@ g_0_f_c, lambda_f_c, _ = data.deriv.getParameters()
 # TODO: Consider to use _f_m instead of _m, depending on the
 # way it will be written in the paper, for the following parameters:
 
+r_n, dr = data.calcRange(
+    sampleInterval,
+    sampleCount,
+    c,
+    offset)
+
+alpha_f_c = data.calcAbsorption(
+    temperature,
+    salinity,
+    depth,
+    acidity,
+    c,
+    f_c)
+
 # The on axix gain as a function of f_m
 g_0_m = data.calc_g(0, 0, f_m)
 
@@ -91,7 +105,7 @@ plt.savefig('./Paper/Fig_ytx.png')
 # In this implementation there are two filters (N_v=2). The first
 # filter operates on the raw data [y_rx(N,u,0)=y_rx_org].
 
-# The filter coefficients 'h_fl_iv' are accessible through 'data.filter_v':
+# The filter coefficients 'h_fl_iv' are accessible through 'data.filter_vn':
 filter_v[0]["h_fl_i"]
 filter_v[1]["h_fl_i"]
 
@@ -220,29 +234,6 @@ r1 = 30
 before = 0.5
 after = 1
 
-r_n, _ = EK80DataContainer.calcRange(
-    sampleInterval,
-    sampleCount,
-    c,
-    offset)
-
-
-alpha_f_c = EK80DataContainer.calcAbsorption(
-    temperature,
-    salinity,
-    depth,
-    acidity,
-    c,
-    f_c)
-
-# Move to data container (Ruben)
-# G = np.interp1(X, g_theta_phi_f, Y)
-
-#
-# RUBEN>
-#
-
-
 # Calculate the point scattering strength (Sp)
 Sp_n = EK80CalculationPaper.calcSp(
     p_rx_e_n,
@@ -330,7 +321,8 @@ plt.savefig('./Paper/Fig_TS.png')
 p_rx_e_n = p_rx_e_n + .0000000000000001
 
 # TODO: Range equal to zero will not work. either remove first sample or
-# reconsider the range vector (log10(0) does not exist)
+# reconsider the range vector (log10(0) does not exist). Hack:
+r_n[r_n == 0] = 0.0000000001
 Sv_n = EK80CalculationPaper.calc_Sv(p_rx_e_n, r_n, lambda_f_c,
                                     p_tx_e, alpha_f_c, c, tau_eff,
                                     Psi_f_c, g_0_f_c)
@@ -339,9 +331,6 @@ Sv_n = EK80CalculationPaper.calc_Sv(p_rx_e_n, r_n, lambda_f_c,
 y_pc_s_n = EK80CalculationPaper.calc_PulseCompSphericalSpread(y_pc_n, r_n)
 
 # Hanning window
-# TODO: This needs attention:
-dr = np.median(np.diff(r_n))
-
 w_tilde_i, N_w, t_w, t_w_n = EK80CalculationPaper.defHanningWindow(c, tau, dr,
                                                                    f_s_dec)
 
@@ -360,6 +349,8 @@ P_rx_e_t_m_n = EK80CalculationPaper.calcPowerFreqforSv(
     Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
 
 # Calculate the Sv(f)
+# TODO: Range == 0 does not work well with log10. another hack:
+
 Sv_m_n = EK80CalculationPaper.calcSvf(P_rx_e_t_m_n,
                                       alpha_m, p_tx_e, lambda_m, t_w,
                                       Psi_m, g_0_m, c, svf_range)
