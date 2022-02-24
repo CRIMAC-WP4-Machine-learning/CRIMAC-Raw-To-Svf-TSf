@@ -4,7 +4,63 @@ from Core.EK80DataContainer import EK80DataContainer
 
 
 class EK80CalculationPaper(EK80DataContainer):
-            
+
+    #
+    # Chapter IIB: Signal generation
+    #
+
+    @staticmethod
+    def generateIdealWindowedSendPulse(f0, f1, tau, fs, slope):
+        nsamples = int(np.floor(tau * fs))
+        t = np.linspace(0, nsamples - 1, num=nsamples) * 1 / fs
+        y = EK80CalculationPaper.chirp(t, f0, tau, f1)
+        L = int(np.round(tau * fs * slope * 2.0))  # Length of hanning window
+        w = EK80CalculationPaper.hann(L)
+        N = len(y)
+        w1 = w[0:int(len(w) / 2)]
+        w2 = w[int(len(w) / 2):-1]
+        i0 = 0
+        i1 = len(w1)
+        i2 = N - len(w2)
+        i3 = N
+        y[i0:i1] = y[i0:i1] * w1
+        y[i2:i3] = y[i2:i3] * w2
+        return y, t
+    
+    @staticmethod
+    def chirp(t, f0, t1, f1):
+        a = np.pi * (f1 - f0) / t1
+        b = 2 * np.pi * f0
+        return np.cos(a * t * t + b * t)
+
+    @staticmethod
+    def hann(L):
+        n = np.arange(0, L, 1)
+        return 0.5 * (1.0 - np.cos(2.0 * np.pi * n / (L - 1)))
+
+    @staticmethod
+    def calcNormalizedTransmitSignal(y_tx_n):
+        return y_tx_n / np.max(y_tx_n)
+    
+    @staticmethod
+    def calcFilteredAndDecimatedSignal(y_tilde_tx_n, filter_v):
+        # Initialize with normalized transmit pulse
+        y_tilde_tx_nv = [y_tilde_tx_n]
+        v = 0
+        if filter_v is not None:
+            for filter_vi in filter_v:
+                tmp = np.convolve(y_tilde_tx_nv[v],
+                                  filter_vi["h_fl_i"],
+                                  mode='full')[0::filter_vi["D"]]
+                y_tilde_tx_nv.append(tmp)
+                v += 1
+
+        return y_tilde_tx_nv
+
+    #
+    # >
+    #
+    
     @staticmethod
     def calcAutoCorrelation(y_mf_n, f_s_dec):
         y_mf_n_conj_rev = np.conj(y_mf_n)[::-1]
@@ -31,25 +87,6 @@ class EK80CalculationPaper(EK80DataContainer):
                 v += 1
         return f_s_dec
     
-    @staticmethod
-    def calcNormalizedTransmitSignal(y_tx_n):
-        return y_tx_n / np.max(y_tx_n)
-
-    @staticmethod
-    def calcFilteredAndDecimatedSignal(y_tilde_tx_n, filter_v):
-        # Initialize with normalized transmit pulse
-        y_tilde_tx_nv = [y_tilde_tx_n]
-        v = 0
-        if filter_v is not None:
-            for filter_vi in filter_v:
-                tmp = np.convolve(y_tilde_tx_nv[v],
-                                  filter_vi["h_fl_i"],
-                                  mode='full')[0::filter_vi["D"]]
-                y_tilde_tx_nv.append(tmp)
-                v += 1
-
-        return y_tilde_tx_nv
-
     @staticmethod
     def calcPulseCompressedQuadrants(quadrant_signals,y_mf_n):
         """
@@ -450,37 +487,8 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
 
         return theta_n, phi_n
 
-    @staticmethod
-    def generateIdealWindowedSendPulse(f0, f1, tau, fs, slope):
-        nsamples = int(np.floor(tau * fs))
-        t = np.linspace(0, nsamples - 1, num=nsamples) * 1 / fs
-        y = EK80CalculationPaper.chirp(t, f0, tau, f1)
-        L = int(np.round(tau * fs * slope * 2.0))  # Length of hanning window
-        w = EK80CalculationPaper.hann(L)
-        N = len(y)
-        w1 = w[0:int(len(w) / 2)]
-        w2 = w[int(len(w) / 2):-1]
-        i0 = 0
-        i1 = len(w1)
 
-        i2 = N - len(w2)
-        i3 = N
 
-        y[i0:i1] = y[i0:i1] * w1
-        y[i2:i3] = y[i2:i3] * w2
-
-        return y, t
-
-    @staticmethod
-    def hann(L):
-        n = np.arange(0, L, 1)
-        return 0.5 * (1.0 - np.cos(2.0 * np.pi * n / (L - 1)))
-
-    @staticmethod
-    def chirp(t, f0, t1, f1):
-        a = np.pi * (f1 - f0) / t1
-        b = 2 * np.pi * f0
-        return np.cos(a * t * t + b * t)
 
     @staticmethod
     def stageFilter(signal, filter):
