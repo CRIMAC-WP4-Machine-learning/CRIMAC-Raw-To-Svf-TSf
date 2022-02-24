@@ -160,6 +160,10 @@ class EK80CalculationPaper(EK80DataContainer):
         idxtmp = np.floor(fvec / fsdec * nfft).astype('int')
         idx = np.mod(idxtmp, nfft) + 1
 
+        # TODO: Hack to avoid out of bounds. Same as for DFT for TS.
+        idx[idx == nfft] = idx[idx == nfft] - 1
+
+
         return FFTvecin[idx]
 
     def calcSvf_old(self, y_pc, r0, r1, overlap=0.5):
@@ -303,7 +307,19 @@ class EK80CalculationPaper(EK80DataContainer):
         # Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m)
         # def freqtransf(FFTvecin, fsdec, fvec=None):
         idxtmp = np.floor(f_m / f_s_dec * N_DFT).astype('int')
+        
+        # TODO: Nils Olav comment: If we add +1 we will make an error
+        # in cases where we wrap the frequencies (?). The IDX will then
+        # go from 1024 to 1 instead of 1023 to 1 Since 1024 is out of bounds
+        # The index 0 is missed which I suppose is the DC term and OK?
+        # We are clearly doing something wrong here. There
+        # are also duplicates in idx indicating nearest neighbour imputation.
+        # This needs some thought.
+       
         idx = np.mod(idxtmp, N_DFT) + 1
+        # TODO: Hack to make the code run (do -1 on the index that is out
+        # of bounds)
+        idx[idx == N_DFT] = idx[idx == N_DFT] - 1
 
         # DFT for the target signal
         _Y_pc_t_m = np.fft.fft(y_pc_t_n, n=N_DFT)

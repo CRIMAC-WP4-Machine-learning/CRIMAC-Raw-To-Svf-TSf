@@ -3,8 +3,13 @@ import numpy as np
 from Core.EK80CalculationPaper import EK80CalculationPaper
 from Core.EK80DataContainer import EK80DataContainer
 
+#
 # Test data
+#
+
 data = EK80DataContainer('./data/pyEcholabEK80data.json')
+# data = EK80DataContainer('./data/CRIMAC_SphereCentre.json')  # Ts sphere
+# data = EK80DataContainer('./data/CRIMAC_Svf.json')  # School
 
 # Unpack variabels
 z_td_e, f_s, n_f_points = data.cont.getParameters()
@@ -42,7 +47,7 @@ g_0_f_c, lambda_f_c, _ = data.deriv.getParameters()
 # way it will be written in the paper, for the following parameters:
 
 # The on axix gain as a function of f_m
-g_0_m = 1
+g_0_m = data.calc_g(0, 0, f_m)
 
 # Cacluate lambda and alpha on the f_m grid
 lambda_m = data.calc_lambda_f(f_m)
