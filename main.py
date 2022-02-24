@@ -36,7 +36,13 @@ offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 # to Psi_f_c, which is the center freq for the chirp. g and lambda are already
 # converted to f_c.
 
-g_0_f_c, lambda_f_c, Psi_m = data.deriv.getParameters()
+g_0_f_c, lambda_f_c, _ = data.deriv.getParameters()
+
+# TODO: Consider to use _f_m instead of _m, depending on the
+# way it will be written in the paper, for the following parameters:
+
+# The on axix gain as a function of f_m
+g_0_m = 1
 
 # Cacluate lambda and alpha on the f_m grid
 lambda_m = data.calc_lambda_f(f_m)
@@ -318,6 +324,8 @@ plt.savefig('./Paper/Fig_TS.png')
 # TODO: I get zero power in the p_rx_e_n. Fails when doing log10. "Quickfix":
 p_rx_e_n = p_rx_e_n + .0000000000000001
 
+# TODO: Range equal to zero will not work. either remove first sample or
+# reconsider the range vector (log10(0) does not exist)
 Sv_n = EK80CalculationPaper.calc_Sv(p_rx_e_n, r_n, lambda_f_c,
                                     p_tx_e, alpha_f_c, c, tau_eff,
                                     Psi_f_c, g_0_f_c)
@@ -347,14 +355,9 @@ P_rx_e_t_m_n = EK80CalculationPaper.calcPowerFreqforSv(
     Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
 
 # Calculate the Sv(f)
-# TODO: alpha_m and lambda_m ok length, Psi_f needs interpolation. Make
-# it scalar for now (it is also negative???, change sign to make the code run):
-Psi_f_dum = 1  # TODO: Fix this
-g_0_m = 1
-
 Sv_m_n = EK80CalculationPaper.calcSvf(P_rx_e_t_m_n,
                                       alpha_m, p_tx_e, lambda_m, t_w,
-                                      Psi_f_dum, g_0_m, c, svf_range)
+                                      Psi_m, g_0_m, c, svf_range)
         
 
 fig, axs = plt.subplots(2)

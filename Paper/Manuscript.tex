@@ -326,7 +326,7 @@ The power-budget equation (i.e., sonar equation) for a single target \citep[Form
 \begin{equation}
 \label{eq:TS}
 \ts(\freqsym) = 10\log_{10}(\prxetf(\freqsym)) + 40\log_{10}(\range) + 2\absorp(\freqsym) \range 
-- 10\log_{10}\left( \frac{\ptxe \wlen^2 \gain^2(\along_t,\athw_t,\freqsym)}{16\pi^2} \right),
+- 10\log_{10}\left( \frac{\ptxe \wlen^2(\freqsym) \gain^2(\along_t,\athw_t,\freqsym)}{16\pi^2} \right),
 \end{equation}
 %
 where $\prxetf(\freqsym)$ is the Fourier transform of the received electric power in a matched load for a signal from a single target at frequency $\freqsym$, $\range_t$ is the range to the target, $\absorp$ the acoustic absorption at frequency $f$, $\ptxe$ the transmitted electric power, $\wlen$ the acoustic wavelength, and $\gain$ the transducer gain incorporating both the on axis gain $\gain_0(\freqsym)=\gain(0,0,\freqsym)$ and the beam pattern based on the estimated target bearing $(\along_t,\athw_t)$.
@@ -385,6 +385,8 @@ Target strength can then be estimated using Eq. \ref{eq:TS}, but with $\freqsym$
 \includegraphics[width=16cm]{Fig_TS}
 \caption{\label{fi:SED}The $\ypctargetf(\samplesymf)$ (upper), $\ymfautoredf(\samplesymf)$ (middle) and $\ypctargetnormf(\samplesymf)$ (lower).}
 \end{figure}
+
+Comment from Nils Olav: Using $m$ as an argument to a function is not ideal. If we use the function argument perhaps using $f_m$ would be more logical, i.e. $\lambda(f_m)$. Alternatively using $lambda_m$ is possible. The latter is perhaps more in line with the code since the parameter is an array windexed with $m$ and not a function. $Psi(f)$, on the the other hand is derived from a function, see below.
 
 \section{Volume backscattering strength}
 
@@ -474,7 +476,7 @@ Finally, the discretized estimate of $\sv(\freqsym)$, $\sv(\samplesymf)$, is giv
 \begin{equation}
 \label{eq:Sv_FFT}
 \sv(\samplesymf) = 10\log_{10}(\prxevf(\samplesymf)) + 2\absorp(\samplesymf) \range_c \\
-- 10\log_{10}\left( \frac{\ptxe \wlen^2 \cw \tslide \eqang(\samplesymf) \gainzero^2(\samplesymf) }{32\pi^2} \right).
+- 10\log_{10}\left( \frac{\ptxe \wlen^2(\samplesymf) \cw \tslide \eqang(\samplesymf) \gainzero^2(\samplesymf) }{32\pi^2} \right).
 \end{equation}
 
 \section{Illustrative examples}
