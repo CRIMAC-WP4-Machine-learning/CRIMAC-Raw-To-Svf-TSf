@@ -38,6 +38,25 @@ class EK80CalculationPaper(EK80DataContainer):
         n = np.arange(0, L, 1)
         return 0.5 * (1.0 - np.cos(2.0 * np.pi * n / (L - 1)))
 
+    #
+    # Chapter IIC: Signal reception
+    #
+
+    @staticmethod
+    def calcDecmiatedSamplingRate(filter_v, f_s):
+        f_s_dec = [f_s]
+        v = 0
+        if filter_v is not None:
+            for filter_v in filter_v:
+                tmp = f_s_dec[v] / filter_v["D"]
+                f_s_dec.append(tmp)
+                v += 1
+        return f_s_dec
+    
+    #
+    # Chapter IID: Pulse compression
+    #
+
     @staticmethod
     def calcNormalizedTransmitSignal(y_tx_n):
         return y_tx_n / np.max(y_tx_n)
@@ -57,38 +76,23 @@ class EK80CalculationPaper(EK80DataContainer):
 
         return y_tilde_tx_nv
 
-    #
-    # >
-    #
-    
     @staticmethod
     def calcAutoCorrelation(y_mf_n, f_s_dec):
         y_mf_n_conj_rev = np.conj(y_mf_n)[::-1]
         y_mf_twoNormSquared = np.linalg.norm(y_mf_n, 2) ** 2
         y_mf_n_conj_rev = y_mf_n_conj_rev
         y_mf_twoNormSquared = y_mf_twoNormSquared
-
+        
         # Calculate auto correlation function for matched filter
         y_mf_auto_n = np.convolve(y_mf_n, y_mf_n_conj_rev)/y_mf_twoNormSquared
-
+        
         # Estimate effective pulse duration
         p_tx_auto = np.abs(y_mf_auto_n) ** 2
         tau_eff = np.sum(p_tx_auto) / ((np.max(p_tx_auto)) * f_s_dec)
         return y_mf_auto_n, tau_eff
 
     @staticmethod
-    def calcDecmiatedSamplingRate(filter_v, f_s):
-        f_s_dec = [f_s]
-        v = 0
-        if filter_v is not None:
-            for filter_v in filter_v:
-                tmp = f_s_dec[v] / filter_v["D"]
-                f_s_dec.append(tmp)
-                v += 1
-        return f_s_dec
-    
-    @staticmethod
-    def calcPulseCompressedQuadrants(quadrant_signals,y_mf_n):
+    def calcPulseCompressedQuadrants(quadrant_signals, y_mf_n):
         """
         Generate matched filtered signal for each quadrant
 
@@ -96,7 +100,6 @@ class EK80CalculationPaper(EK80DataContainer):
         np.array: y_pc_nu pulseCompressedQuadrants
         """
         # Do pulse compression on all quadrants
-
         y_mf_n_conj_rev = np.conj(y_mf_n)[::-1]
         y_mf_twoNormSquared = np.linalg.norm(y_mf_n, 2) ** 2
 
@@ -125,6 +128,22 @@ class EK80CalculationPaper(EK80DataContainer):
         np.array: y_pc_n
         """
         return np.sum(y_pc_nu, axis=0) / y_pc_nu.shape[0]
+
+    @staticmethod
+    def calcTransducerHalves(y_pc_nu):
+        y_pc_fore_n = 0.5 * (y_pc_nu[2, :] + y_pc_nu[3, :])
+        y_pc_aft_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[1, :])
+        y_pc_star_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[3, :])
+        y_pc_port_n = 0.5 * (y_pc_nu[1, :] + y_pc_nu[2, :])
+        return y_pc_fore_n, y_pc_aft_n, y_pc_star_n, y_pc_port_n
+
+    #
+    # Chapter IIE: Power angles and samples
+    #
+
+    #
+    # >
+    #
     
     @staticmethod
     def calcPower(y_pc, z_td_e, z_rx_e, N_u):
@@ -460,14 +479,6 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
 
 
 
-    @staticmethod
-    def calcTransducerHalves(y_pc_nu):
-        y_pc_fore_n = 0.5 * (y_pc_nu[2, :] + y_pc_nu[3, :])
-        y_pc_aft_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[1, :])
-        y_pc_star_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[3, :])
-        y_pc_port_n = 0.5 * (y_pc_nu[1, :] + y_pc_nu[2, :])
-
-        return y_pc_fore_n, y_pc_aft_n, y_pc_star_n, y_pc_port_n
 
     @staticmethod
     def calcGamma(angle_sensitivity_fnom, f_c, fnom):
