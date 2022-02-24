@@ -141,10 +141,6 @@ class EK80CalculationPaper(EK80DataContainer):
     # Chapter IIE: Power angles and samples
     #
 
-    #
-    # >
-    #
-    
     @staticmethod
     def calcPower(y_pc, z_td_e, z_rx_e, N_u):
         K1 = 4 / ((2 * np.sqrt(2)) ** 2)
@@ -154,6 +150,32 @@ class EK80CalculationPaper(EK80DataContainer):
         
         return C1Prx * np.abs(y_pc) ** 2
 
+    @staticmethod
+    def calcGamma(angle_sensitivity_fnom, f_c, fnom):
+        return angle_sensitivity_fnom * (f_c / fnom)
+
+    @staticmethod
+    def calcAngles(y_pc_halves,gamma_theta, gamma_phi):
+        # Transducers might have different segment configuration
+        # Here we assume 4 quadrants
+        y_pc_fore_n, y_pc_aft_n, y_pc_star_n, y_pc_port_n = y_pc_halves
+
+        y_theta_n = y_pc_fore_n * np.conj(y_pc_aft_n)
+        y_phi_n = y_pc_star_n * np.conj(y_pc_port_n)
+
+        theta_n = np.arcsin(
+            np.arctan2(np.imag(y_theta_n), np.real(
+                y_theta_n)) / gamma_theta) * 180 / np.pi
+        phi_n = np.arcsin(
+            np.arctan2(np.imag(y_phi_n), np.real(
+                y_phi_n)) / gamma_phi) * 180 / np.pi
+
+        return theta_n, phi_n
+
+    #
+    # >
+    #
+    
     @staticmethod
     def calcSp(
             p_rx_e_n,
@@ -480,23 +502,7 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
 
 
 
-    @staticmethod
-    def calcGamma(angle_sensitivity_fnom, f_c, fnom):
-        return angle_sensitivity_fnom * (f_c / fnom)
 
-    @staticmethod
-    def calcAngles(y_pc_halves,gamma_theta, gamma_phi):
-        # Transducers might have different segment configuration
-        # Here we assume 4 quadrants
-        y_pc_fore_n, y_pc_aft_n, y_pc_star_n, y_pc_port_n = y_pc_halves
-
-        y_theta_n = y_pc_fore_n * np.conj(y_pc_aft_n)
-        y_phi_n = y_pc_star_n * np.conj(y_pc_port_n)
-
-        theta_n = np.arcsin(np.arctan2(np.imag(y_theta_n), np.real(y_theta_n)) / gamma_theta) * 180 / np.pi
-        phi_n = np.arcsin(np.arctan2(np.imag(y_phi_n), np.real(y_phi_n)) / gamma_phi) * 180 / np.pi
-
-        return theta_n, phi_n
 
 
 
