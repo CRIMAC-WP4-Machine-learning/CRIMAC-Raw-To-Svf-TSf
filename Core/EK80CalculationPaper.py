@@ -155,7 +155,7 @@ class EK80CalculationPaper(EK80DataContainer):
         return angle_sensitivity_fnom * (f_c / fnom)
 
     @staticmethod
-    def calcAngles(y_pc_halves,gamma_theta, gamma_phi):
+    def calcAngles(y_pc_halves, gamma_theta, gamma_phi):
         # Transducers might have different segment configuration
         # Here we assume 4 quadrants
         y_pc_fore_n, y_pc_aft_n, y_pc_star_n, y_pc_port_n = y_pc_halves
@@ -173,7 +173,7 @@ class EK80CalculationPaper(EK80DataContainer):
         return theta_n, phi_n
 
     #
-    # >
+    # Chapter III: TARGET STRENGTH
     #
     
     @staticmethod
@@ -198,6 +198,122 @@ class EK80CalculationPaper(EK80DataContainer):
                           / (16.0 * np.pi ** 2))
 
         return S_p_n
+    
+    @staticmethod
+    def singleTarget(y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
+                     r0, r1, before=0.5, after=0.5):
+        # This is a pseudo single target detector (SED) using the max peak
+        # power within the range interval [r0 r1] as the single target
+        # detection criteria
+
+        # Get the samples within the sub range defined by the range interval
+        if r0 is not None and r1 is not None:
+            Idx = np.where((r_n >= r0) & (r_n <= r1))
+            r_n_sub = r_n[Idx]
+            y_pc_n_sub = y_pc_n[Idx]
+            p_rx_e_n_sub = p_rx_e_n[Idx]
+            theta_n_sub = theta_n[Idx]
+            phi_n_sub = phi_n[Idx]
+
+        # Use peak power within given range limits as index for single target
+        # to get the range, theta and phi for the single target
+        idx_peak_p_rx = np.argmax(p_rx_e_n_sub)
+        r_t = r_n_sub[idx_peak_p_rx]
+        theta_t = theta_n_sub[idx_peak_p_rx]
+        phi_t = phi_n_sub[idx_peak_p_rx]
+
+        # Extract pulse compressed samples "before" and "after" the peak power
+        r_t_begin = r_t - before
+        r_t_end = r_t + after
+        Idx2 = np.where((r_n_sub >= r_t_begin) & (r_n_sub <= r_t_end))
+        y_pc_t = y_pc_n_sub[Idx2]
+        p_rx_t = p_rx_e_n_sub[Idx2]
+        dum_theta = theta_n_sub[Idx2]
+        dum_phi = phi_n_sub[Idx2]
+        dum_r = r_n_sub[Idx2]
+        
+        return r_t, theta_t, phi_t, y_pc_t, p_rx_t, dum_theta, dum_phi, dum_r
+
+    @staticmethod
+    def alignAuto(y_mf_auto_n, y_pc_t_n):
+        # The equivalent samples around the peak in the decimated tx signal
+        idx_peak_auto = np.argmax(np.abs(y_mf_auto_n))
+        idx_peak_y_pc_t_n = np.argmax(np.abs(y_pc_t_n))
+
+        left_samples = idx_peak_y_pc_t_n
+        right_samples = len(y_pc_t_n) - idx_peak_y_pc_t_n
+
+        idx_start_auto = max(0, idx_peak_auto - left_samples)
+        idx_stop_auto = min(len(y_mf_auto_n), idx_peak_auto + right_samples)
+
+        y_mf_auto_red_n = y_mf_auto_n[idx_start_auto: idx_stop_auto]
+
+        return y_mf_auto_red_n
+
+    @staticmethod
+    def calcDFTforTS(y_pc_t_n, y_mf_auto_red_n, n_f_points, f_m, f_s_dec):
+
+        # The number of DFT points inpower of 2
+        N_DFT = int(2 ** np.ceil(np.log2(n_f_points)))
+        # Corresponding frequency vector
+        
+        # Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m)
+        # def freqtransf(FFTvecin, fsdec, fvec=None):
+        idxtmp = np.floor(f_m / f_s_dec * N_DFT).astype('int')
+        
+        # TODO: Nils Olav comment: If we add +1 we will make an error
+        # in cases where we wrap the frequencies (?). The IDX will then
+        # go from 1024 to 1 instead of 1023 to 1 Since 1024 is out of bounds
+        # The index 0 is missed which I suppose is the DC term and OK?
+        # We are clearly doing something wrong here. There
+        # are also duplicates in idx indicating nearest neighbour imputation.
+        # This needs some thought.
+       
+        idx = np.mod(idxtmp, N_DFT) + 1
+        # TODO: Hack to make the code run (do -1 on the index that is out
+        # of bounds)
+        idx[idx == N_DFT] = idx[idx == N_DFT] - 1
+
+        # DFT for the target signal
+        _Y_pc_t_m = np.fft.fft(y_pc_t_n, n=N_DFT)
+        Y_pc_t_m = _Y_pc_t_m[idx]
+
+        # DFT for the transmit signal
+        _Y_mf_auto_red_m = np.fft.fft(y_mf_auto_red_n, n=N_DFT)
+        Y_mf_auto_red_m = _Y_mf_auto_red_m[idx]
+        
+        # The Normalized DFT
+        Y_tilde_pc_t_m = Y_pc_t_m/Y_mf_auto_red_m
+        
+        return Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m
+
+    @staticmethod
+    def calcPowerFreq(N_u, Y_tilde_pc_t_m, z_td_e, z_rx_e):
+        imp = (np.abs(z_rx_e + z_td_e) / np.abs(z_rx_e)) ** 2 / np.abs(z_td_e)
+        P_rx_e_t_m = N_u * (np.abs(Y_tilde_pc_t_m)/(2 * np.sqrt(2))) ** 2 * imp
+        return P_rx_e_t_m
+
+    def calc_g0_m(self, f):
+        if self.isCalibrated:
+            # Calibrated case
+            return np.interp(f, self.frequencies, self.gain)
+        else:
+            # Uncalibrated case
+            return self.G_fnom + 20 * np.log10(f / self.fnom)
+
+    @staticmethod
+    def calcTSf(P_rx_e_t_m, r_t, alpha_m, p_tx_e,
+                lambda_m, g_theta_t_phi_t_f_t):
+
+        TS_m = 10*np.log10(P_rx_e_t_m) \
+               + 40*np.log10(r_t) \
+               + 2*alpha_m*r_t \
+               - 10*np.log10((p_tx_e * lambda_m**2 * g_theta_t_phi_t_f_t ** 2) / (16 * np.pi ** 2))
+        return TS_m
+
+    #
+    # >
+    #
 
     def calcSv(self, power, r0=None, r1=None):
 
@@ -324,109 +440,7 @@ class EK80CalculationPaper(EK80DataContainer):
 
         return Svf, svf_range, f
 
-    @staticmethod
-    def alignAuto(y_mf_auto_n, y_pc_t_n):
-        # The equivalent samples around the peak in the decimated tx signal
-        idx_peak_auto = np.argmax(np.abs(y_mf_auto_n))
-        idx_peak_y_pc_t_n = np.argmax(np.abs(y_pc_t_n))
-
-        left_samples = idx_peak_y_pc_t_n
-        right_samples = len(y_pc_t_n) - idx_peak_y_pc_t_n
-
-        idx_start_auto = max(0, idx_peak_auto - left_samples)
-        idx_stop_auto = min(len(y_mf_auto_n), idx_peak_auto + right_samples)
-
-        y_mf_auto_red_n = y_mf_auto_n[idx_start_auto: idx_stop_auto]
-
-        return y_mf_auto_red_n
     
-    @staticmethod
-    def singleTarget(y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
-                     r0, r1, before=0.5, after=0.5):
-        # This is a pseudo single target detector (SED) using the max peak
-        # power within the range interval [r0 r1] as the single target
-        # detection criteria
-
-        # Get the samples within the sub range defined by the range interval
-        if r0 is not None and r1 is not None:
-            Idx = np.where((r_n >= r0) & (r_n <= r1))
-            r_n_sub = r_n[Idx]
-            y_pc_n_sub = y_pc_n[Idx]
-            p_rx_e_n_sub = p_rx_e_n[Idx]
-            theta_n_sub = theta_n[Idx]
-            phi_n_sub = phi_n[Idx]
-
-        # Use peak power within given range limits as index for single target
-        # to get the range, theta and phi for the single target
-        idx_peak_p_rx = np.argmax(p_rx_e_n_sub)
-        r_t = r_n_sub[idx_peak_p_rx]
-        theta_t = theta_n_sub[idx_peak_p_rx]
-        phi_t = phi_n_sub[idx_peak_p_rx]
-
-        # Extract pulse compressed samples "before" and "after" the peak power
-        r_t_begin = r_t - before
-        r_t_end = r_t + after
-        Idx2 = np.where((r_n_sub >= r_t_begin) & (r_n_sub <= r_t_end))
-        y_pc_t = y_pc_n_sub[Idx2]
-        p_rx_t = p_rx_e_n_sub[Idx2]
-        dum_theta = theta_n_sub[Idx2]
-        dum_phi = phi_n_sub[Idx2]
-        dum_r = r_n_sub[Idx2]
-        
-        return r_t, theta_t, phi_t, y_pc_t, p_rx_t, dum_theta, dum_phi, dum_r 
-
-    @staticmethod
-    def calcDFTforTS(y_pc_t_n, y_mf_auto_red_n, n_f_points, f_m, f_s_dec):
-
-        # The number of DFT points inpower of 2
-        N_DFT = int(2 ** np.ceil(np.log2(n_f_points)))
-        # Corresponding frequency vector
-        
-        # Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m)
-        # def freqtransf(FFTvecin, fsdec, fvec=None):
-        idxtmp = np.floor(f_m / f_s_dec * N_DFT).astype('int')
-        
-        # TODO: Nils Olav comment: If we add +1 we will make an error
-        # in cases where we wrap the frequencies (?). The IDX will then
-        # go from 1024 to 1 instead of 1023 to 1 Since 1024 is out of bounds
-        # The index 0 is missed which I suppose is the DC term and OK?
-        # We are clearly doing something wrong here. There
-        # are also duplicates in idx indicating nearest neighbour imputation.
-        # This needs some thought.
-       
-        idx = np.mod(idxtmp, N_DFT) + 1
-        # TODO: Hack to make the code run (do -1 on the index that is out
-        # of bounds)
-        idx[idx == N_DFT] = idx[idx == N_DFT] - 1
-
-        # DFT for the target signal
-        _Y_pc_t_m = np.fft.fft(y_pc_t_n, n=N_DFT)
-        Y_pc_t_m = _Y_pc_t_m[idx]
-
-        # DFT for the transmit signal
-        _Y_mf_auto_red_m = np.fft.fft(y_mf_auto_red_n, n=N_DFT)
-        Y_mf_auto_red_m = _Y_mf_auto_red_m[idx]
-        
-        # The Normalized DFT
-        Y_tilde_pc_t_m = Y_pc_t_m/Y_mf_auto_red_m
-        
-        return Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m
-    
-    @staticmethod
-    def calcPowerFreq(N_u, Y_tilde_pc_t_m, z_td_e, z_rx_e):
-        imp = (np.abs(z_rx_e + z_td_e) / np.abs(z_rx_e)) ** 2 / np.abs(z_td_e)
-        P_rx_e_t_m = N_u * (np.abs(Y_tilde_pc_t_m)/(2 * np.sqrt(2))) ** 2 * imp
-        return P_rx_e_t_m
-
-    @staticmethod
-    def calcTSf(P_rx_e_t_m, r_t, alpha_m, p_tx_e,
-                lambda_m, g_theta_t_phi_t_f_t):
-
-        TS_m = 10*np.log10(P_rx_e_t_m) \
-               + 40*np.log10(r_t) \
-               + 2*alpha_m*r_t \
-               - 10*np.log10((p_tx_e * lambda_m**2 * g_theta_t_phi_t_f_t ** 2) / (16 * np.pi ** 2))
-        return TS_m
     
     """
         \begin{equation}
@@ -491,13 +505,6 @@ TS_m = 10 * np.log10(P_rx_e_t_m) + \
             # Calibrated case
             return np.interp(f, self.frequencies, self.gain)
 
-    def calc_g0_m(self, f):
-        if self.isCalibrated:
-            # Calibrated case
-            return np.interp(f, self.frequencies, self.gain)
-        else:
-            # Uncalibrated case
-            return self.G_fnom + 20 * np.log10(f / self.fnom)
 
 
 
