@@ -6,10 +6,31 @@ from Core.EK80DataContainer import EK80DataContainer
 #
 # Test data
 #
+# Four datasets (single pings) are available
+#
+# 'TS_Sphere_Centre': Calibration sphere in the centre of beam
+# 'TS_Sphere_Beam': Calibration sphere off-axis
+# 'TS_Fish': Demersal fish
+# 'Sv_School': Herring school
+# 'Old': Old datafile, LSSSEK80data.json
+#
 
-data = EK80DataContainer('./data/pyEcholabEK80data.json')
-# data = EK80DataContainer('./data/CRIMAC_SphereCentre.json')  # Ts sphere
-# data = EK80DataContainer('./data/CRIMAC_Svf.json')  # School
+#dataset='TS_Sphere_Centre'
+#dataset='TS_Sphere_Beam'
+#dataset='TS_Fish'
+#dataset='Sv_School'
+dataset='Old'
+
+if dataset == 'TS_Sphere_Centre':
+    data = EK80DataContainer('./data/CRIMAC_SphereCentre.json')  # TS sphere
+elif dataset == 'TS_Sphere_Beam':
+    data = EK80DataContainer('./data/CRIMAC_SphereBeam.json')  # TS sphere
+elif dataset == 'TS_Fish':
+    data = EK80DataContainer('./data/CRIMAC_TSf.json')  # TS fish
+elif dataset == 'Sv_School':
+    data = EK80DataContainer('./data/CRIMAC_Svf.json')  # Sv school 
+elif dataset == 'Old':
+    data = EK80DataContainer('./data/pyEcholabEK80data.json')  # Old dataset
 
 # Unpack variabels
 z_td_e, f_s, n_f_points = data.cont.getParameters()
@@ -231,10 +252,31 @@ plt.savefig('./Paper/Fig_theta_phi.png')
 #
 
 # Get parameters
-r0 = 10
-r1 = 30
-before = 0.5
-after = 1
+if dataset == 'TS_Sphere_Centre':
+    r0 = 4
+    r1 = 5.1
+    before = 0.5
+    after = 1
+elif dataset == 'TS_Sphere_Beam':
+    r0 = 5.8-0.5
+    r1 = 5.8+0.5
+    before = 0.5
+    after = 1
+elif dataset == 'TS_Fish':
+    r0 = 12-0.5
+    r1 = 12+0.5
+    before = 0.5
+    after = 1
+elif dataset == 'Sv_School':
+    r0 = 50
+    r1 = 90
+    before = 0.5
+    after = 1
+elif dataset == 'Old':
+    r0 = 10
+    r1 = 30
+    before = 0.5
+    after = 1
 
 # Calculate the point scattering strength (Sp)
 Sp_n = EK80CalculationPaper.calcSp(

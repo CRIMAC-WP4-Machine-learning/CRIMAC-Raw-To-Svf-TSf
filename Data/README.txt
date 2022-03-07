@@ -25,7 +25,7 @@ Seafloor 12/13 m
 D:\CRIMAC\CRIMAC_WP1\SphereCentre\IMR123-D20211215-T094621.raw
 Single sphere - WC35
 Ping no 510
-Range/depth 4.5 m
+Range/depth 5.8 m
 Off axis 2 deg
 Seafloor 12/13 m
 120 kHz
