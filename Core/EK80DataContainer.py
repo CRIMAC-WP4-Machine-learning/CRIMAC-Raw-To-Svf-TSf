@@ -15,9 +15,13 @@ from Core.FIL1 import FIL1
 class Derived:
     def __init__(self, frqp, parm, trdu, envr):
 
-        self.Gfc = self.calc_Gfc(frqp, parm,trdu)
-        self.PSI_f = 10*np.log10(trdu.psi_f_n/10) + 20 * np.log10(trdu.f_n / frqp.frequencies)
-        self.g_0_f_c = np.power(self.Gfc/10, 10)
+        Gfc = self.calc_Gfc(frqp, parm, trdu)
+
+        self.gfc = 10 * np.log10(Gfc/10)
+        PSI_f = 10 * np.log10(trdu.psi_f_n / 10) + 20 * np.log10(trdu.f_n / frqp.frequencies)
+
+        self.psi_f = np.power(PSI_f/10, 10)
+        self.g_0_f_c = np.power(Gfc/10, 10)
         self.lambda_f_c = envr.c/parm.f_c
 
     @staticmethod
@@ -31,7 +35,7 @@ class Derived:
 
 
     def getParameters(self):
-        return self.g_0_f_c, self.lambda_f_c, self.PSI_f
+        return self.g_0_f_c, self.lambda_f_c, self.psi_f
 
 
 class Constants:
