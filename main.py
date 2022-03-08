@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from Core.EK80CalculationPaper import EK80CalculationPaper
+from Core.Calculation import EK80CalculationPaper
 from Core.EK80DataContainer import EK80DataContainer
 
 #

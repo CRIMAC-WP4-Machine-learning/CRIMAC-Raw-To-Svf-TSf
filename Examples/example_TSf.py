@@ -3,7 +3,7 @@ import numpy as np
 import argparse
 
 from Core.EK80DataContainer import EK80DataContainer
-from Core.EK80CalculationPaper import EK80CalculationPaper
+from Core.Calculation import EK80CalculationPaper
 
 # python example_TSf.py --file ..\Data\pyEcholabEK80data.json --r0 10 --r1 30 --before 0.5 --after 1
 if __name__ == '__main__':
