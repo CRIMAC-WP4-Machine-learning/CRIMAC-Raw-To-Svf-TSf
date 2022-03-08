@@ -57,10 +57,6 @@ filter_v, N_v = data.filt.getParameters()
 
 offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 
-# Ruben: the Psi should be the Psi_f_n, i.e. the Psi at the nominal frequency
-# for the transducer. The function EK80CalculationPaper.calc_Psi_f will convert
-# to Psi_f_c, which is the center freq for the chirp. g and lambda are already
-# converted to f_c.
 
 g_0_f_c, lambda_f_c, _ = data.deriv.getParameters()
 
