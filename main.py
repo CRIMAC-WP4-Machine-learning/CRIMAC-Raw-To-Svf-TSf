@@ -43,10 +43,10 @@ f_0, f_1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
 f_m = np.linspace(f_0, f_1, n_f_points)
 
 
-f_n, G_fnom, Psi_f_n, angle_offset_alongship_fnom, \
-    angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
-    angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
-    beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
+f_n, G_fnom, psi_f_n, angle_offset_alongship_fnom, \
+angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
+angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
+beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
 
 c, alpha, temperature, salinity, \
     acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
@@ -89,9 +89,9 @@ lambda_m = data.calc_lambda_f(f_m)
 alpha_m = data.calc_alpha_f(f_m)
 
 # Calculate Psi for f_c and on the f_m grid
-Psi_f_c = EK80CalculationPaper.calc_Psi_f(Psi_f_n, f_n, f_c)
+Psi_f_c = EK80CalculationPaper.calc_Psi_f(psi_f_n, f_n, f_c)
 # TODO: double check this. I think it is ok:
-Psi_m = EK80CalculationPaper.calc_Psi_f(Psi_f_n, f_n, f_m)
+Psi_m = EK80CalculationPaper.calc_Psi_f(psi_f_n, f_n, f_m)
 
 #
 # Chapter IIB: Signal generation

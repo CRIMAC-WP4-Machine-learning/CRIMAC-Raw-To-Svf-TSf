@@ -16,7 +16,7 @@ class Derived:
     def __init__(self, frqp, parm, trdu, envr):
 
         self.Gfc = self.calc_Gfc(frqp, parm,trdu)
-        self.PSI_f = trdu.Psi_f_c + 20 * np.log10(trdu.f_n / frqp.frequencies)
+        self.PSI_f = 10*np.log10(trdu.psi_f_n/10) + 20 * np.log10(trdu.f_n / frqp.frequencies)
         self.g_0_f_c = np.power(self.Gfc/10, 10)
         self.lambda_f_c = envr.c/parm.f_c
 
@@ -69,8 +69,8 @@ class Transducer:
     def __init__(self, xml):
         self.f_n = xml['Frequency']  # nominal design frequency for the transducer
         self.G_fnom = xml['GainNom']
-        Psi_f_n_dB = xml['EquivalentBeamAngle']
-        self.Psi_f_n = 10 ** (Psi_f_n_dB/10) # Make linear
+        Psi_f_n = xml['EquivalentBeamAngle']
+        self.psi_f_n = 10 ** (Psi_f_n / 10) # Make linear
         self.angle_offset_alongship_fnom = xml['AngleOffsetAlongship']
         self.angle_offset_athwartship_fnom = xml['AngleOffsetAthwartship']
         self.angle_sensitivity_alongship_fnom = xml['AngleSensitivityAlongship']
@@ -80,7 +80,7 @@ class Transducer:
         self.corrSa = xml['SaCorrection']
 
     def getParameters(self):
-        return self.f_n, self.G_fnom, self.Psi_f_n, self.angle_offset_alongship_fnom, \
+        return self.f_n, self.G_fnom, self.psi_f_n, self.angle_offset_alongship_fnom, \
                self.angle_offset_athwartship_fnom, self.angle_sensitivity_alongship_fnom, \
                self.angle_sensitivity_athwartship_fnom, self.beam_width_alongship_fnom, \
                self.beam_width_athwartship_fnom, self.corrSa
