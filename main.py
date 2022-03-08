@@ -42,9 +42,7 @@ f_0, f_1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
 # The frequency vector for both Ts and Sv (grid for index m)
 f_m = np.linspace(f_0, f_1, n_f_points)
 
-# TODO: Double check that it is Psi_f_n and no Psi_f_c
-# We return 10 ** (Psi_f_c/10), where Psi_f_c = xml['EquivalentBeamAngle']
-# xml['EquivalentBeamAngle'] comes from simrad, so we need to clarify with them
+
 f_n, G_fnom, Psi_f_n, angle_offset_alongship_fnom, \
     angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
     angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \

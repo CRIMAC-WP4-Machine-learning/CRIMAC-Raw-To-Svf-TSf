@@ -69,8 +69,8 @@ class Transducer:
     def __init__(self, xml):
         self.f_n = xml['Frequency']  # nominal design frequency for the transducer
         self.G_fnom = xml['GainNom']
-        Psi_f_c = xml['EquivalentBeamAngle']  # TODO: I think this is the Psi_f_n and not Psi_f_c. Right?
-        self.Psi_f_c = 10 ** (Psi_f_c/10) # Make linear
+        Psi_f_n_dB = xml['EquivalentBeamAngle']  # TODO: I think this is the Psi_f_n and not Psi_f_c. Right?
+        self.Psi_f_n = 10 ** (Psi_f_n_dB/10) # Make linear
         self.angle_offset_alongship_fnom = xml['AngleOffsetAlongship']
         self.angle_offset_athwartship_fnom = xml['AngleOffsetAthwartship']
         self.angle_sensitivity_alongship_fnom = xml['AngleSensitivityAlongship']
@@ -80,7 +80,7 @@ class Transducer:
         self.corrSa = xml['SaCorrection']
 
     def getParameters(self):
-        return self.f_n, self.G_fnom, self.Psi_f_c, self.angle_offset_alongship_fnom, \
+        return self.f_n, self.G_fnom, self.Psi_f_n, self.angle_offset_alongship_fnom, \
                self.angle_offset_athwartship_fnom, self.angle_sensitivity_alongship_fnom, \
                self.angle_sensitivity_athwartship_fnom, self.beam_width_alongship_fnom, \
                self.beam_width_athwartship_fnom, self.corrSa
