@@ -69,7 +69,7 @@ class Transducer:
     def __init__(self, xml):
         self.f_n = xml['Frequency']  # nominal design frequency for the transducer
         self.G_fnom = xml['GainNom']
-        Psi_f_n_dB = xml['EquivalentBeamAngle']  # TODO: I think this is the Psi_f_n and not Psi_f_c. Right?
+        Psi_f_n_dB = xml['EquivalentBeamAngle']
         self.Psi_f_n = 10 ** (Psi_f_n_dB/10) # Make linear
         self.angle_offset_alongship_fnom = xml['AngleOffsetAlongship']
         self.angle_offset_athwartship_fnom = xml['AngleOffsetAthwartship']
