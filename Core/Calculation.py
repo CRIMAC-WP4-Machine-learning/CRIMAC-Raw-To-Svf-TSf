@@ -442,7 +442,7 @@ class EK80CalculationPaper(EK80DataContainer):
                 Psi_f, g_0_m, c, svf_range):
         
         # Initialize list of Svf by range
-        Sv_m_n = []
+        Sv_m_n=np.empty([len(svf_range),len(alpha_m)],dtype=float)
 
         G = (p_tx_e * lambda_m ** 2 * c * t_w * Psi_f * g_0_m ** 2)/(
             32 * np.pi ** 2)
@@ -451,9 +451,9 @@ class EK80CalculationPaper(EK80DataContainer):
         for P_rx_e_t_m in P_rx_e_t_m_n:
             Sv_m = 10 * np.log10(
                 P_rx_e_t_m) + 2 * alpha_m * svf_range[n] - 10 * np.log10(G)
-            # Append power to list
+            # Add to array
+            Sv_m_n[n,]=Sv_m
             n += 1
-            Sv_m_n.append(Sv_m)
         
         return Sv_m_n
 
