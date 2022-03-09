@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from Core.Calculation import Calculation
 from Core.EK80DataContainer import EK80DataContainer
+from matplotlib.pyplot import figure, show, subplots_adjust, get_cmap
 
 #
 # Test data Sv - Herring school, single ping
@@ -167,34 +168,40 @@ Sv_m_n = Calculation.calcSvf(P_rx_e_t_m_n,
                                       Psi_m, g_0_m, c, svf_range)
         
 
-# fig, axs = plt.subplots(2)
-# axs[0].plot(t_w_n, w_tilde_i)
-# axs[0].set_ylabel('w_tilde_i')
-# axs[1].pcolormesh(f_m,svf_range,Sv_m_n)
-# axs[1].set_ylabel('w_tilde_i')
-# axs[1].set_xlabel('t (s)')
-# plt.savefig('./Paper/Fig_Svf.png')
 
-#fig3 = figure()
-plt.pcolormesh(f_m/1000,svf_range,Sv_m_n,vmin=-180, vmax=-120)
+fig, axs = plt.subplots(2)
+axs[0].plot(t_w_n, w_tilde_i)
+axs[0].set_ylabel('w_tilde_i')
+axs[1].plot(t_w_n, w_tilde_i)
+axs[1].set_ylabel('w_tilde_i')
+axs[1].set_xlabel('t (s)')
+plt.savefig('./Paper/Fig_Svf.png')
+
+# Plot Sv(f) for entire ping
+fig = figure()
+plt.pcolormesh(f_m/1000,svf_range,Sv_m_n,vmin=-180, vmax=-120, shading='auto')
 plt.colorbar()
 plt.title('Echogram [Sv]')
 plt.xlabel('Frequency [kHz]')
 plt.ylabel('Range [m]')
 plt.show()
 
-plt.plot(Sv_m_n[7000,])
-
-indices=np.where(np.logical_and(svf_range>=60, svf_range<=70))
-# returns (array([3, 4, 5]),)
+indices=np.where(np.logical_and(svf_range>=15, svf_range<=34))
 Sv=[]
+
+# Plot Sv(f) in one depth in the middle of layer
+plt.plot(Sv_m_n[int(len(indices[0]) / 2) - 1,])
+plt.title('Sv(f) at one depth')
+plt.xlabel('Frequency [kHz]')
+plt.ylabel('Sv')
+plt.grid()
+
 for i in range(len(f_m)):
     sv=10**(Sv_m_n[indices,i]/10)
     sv=sv.mean()
     Sv.append(10*np.log10(sv))
 
 # plot a Sv(f) over school
-from matplotlib.pyplot import figure, show, subplots_adjust, get_cmap
 fig1 = figure()
 sv=plt.plot(f_m/1000,Sv) # values are for some reason to low, add ~17dB
 plt.title('Sv(f) averaged over school depths')
@@ -202,3 +209,7 @@ plt.xlabel('Frequency [kHz]')
 plt.ylabel('Range [m]')
 plt.grid()
 plt.show()
+
+# Store Sv(f) and f for further analysis
+SvfOut = np.concatenate((f_m[np.newaxis],Sv_m_n), axis=0)
+np.save('Svf.npy',SvfOut)

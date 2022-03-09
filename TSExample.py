@@ -309,4 +309,6 @@ axs[4].set_xlabel('f (Hz)')
 axs[4].set_ylabel('TS(f)')
 plt.savefig('./Paper/Fig_TS.png')
 
-
+# Store TS(f) and f for further analysis
+TSfOut = np.stack((f_m,TS_m), axis=0)
+np.save('TSf.npy',TSfOut)
