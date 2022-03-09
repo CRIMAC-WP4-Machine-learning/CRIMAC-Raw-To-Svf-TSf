@@ -166,13 +166,13 @@ Sv_m_n = EK80CalculationPaper.calcSvf(P_rx_e_t_m_n,
                                       Psi_m, g_0_m, c, svf_range)
         
 
-# fig, axs = plt.subplots(2)
-# axs[0].plot(t_w_n, w_tilde_i)
-# axs[0].set_ylabel('w_tilde_i')
-# axs[1].pcolormesh(f_m,svf_range,Sv_m_n)
-# axs[1].set_ylabel('w_tilde_i')
-# axs[1].set_xlabel('t (s)')
-# plt.savefig('./Paper/Fig_Svf.png')
+fig, axs = plt.subplots(2)
+axs[0].plot(t_w_n, w_tilde_i)
+axs[0].set_ylabel('w_tilde_i')
+axs[1].pcolormesh(f_m,svf_range,Sv_m_n)
+axs[1].set_ylabel('w_tilde_i')
+axs[1].set_xlabel('t (s)')
+plt.savefig('./Paper/Fig_Svf.png')
 
 #fig3 = figure()
 plt.pcolormesh(f_m/1000,svf_range,Sv_m_n,vmin=-180, vmax=-120)
@@ -183,6 +183,10 @@ plt.ylabel('Range [m]')
 plt.show()
 
 plt.plot(Sv_m_n[7000,])
+plt.title('Sv(f) at one depth')
+plt.xlabel('Frequency [kHz]')
+plt.ylabel('Sv')
+plt.grid()
 
 indices=np.where(np.logical_and(svf_range>=60, svf_range<=70))
 # returns (array([3, 4, 5]),)
