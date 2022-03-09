@@ -30,6 +30,7 @@ beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
 
 c, alpha, temperature, salinity, \
     acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
+
 frequencies, gain, angle_offset_athwartship, angle_offset_alongship, \
     beam_width_athwartship, beam_width_alongship = data.frqp.getParameters()
 
