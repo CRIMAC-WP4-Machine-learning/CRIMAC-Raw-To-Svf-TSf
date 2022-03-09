@@ -3,7 +3,7 @@ import numpy as np
 from Core.EK80DataContainer import EK80DataContainer
 
 
-class EK80CalculationPaper(EK80DataContainer):
+class Calculation(EK80DataContainer):
 
     #
     # Chapter IIB: Signal generation
@@ -13,9 +13,9 @@ class EK80CalculationPaper(EK80DataContainer):
     def generateIdealWindowedSendPulse(f0, f1, tau, fs, slope):
         nsamples = int(np.floor(tau * fs))
         t = np.linspace(0, nsamples - 1, num=nsamples) * 1 / fs
-        y = EK80CalculationPaper.chirp(t, f0, tau, f1)
+        y = Calculation.chirp(t, f0, tau, f1)
         L = int(np.round(tau * fs * slope * 2.0))  # Length of hanning window
-        w = EK80CalculationPaper.hann(L)
+        w = Calculation.hann(L)
         N = len(y)
         w1 = w[0:int(len(w) / 2)]
         w2 = w[int(len(w) / 2):-1]
@@ -332,7 +332,7 @@ class EK80CalculationPaper(EK80DataContainer):
         t_w_n = np.arange(0, N_w) * f_s_dec
         t_w = N_w * f_s_dec
         
-        w_i = EK80CalculationPaper.hann(N_w)
+        w_i = Calculation.hann(N_w)
         w_tilde_i = w_i / (np.linalg.norm(w_i) / np.sqrt(N_w))
         
         return w_tilde_i, N_w, t_w, t_w_n
@@ -347,8 +347,8 @@ class EK80CalculationPaper(EK80DataContainer):
 
         # The DFT of the ACf of the mathced filter signal
         _Y_mf_auto_m = np.fft.fft(y_mf_auto_n, n=N_w)
-        Y_mf_auto_m = EK80CalculationPaper.freqtransf(_Y_mf_auto_m,
-                                                      f_s_dec, f_m)
+        Y_mf_auto_m = Calculation.freqtransf(_Y_mf_auto_m,
+                                             f_s_dec, f_m)
 
         svf_range = []
         min_sample = 0  # int(r0 / dr)
@@ -375,7 +375,7 @@ class EK80CalculationPaper(EK80DataContainer):
                 last_bin = True
                 bin_stop_sample = max_sample
                 sub_yspread = y_pc_s_n[bin_start_sample:bin_stop_sample]
-                w = EK80CalculationPaper.hann(len(sub_yspread))
+                w = Calculation.hann(len(sub_yspread))
                 w = w / (np.linalg.norm(w) / np.sqrt(len(sub_yspread)))
                 yspread_bin = w * sub_yspread
 
@@ -386,7 +386,7 @@ class EK80CalculationPaper(EK80DataContainer):
 
             # Calculate the dft of the windowed signal
             _Y_pc_v_m = np.fft.fft(yspread_bin, n=N_w)
-            Y_pc_v_m = EK80CalculationPaper.freqtransf(_Y_pc_v_m, f_s_dec, f_m)
+            Y_pc_v_m = Calculation.freqtransf(_Y_pc_v_m, f_s_dec, f_m)
 
             # Scale the DFT with the acf of the mathed filter signal
             Y_tilde_pc_v_m = Y_pc_v_m / Y_mf_auto_m
