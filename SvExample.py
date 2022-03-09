@@ -177,7 +177,7 @@ axs[1].set_xlabel('t (s)')
 plt.savefig('./Paper/Fig_Svf.png')
 
 fig = figure()
-plt.pcolormesh(f_m/1000,svf_range,Sv_m_n,vmin=-180, vmax=-120)
+plt.pcolormesh(f_m/1000,svf_range,Sv_m_n,vmin=-180, vmax=-120, shading='auto')
 plt.colorbar()
 plt.title('Echogram [Sv]')
 plt.xlabel('Frequency [kHz]')
@@ -206,3 +206,7 @@ plt.xlabel('Frequency [kHz]')
 plt.ylabel('Range [m]')
 plt.grid()
 plt.show()
+
+# Store Sv(f) and f for further analysis
+SvfOut = np.concatenate((f_m[np.newaxis],Sv_m_n), axis=0)
+np.save('Svf.npy',SvfOut)
