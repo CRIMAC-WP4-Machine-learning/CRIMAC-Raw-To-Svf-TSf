@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from Core.EK80CalculationPaper import EK80CalculationPaper
 from Core.EK80DataContainer import EK80DataContainer
+from matplotlib.pyplot import figure, show, subplots_adjust, get_cmap
 
 #
 # Test data Sv - Herring school, single ping
@@ -175,7 +176,7 @@ axs[1].set_ylabel('w_tilde_i')
 axs[1].set_xlabel('t (s)')
 plt.savefig('./Paper/Fig_Svf.png')
 
-#fig3 = figure()
+fig = figure()
 plt.pcolormesh(f_m/1000,svf_range,Sv_m_n,vmin=-180, vmax=-120)
 plt.colorbar()
 plt.title('Echogram [Sv]')
@@ -198,7 +199,6 @@ for i in range(len(f_m)):
     Sv.append(10*np.log10(sv))
 
 # plot a Sv(f) over school
-from matplotlib.pyplot import figure, show, subplots_adjust, get_cmap
 fig1 = figure()
 sv=plt.plot(f_m/1000,Sv) # values are for some reason to low, add ~17dB
 plt.title('Sv(f) averaged over school depths')
