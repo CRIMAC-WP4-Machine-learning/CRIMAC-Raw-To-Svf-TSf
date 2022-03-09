@@ -1,4 +1,11 @@
 **********CRIMAC_Svf.json***********
+D:\\CRIMAC\\CRIMAC_WP1\\Svf\\D20210507-T074652.raw
+School
+PingNo 514
+Depth 25-42m
+120 kHz
+(non-swimbladder fish)
+**********OLDCRIMAC_Svf.json***********
 D:\\CRIMAC\\CRIMAC_WP1\\Svf\\2020116_PS4-D20201121-T132554.raw
 School
 PingNo 56
