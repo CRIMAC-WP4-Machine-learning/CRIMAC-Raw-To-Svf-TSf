@@ -6,11 +6,12 @@ from Core.EK80DataContainer import EK80DataContainer
 
 def preCalculations(data):
 
+    global filter_v, f_s_dec_v
     global f_0,f_1, tau, f_s, slope, filter_v, z_td_e, z_rx_e, N_u,y_tx_n
     global angle_sensitivity_alongship_fnom,angle_sensitivity_athwartship_fnom
     global f_c, f_n, y_rx_nu,  r_n, alpha_f_c, p_tx_e, lambda_f_c, g_0_f_c
     global n_f_points, f_m, alpha_m, p_tx_e, lambda_m, c, tau_eff, Psi_f_c
-    global y_tx_n05slope, t
+    #global y_tx_n05slope, t
     global Psi_m, g_0_m, dr
     global Sv_m_n, svf_range
 
@@ -70,10 +71,10 @@ def preCalculations(data):
         f_0, f_1, tau, f_s, slope)
 
 
-    plot_ytx(f_0, f_1, tau, f_s)
+    plot_ytx()
 
 
-def plot_ytx(f_0, f_1, tau, f_s):
+def plot_ytx():
 
     y_tx_n05slope, t = Calculation.generateIdealWindowedSendPulse(
         f_0, f_1, tau, f_s, .5)
@@ -87,9 +88,11 @@ def plot_ytx(f_0, f_1, tau, f_s):
     plt.ylabel('amplitude')
     plt.savefig('./Paper/Fig_ytx.png')
 
-def calcTS():
+def calc_TS():
 
-
+    global f_s_dec_v, y_mf_n, y_mf_auto_n, theta_n,phi_n
+    global f_m,Y_pc_t_m,Y_mf_auto_red_m,Y_tilde_pc_t_m,g_theta_phi_m,TS_m
+    global dum_r, dum_p, dum_phi, dum_theta, r_t, phi_t, y_mf_auto_red_n
     #
     # Chapter IIC: Signal reception
     #
@@ -116,7 +119,7 @@ def calcTS():
     # The final sampling frequency
     f_s_dec = f_s_dec_v[-1]
 
-    plot_fir(filter_v, f_s_dec_v)
+    plot_fir()
 
 
     #
@@ -134,14 +137,14 @@ def calcTS():
     # filter stage for the matched filter.
     y_mf_n = y_tilde_tx_nv[-1]
 
-    plot_FiltOutSig(y_mf_n)
+    plot_y_mf_n()
 
     # The autocorrelation function and efficient pulse duration of the mathced
     # filter
     y_mf_auto_n, tau_eff = Calculation.calcAutoCorrelation(
         y_mf_n, f_s_dec)
 
-    plot_ACF(y_mf_auto_n)
+    plot_ACF()
 
     # Calculating the pulse compressed quadrant signals separately on each channel
     y_pc_nu = Calculation.calcPulseCompressedQuadrants(y_rx_nu, y_mf_n)
@@ -179,7 +182,7 @@ def calcTS():
         gamma_theta,
         gamma_phi)
 
-    plot_theta_phi(theta_n,phi_n)
+    plot_theta_phi()
 
     #
     # Chapter III: TARGET STRENGTH
@@ -212,7 +215,7 @@ def calcTS():
     # Pick the reduced samples from the mathed filtered decimated send pulse
     y_mf_auto_red_n = Calculation.alignAuto(y_mf_auto_n, y_pc_t_n)
 
-    plt_singleTarget(dum_r, dum_p,dum_phi,dum_theta,r_t, phi_t,y_mf_auto_red_n)
+    plt_single_target()
 
     # DFT on the pulse compressed received signal and the pulse compressed
     # send pulse signal (reduced and matched filtered)
@@ -227,22 +230,16 @@ def calcTS():
         z_td_e,
         z_rx_e)
 
-    # Calculate the target strength
-    """
-    g_theta_t_phi_t_f_t = data.calc_B_theta_phi_m(theta_t, phi_t, f_m)
-    G0_m = data.calc_G0_m(f_m)
-    G_theta_phi_m = G0_m - g_theta_t_phi_t_f_t
-    """
     g_theta_phi_m = data.calc_g(theta_t, phi_t, f_m)
 
     TS_m = Calculation.calcTSf(
         P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m,
         g_theta_phi_m)
 
-    plot_TS(f_m,Y_pc_t_m,Y_mf_auto_red_m,Y_tilde_pc_t_m,g_theta_phi_m,TS_m)
+    plot_TS()
 
 
-def plot_fir(filter_v, f_s_dec_v):
+def plot_fir():
     # The frequency response function of the filter is given by its
     # discrete time fourier transform:
     H0 = np.fft.fft(filter_v[0]["h_fl_i"])
@@ -270,7 +267,7 @@ def plot_fir(filter_v, f_s_dec_v):
     plt.savefig('./Paper/Fig_fir.png')
 
 
-def plot_FiltOutSig(y_mf_n):
+def plot_y_mf_n():
     plt.figure()
     plt.plot(np.abs(y_mf_n))
     plt.title('The absolute value of the filtered and decimated output signal')
@@ -278,7 +275,7 @@ def plot_FiltOutSig(y_mf_n):
     plt.ylabel('amplitude')
     plt.savefig('./Paper/Fig_y_mf_n.png')
 
-def plot_ACF(y_mf_auto_n):
+def plot_ACF():
     plt.figure()
     plt.plot(np.abs(y_mf_auto_n))
     plt.title('The autocorrelation function of the matched filter.')
@@ -286,7 +283,7 @@ def plot_ACF(y_mf_auto_n):
     plt.ylabel('ACF')
     plt.savefig('./Paper/Fig_ACF.png')
 
-def plot_theta_phi(theta_n,phi_n):
+def plot_theta_phi():
     # Plot angles
     plt.figure()
     plt.plot(theta_n)
@@ -296,7 +293,7 @@ def plot_theta_phi(theta_n,phi_n):
     plt.ylabel('angles')
     plt.savefig('./Paper/Fig_theta_phi.png')
 
-def plt_singleTarget(dum_r, dum_p,dum_phi,dum_theta,r_t, phi_t,y_mf_auto_red_n):
+def plt_single_target():
     fig, axs = plt.subplots(3)
     fig.suptitle('Single target')
     axs[0].plot(dum_r, dum_p)
@@ -312,7 +309,7 @@ def plt_singleTarget(dum_r, dum_p,dum_phi,dum_theta,r_t, phi_t,y_mf_auto_red_n):
     axs[2].set_xlabel('range (m)')
     plt.savefig('./Paper/Fig_singleTarget.png')
 
-def plot_TS(f_m,Y_pc_t_m,Y_mf_auto_red_m,Y_tilde_pc_t_m,g_theta_phi_m,TS_m):
+def plot_TS():
     fig, axs = plt.subplots(5)
     axs[0].plot(f_m, np.abs(Y_pc_t_m))
     axs[0].set_ylabel('Y_tilde_pc_t_m')
@@ -329,7 +326,10 @@ def plot_TS(f_m,Y_pc_t_m,Y_mf_auto_red_m,Y_tilde_pc_t_m,g_theta_phi_m,TS_m):
     plt.savefig('./Paper/Fig_TS.png')
 
 
-def calcSv():
+def calc_Sv():
+
+    global f_m,svf_range,Sv_m_n
+
     # Generate ideal send pulse
     y_tx_n, t = Calculation.generateIdealWindowedSendPulse(
         f_0, f_1, tau, f_s, slope)
@@ -431,10 +431,10 @@ def calcSv():
                                  Psi_m, g_0_m, c, svf_range)
 
 
-    plotSvf(f_m,svf_range,Sv_m_n)
+    plotSvf()
 
 
-def plotSvf(f_m,svf_range,Sv_m_n):
+def plotSvf():
     _f = f_m / 1000
     plt.imshow(Sv_m_n, extent=[_f[0], _f[-1], svf_range[0], svf_range[-1]], origin='lower', vmin=-180, vmax=-120,
                interpolation=None)
@@ -469,8 +469,8 @@ if __name__ == '__main__':
 
     data = EK80DataContainer('./data/CRIMAC_Svf.json')
     preCalculations(data)
-    calcSv()    
+    calc_Sv()
 
     data = EK80DataContainer('./data/CRIMAC_SphereBeam.json')  # TS sphere
     preCalculations(data)
-    calcTS()
+    calc_TS()
