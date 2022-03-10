@@ -399,16 +399,9 @@ def calcSv():
                                  alpha_m, p_tx_e, lambda_m, t_w,
                                  Psi_m, g_0_m, c, svf_range)
 
-    # fig, axs = plt.subplots(2)
-    # axs[0].plot(t_w_n, w_tilde_i)
-    # axs[0].set_ylabel('w_tilde_i')
-    # axs[1].pcolormesh(f_m,svf_range,Sv_m_n)
-    # axs[1].set_ylabel('w_tilde_i')
-    # axs[1].set_xlabel('t (s)')
-    # plt.savefig('./Paper/Fig_Svf.png')
 
-    # fig3 = figure()
-    plt.pcolormesh(f_m / 1000, svf_range, Sv_m_n, vmin=-180, vmax=-120)
+    _f=f_m / 1000
+    plt.imshow(Sv_m_n, extent=[_f[0], _f[-1],svf_range[0], svf_range[-1]],origin='lower', vmin=-180, vmax=-120,interpolation=None)
     plt.colorbar()
     plt.title('Echogram [Sv]')
     plt.xlabel('Frequency [kHz]')
