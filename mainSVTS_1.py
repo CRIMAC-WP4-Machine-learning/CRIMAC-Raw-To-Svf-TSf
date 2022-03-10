@@ -263,7 +263,7 @@ def plot_fir():
              [f_0, f_1], [-140, -140])
     plt.xlabel('frequency (Hz)')
     plt.ylabel('Gain (dB)')
-    plt.xlim([0, 100000])
+    plt.xlim([50000, 210000])
     plt.savefig('./Paper/Fig_fir.png')
 
 
@@ -279,7 +279,7 @@ def plot_ACF():
     plt.figure()
     plt.plot(np.abs(y_mf_auto_n))
     plt.title('The autocorrelation function of the matched filter.')
-    plt.xlabel('samples')
+    plt.xlabel('Samples')
     plt.ylabel('ACF')
     plt.savefig('./Paper/Fig_ACF.png')
 
@@ -290,7 +290,7 @@ def plot_theta_phi():
     plt.plot(phi_n)
     plt.title('The physical angles.')
     plt.xlabel(' ')
-    plt.ylabel('angles')
+    plt.ylabel('Angles')
     plt.savefig('./Paper/Fig_theta_phi.png')
 
 def plt_single_target():
@@ -306,7 +306,7 @@ def plt_single_target():
     axs[1].set_ylabel('Angles')
     axs[2].plot(dum_r, np.abs(y_mf_auto_red_n))
     axs[2].set_ylabel(' ')
-    axs[2].set_xlabel('range (m)')
+    axs[2].set_xlabel('Range [m]')
     plt.savefig('./Paper/Fig_singleTarget.png')
 
 def plot_TS():
@@ -444,7 +444,14 @@ def plotSvf():
     plt.ylabel('Range [m]')
     plt.show()
 
-    plt.plot(Sv_m_n[7000,])
+    # Plot Sv(f) in one depth in the middle of layer
+    indices=np.where(np.logical_and(svf_range>=15, svf_range<=34))
+    Sv=[]
+    plt.plot(Sv_m_n[int(len(indices[0]) / 2) - 1,])
+    plt.title('Sv(f) at one depth')
+    plt.xlabel('Frequency [kHz]')
+    plt.ylabel('Sv')
+    plt.grid()
 
     indices = np.where(np.logical_and(svf_range >= 60, svf_range <= 70))
     # returns (array([3, 4, 5]),)
