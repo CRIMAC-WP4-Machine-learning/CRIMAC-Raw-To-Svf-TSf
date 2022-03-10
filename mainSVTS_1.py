@@ -69,13 +69,15 @@ def preCalculations(data):
     y_tx_n, t = Calculation.generateIdealWindowedSendPulse(
         f_0, f_1, tau, f_s, slope)
 
+
+    plot_ytx(f_0, f_1, tau, f_s)
+
+
+def plot_ytx(f_0, f_1, tau, f_s):
+
     y_tx_n05slope, t = Calculation.generateIdealWindowedSendPulse(
         f_0, f_1, tau, f_s, .5)
 
-    plot_ytx(t,y_tx_n,y_tx_n05slope,f_0,f_1)
-
-
-def plot_ytx(t,y_tx_n,y_tx_n05slope,f_0,f_1):
     plt.figure()
     plt.plot(t * 1000, y_tx_n, t * 1000, y_tx_n05slope)
     plt.title(
