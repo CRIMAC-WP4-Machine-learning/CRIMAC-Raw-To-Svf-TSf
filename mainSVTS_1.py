@@ -325,7 +325,10 @@ def plot_TS():
     axs[4].set_ylabel('TS(f)')
     plt.savefig('./Paper/Fig_TS.png')
 
-
+    # Store TS(f) and f for further analysis
+    TSfOut = np.stack((f_m,TS_m), axis=0)
+    np.save('TSf.npy',TSfOut)
+    
 def calc_Sv():
 
     global f_m,svf_range,Sv_m_n
@@ -470,6 +473,9 @@ def plotSvf():
     plt.ylabel('Range [m]')
     plt.grid()
 
+    # Store Sv(f) and f for further analysis
+    SvfOut = np.concatenate((f_m[np.newaxis],Sv_m_n), axis=0)
+    np.save('Svf.npy',SvfOut)
 
 if __name__ == '__main__':
 
