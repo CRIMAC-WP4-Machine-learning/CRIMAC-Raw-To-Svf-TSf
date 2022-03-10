@@ -64,7 +64,7 @@ def preCalculations(data):
     Psi_f_c = Calculation.calc_Psi_f(Psi_f_n, f_n, f_c)
     Psi_m = Calculation.calc_Psi_f(Psi_f_n, f_n, f_m)
 
-def calckTS():
+def calcTS():
     y_tx_n, t = Calculation.generateIdealWindowedSendPulse(
         f_0, f_1, tau, f_s, slope)
 
@@ -298,7 +298,7 @@ def calckTS():
     axs[4].set_ylabel('TS(f)')
     plt.savefig('./Paper/Fig_TS.png')
 
-def calckSv():
+def calcSv():
     # Generate ideal send pulse
     y_tx_n, t = Calculation.generateIdealWindowedSendPulse(
         f_0, f_1, tau, f_s, slope)
@@ -440,8 +440,8 @@ if __name__ == '__main__':
 
     data = EK80DataContainer('./data/CRIMAC_Svf.json')
     preCalculations(data)
-    calckSv()
+    calcSv()
 
     data = EK80DataContainer('./data/CRIMAC_SphereBeam.json')  # TS sphere
     preCalculations(data)
-    calckTS()
+    calcTS()
