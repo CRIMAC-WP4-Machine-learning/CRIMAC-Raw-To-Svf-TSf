@@ -160,10 +160,10 @@ def calc_TS():
     # Pulse compressed signals for each channel (transducer sector)
     y_pc_nu = Calculation.calcPulseCompressedSignals(y_rx_nu, y_mf_n)
 
-    # Calculating average signal over all channels (transducer sectors)
+    # Average signal over all channels (transducer sectors)
     y_pc_n = Calculation.calcAverageSignal(y_pc_nu)
 
-    # Calculating average signals over paired channels corresponding to transducer halves
+    # Average signals over paired channels corresponding to transducer halves
     # fore, aft, starboard, port
     y_pc_halves_n = Calculation.calcTransducerHalves(y_pc_nu)
 
@@ -178,26 +178,26 @@ def calc_TS():
         z_rx_e,
         N_u)
 
-    # Calculate the physical angles
+    # Physical angles
     theta_n, phi_n = Calculation.calcAngles(
         y_pc_halves_n,
         gamma_theta_f_c,
         gamma_phi_f_c)
 
+    # Plots for paper
     plot_theta_phi()
 
     #
     # Chapter III: TARGET STRENGTH
     #
 
-    # Get parameters
-    # 'TS_Sphere_Beam':
+    # TS estimation parameters
     r0 = 5.8 - 0.5
     r1 = 5.8 + 0.5
     before = 0.5
     after = 1
 
-    # Calculate the point scattering strength (Sp)
+    # Point scattering strength (Sp)
     Sp_n = Calculation.calcSp(
         p_rx_e_n,
         r_n,
@@ -214,30 +214,35 @@ def calc_TS():
             y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
             r0, r1, before, after)
 
-    # Pick the reduced samples from the mathed filtered decimated send pulse
+    # Reduced auto correlation signal
     y_mf_auto_red_n = Calculation.alignAuto(y_mf_auto_n, y_pc_t_n)
 
+    # Plots for paper
     plt_single_target()
 
-    # DFT on the pulse compressed received signal and the pulse compressed
-    # send pulse signal (reduced and matched filtered)
+    # DFT of target signal, DFT of reduced auto correlation signal, and
+    # normalized DFT of target signal
     Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m = \
         Calculation.calcDFTforTS(y_pc_t_n, y_mf_auto_red_n,
                                  n_f_points, f_m, f_s_dec)
 
-    # Calculate the power by frequency from a single target
+    # Received power spectrum for a single target
     P_rx_e_t_m = Calculation.calcPowerFreq(
         N_u,
         Y_tilde_pc_t_m,
         z_td_e,
         z_rx_e)
 
+    # Transducer gain incorporating both on-axis gain and
+    # beam pattern based oon target bearing
     g_theta_phi_m = data.calc_g(theta_t, phi_t, f_m)
 
+    # Target strength spectrum
     TS_m = Calculation.calcTSf(
         P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m,
         g_theta_phi_m)
 
+    # Plots for paper
     plot_TS()
 
 
@@ -277,6 +282,7 @@ def plot_y_mf_n():
     plt.ylabel('amplitude')
     plt.savefig('./Paper/Fig_y_mf_n.png')
 
+
 def plot_ACF():
     plt.figure()
     plt.plot(np.abs(y_mf_auto_n))
@@ -284,6 +290,7 @@ def plot_ACF():
     plt.xlabel('Samples')
     plt.ylabel('ACF')
     plt.savefig('./Paper/Fig_ACF.png')
+
 
 def plot_theta_phi():
     # Plot angles
@@ -294,6 +301,7 @@ def plot_theta_phi():
     plt.xlabel(' ')
     plt.ylabel('Angles')
     plt.savefig('./Paper/Fig_theta_phi.png')
+
 
 def plt_single_target():
     fig, axs = plt.subplots(3)
@@ -310,6 +318,7 @@ def plt_single_target():
     axs[2].set_ylabel(' ')
     axs[2].set_xlabel('Range [m]')
     plt.savefig('./Paper/Fig_singleTarget.png')
+
 
 def plot_TS():
     fig, axs = plt.subplots(5)
@@ -328,9 +337,14 @@ def plot_TS():
     plt.savefig('./Paper/Fig_TS.png')
 
     # Store TS(f) and f for further analysis
-    TSfOut = np.stack((f_m,TS_m), axis=0)
+    # TSfOut = np.stack((f_m,TS_m), axis=0)
     # np.save('TSf.npy',TSfOut)
     
+    #
+    # Chapter IV: VOLUME BACKSCATTERING STRENGTH
+    #
+
+
 def calc_Sv():
 
     global f_m,svf_range,Sv_m_n
@@ -341,6 +355,7 @@ def calc_Sv():
 
     # The sampling freq for each filter step
     f_s_dec_v = Calculation.calcDecmiatedSamplingRate(filter_v, f_s)
+
     # The final sampling frequency
     f_s_dec = f_s_dec_v[-1]
 
@@ -375,12 +390,6 @@ def calc_Sv():
         z_td_e,
         z_rx_e,
         N_u)
-
-    # Calculate the physical angles
-    theta_n, phi_n = Calculation.calcAngles(
-        y_pc_halves_n,
-        gamma_theta_f_c,
-        gamma_phi_f_c)
 
     #
     # Chapter IV: VOLUME BACKSCATTERING STRENGTH
@@ -425,7 +434,7 @@ def calc_Sv():
                                  alpha_m, p_tx_e, lambda_m, t_w,
                                  psi_m, g_0_m, c, svf_range)
 
-
+    # Plots for paper
     plotSvf()
 
 
@@ -469,8 +478,8 @@ def plotSvf():
     SvfOut = np.concatenate((f_m[np.newaxis],Sv_m_n), axis=0)
     # np.save('Svf.npy',SvfOut)
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
 
     data = EK80DataContainer('./data/CRIMAC_Svf.json')
     preCalculations(data)
