@@ -10,9 +10,9 @@ def preCalculations(data):
     global f_0,f_1, tau, f_s, slope, filter_v, z_td_e, z_rx_e, N_u,y_tx_n
     global angle_sensitivity_alongship_fnom,angle_sensitivity_athwartship_fnom
     global f_c, f_n, y_rx_nu,  r_n, alpha_f_c, p_tx_e, lambda_f_c, g_0_f_c
-    global n_f_points, f_m, alpha_m, p_tx_e, lambda_m, c, tau_eff, Psi_f_c
+    global n_f_points, f_m, alpha_m, p_tx_e, lambda_m, c, tau_eff, psi_f_c
     #global y_tx_n05slope, t
-    global Psi_m, g_0_m, dr
+    global psi_m, g_0_m, dr
     global Sv_m_n, svf_range
 
     # Unpack variabels
@@ -64,8 +64,8 @@ def preCalculations(data):
     alpha_m = data.calc_alpha_f(f_m)
 
     # Calculate Psi for f_c and on the f_m grid
-    Psi_f_c = Calculation.calc_Psi_f(Psi_f_n, f_n, f_c)
-    Psi_m = Calculation.calc_Psi_f(Psi_f_n, f_n, f_m)
+    psi_f_c = Calculation.calc_Psi_f(Psi_f_n, f_n, f_c)
+    psi_m = Calculation.calc_Psi_f(Psi_f_n, f_n, f_m)
 
     y_tx_n, t = Calculation.generateIdealWindowedSendPulse(
         f_0, f_1, tau, f_s, slope)
@@ -403,7 +403,7 @@ def calc_Sv():
     r_n[r_n == 0] = 0.0000000001
     Sv_n = Calculation.calc_Sv(p_rx_e_n, r_n, lambda_f_c,
                                p_tx_e, alpha_f_c, c, tau_eff,
-                               Psi_f_c, g_0_f_c)
+                               psi_f_c, g_0_f_c)
 
     # Calculate the pulse compressed signal adjusted for spherical loss
     y_pc_s_n = Calculation.calc_PulseCompSphericalSpread(y_pc_n, r_n)
@@ -431,7 +431,7 @@ def calc_Sv():
 
     Sv_m_n = Calculation.calcSvf(P_rx_e_t_m_n,
                                  alpha_m, p_tx_e, lambda_m, t_w,
-                                 Psi_m, g_0_m, c, svf_range)
+                                 psi_m, g_0_m, c, svf_range)
 
 
     plotSvf()
