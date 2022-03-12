@@ -178,7 +178,7 @@ class EK80DataContainer:
     def __init__(self, jsonfname=None):
 
         # Constants
-        self.cont = Constants(z_td_e=75,f_s=1.5e6,n_f_points=1000)
+        self.cont = Constants(z_td_e=75, f_s=1.5e6, n_f_points=1000)
 
         self.hasData = False
         if jsonfname is not None:
@@ -221,16 +221,18 @@ class EK80DataContainer:
         return a / 1000
 
     def calc_alpha_f(self, f):
-        return self.calcAbsorption(self.envr.temperature, self.envr.salinity, self.envr.depth,self.envr.acidity,self.envr.c,f)
+        return self.calcAbsorption(self.envr.temperature, self.envr.salinity, self.envr.depth, self.envr.acidity, self.envr.c, f)
 
     def calc_lambda_f(self, f):
         return self.envr.c/f
 
     @staticmethod
-    def  calcRange(sampleInterval, sampleCount, c, offset) :
+    def  calcRange(sampleInterval, sampleCount, c, offset):
         dr = sampleInterval * c * 0.5
         r = np.array([(offset + i) * dr for i in range(0, sampleCount)])
         return r, dr
+
+
 
     def calc_angle_offsets_m(self, f):
         if self.isCalibrated:

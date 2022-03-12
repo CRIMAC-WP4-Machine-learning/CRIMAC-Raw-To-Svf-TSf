@@ -6,26 +6,31 @@ from Core.EK80DataContainer import EK80DataContainer
 
 def preCalculations(data):
 
+    #
+    # Chapter I: Signal generation
+    #
+
+    # Obtain data from raw file
+    # Estimate variable values at center frequency and other frequencies
+    # Generate ideal windowed transmit signal
+
     global filter_v, f_s_dec_v
-    global f_0,f_1, tau, f_s, slope, filter_v, z_td_e, z_rx_e, N_u,y_tx_n
-    global angle_sensitivity_alongship_fnom,angle_sensitivity_athwartship_fnom
-    global f_c, f_n, y_rx_nu,  r_n, alpha_f_c, p_tx_e, lambda_f_c, g_0_f_c
-    global n_f_points, f_m, alpha_m, p_tx_e, lambda_m, c, tau_eff, psi_f_c
+    global f_0, f_1, tau, f_s, slope, filter_v, z_td_e, z_rx_e, N_u, y_tx_n
+    global angle_sensitivity_alongship_fnom, angle_sensitivity_athwartship_fnom
+    global f_c, f_n, y_rx_nu, r_n, alpha_f_c, p_tx_e, lambda_f_c, g_0_f_c
+    global n_f_points, f_m, alpha_m, p_tx_e, lambda_m, c, psi_f_c
     #global y_tx_n05slope, t
-    global psi_m, g_0_m, dr
+    global gamma_theta, gamma_phi, psi_m, g_0_m, dr
     global Sv_m_n, svf_range
 
-    # Unpack variabels
+    # Unpack variables
     z_td_e, f_s, n_f_points = data.cont.getParameters()
 
     z_rx_e = data.trcv.getParameters()
 
     f_0, f_1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
 
-    # The frequency vector for both Ts and Sv (grid for index m)
-    f_m = np.linspace(f_0, f_1, n_f_points)
-
-    f_n, G_fnom, Psi_f_n, angle_offset_alongship_fnom, \
+    f_n, G_fnom, psi_f_n, angle_offset_alongship_fnom, \
     angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
     angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
     beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
@@ -40,14 +45,17 @@ def preCalculations(data):
 
     offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 
-    g_0_f_c, lambda_f_c, _ = data.deriv.getParameters()
-
+    # Range vector
     r_n, dr = data.calcRange(
         sampleInterval,
         sampleCount,
         c,
         offset)
 
+    # Gain and wavelength at center frequency
+    g_0_f_c, lambda_f_c, _ = data.deriv.getParameters()
+
+    # Absorption coefficient at center frequency
     alpha_f_c = data.calcAbsorption(
         temperature,
         salinity,
@@ -56,43 +64,63 @@ def preCalculations(data):
         c,
         f_c)
 
-    # The on axix gain as a function of f_m
+    # Two-way equivalent beam angle at center frequency
+    psi_f_c = Calculation.calc_psi_f(psi_f_n, f_n, f_c)
+
+    # Frequency vector for both TS and Sv (grid for index m)
+    f_m = np.linspace(f_0, f_1, n_f_points)
+
+    # On-axis gain for f_m
     g_0_m = data.calc_g(0, 0, f_m)
 
-    # Cacluate lambda and alpha on the f_m grid
+    # Wavelength and absorption for f_m
     lambda_m = data.calc_lambda_f(f_m)
     alpha_m = data.calc_alpha_f(f_m)
 
-    # Calculate Psi for f_c and on the f_m grid
-    psi_f_c = Calculation.calc_Psi_f(Psi_f_n, f_n, f_c)
-    psi_m = Calculation.calc_Psi_f(Psi_f_n, f_n, f_m)
+    # Angle sensitivities
+    gamma_theta = Calculation.calcGamma(
+        angle_sensitivity_alongship_fnom,
+        f_c,
+        f_n)
 
-    y_tx_n, t = Calculation.generateIdealWindowedSendPulse(
+    gamma_phi = Calculation.calcGamma(
+        angle_sensitivity_athwartship_fnom,
+        f_c,
+        f_n)
+
+    # Two-way equivalent beam angle for f_m
+    psi_m = Calculation.calc_psi_f(psi_f_n, f_n, f_m)
+
+    # Ideal windowed transmit signal
+    y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
         f_0, f_1, tau, f_s, slope)
 
-
+    # Plots for paper
     plot_ytx()
 
 
 def plot_ytx():
 
-    y_tx_n05slope, t = Calculation.generateIdealWindowedSendPulse(
+    # Example of ideal windowed transmit signal with slope 0.5
+    y_tx_n05slope, t = Calculation.generateIdealWindowedTransmitSignal(
         f_0, f_1, tau, f_s, .5)
 
     plt.figure()
     plt.plot(t * 1000, y_tx_n, t * 1000, y_tx_n05slope)
     plt.title(
-        'Ideal enveloped send pulse.{:.0f}kHz - {:.0f}kHz, slope {:.3f}'
+        'Ideal windowed transmit pulse.{:.0f}kHz - {:.0f}kHz, slope {:.3f}'
             .format(f_0 / 1000, f_1 / 1000, slope))
     plt.xlabel('time (ms)')
     plt.ylabel('amplitude')
     plt.savefig('./Paper/Fig_ytx.png')
 
+
 def calc_TS():
 
-    global f_s_dec_v, y_mf_n, y_mf_auto_n, theta_n,phi_n
-    global f_m,Y_pc_t_m,Y_mf_auto_red_m,Y_tilde_pc_t_m,g_theta_phi_m,TS_m
+    global f_s_dec_v, y_mf_n, y_mf_auto_n, tau_eff, theta_n, phi_n
+    global f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m
     global dum_r, dum_p, dum_phi, dum_theta, r_t, phi_t, y_mf_auto_red_n
+
     #
     # Chapter IIC: Signal reception
     #
@@ -105,76 +133,69 @@ def calc_TS():
 
     # In this implementation there are two filters (N_v=2). The first
     # filter operates on the raw data [y_rx(N,u,0)=y_rx_org].
-
+    #
     # The filter coefficients 'h_fl_iv' are accessible through 'data.filter_vn':
-    filter_v[0]["h_fl_i"]
-    filter_v[1]["h_fl_i"]
-
+    # filter_v[0]["h_fl_i"]
+    # filter_v[1]["h_fl_i"]
+    #
     # the corresponding decimation factors are available through
-    filter_v[0]["D"]
-    filter_v[1]["D"]
+    # filter_v[0]["D"]
+    # filter_v[1]["D"]
 
-    # The sampling freq for each filter step
+    # The decimated sampling frequency after each filter stage
     f_s_dec_v = Calculation.calcDecmiatedSamplingRate(filter_v, f_s)
-    # The final sampling frequency
+
+    # The final decimated sampling frequency after last filter stage
     f_s_dec = f_s_dec_v[-1]
 
     plot_fir()
-
 
     #
     # Chapter IID: Pulse compression
     #
 
-    # The normalized ideal transmit signal
+    # Normalized ideal transmit signal
     y_tilde_tx_n = Calculation.calcNormalizedTransmitSignal(y_tx_n)
 
-    # Passing the normalized and ideal transmit signal through the filter bank
+    # Passing the normalized ideal transmit signal through the filter bank
     y_tilde_tx_nv = Calculation.calcFilteredAndDecimatedSignal(
         y_tilde_tx_n, filter_v)
 
-    # Use the normalized, filtered and decimated transmit signal from the last
-    # filter stage for the matched filter.
+    # Use the normalized, filtered, and decimated transmit signal from the last
+    # filter stage as matched filter
     y_mf_n = y_tilde_tx_nv[-1]
 
+    # Plots for paper
     plot_y_mf_n()
 
-    # The autocorrelation function and efficient pulse duration of the mathced
+    # Auto correlation function and effective pulse duration of the matched
     # filter
     y_mf_auto_n, tau_eff = Calculation.calcAutoCorrelation(
         y_mf_n, f_s_dec)
 
+    # Plots for paper
     plot_ACF()
 
-    # Calculating the pulse compressed quadrant signals separately on each channel
-    y_pc_nu = Calculation.calcPulseCompressedQuadrants(y_rx_nu, y_mf_n)
+    # Pulse compressed signals for each channel (transducer sector)
+    y_pc_nu = Calculation.calcPulseCompressedSignals(y_rx_nu, y_mf_n)
 
-    # Calculating the average signal over the channels
-    y_pc_n = Calculation.calcAvgSumQuad(y_pc_nu)
+    # Calculating average signal over all channels (transducer sectors)
+    y_pc_n = Calculation.calcAverageSignal(y_pc_nu)
 
-    # Calculating the average signal over paired fore, aft, starboard, port channel
+    # Calculating average signals over paired channels corresponding to transducer halves
+    # fore, aft, starboard, port
     y_pc_halves_n = Calculation.calcTransducerHalves(y_pc_nu)
 
     #
     # Chapter IIE: Power angles and samples
     #
 
-    # Calcuate the power across transducer channels
+    # Total received power for all channels (all transducer sectors)
     p_rx_e_n = Calculation.calcPower(
         y_pc_n,
         z_td_e,
         z_rx_e,
         N_u)
-
-    # Calculate the angle sensitivities
-    gamma_theta = Calculation.calcGamma(
-        angle_sensitivity_alongship_fnom,
-        f_c,
-        f_n)
-    gamma_phi = Calculation.calcGamma(
-        angle_sensitivity_athwartship_fnom,
-        f_c,
-        f_n)
 
     # Calculate the physical angles
     theta_n, phi_n = Calculation.calcAngles(
@@ -334,7 +355,7 @@ def calc_Sv():
     global f_m,svf_range,Sv_m_n
 
     # Generate ideal send pulse
-    y_tx_n, t = Calculation.generateIdealWindowedSendPulse(
+    y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
         f_0, f_1, tau, f_s, slope)
 
     # The sampling freq for each filter step
@@ -359,10 +380,10 @@ def calc_Sv():
         y_mf_n, f_s_dec)
 
     # Calculating the pulse compressed quadrant signals separately on each channel
-    y_pc_nu = Calculation.calcPulseCompressedQuadrants(y_rx_nu, y_mf_n)
+    y_pc_nu = Calculation.calcPulseCompressedSignals(y_rx_nu, y_mf_n)
 
     # Calculating the average signal over the channels
-    y_pc_n = Calculation.calcAvgSumQuad(y_pc_nu)
+    y_pc_n = Calculation.calcAverageSignal(y_pc_nu)
 
     # Calculating the average signal over paired fore, aft, starboard, port channel
     y_pc_halves_n = Calculation.calcTransducerHalves(y_pc_nu)

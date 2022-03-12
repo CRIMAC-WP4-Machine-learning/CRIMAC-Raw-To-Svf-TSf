@@ -10,7 +10,7 @@ class Calculation(EK80DataContainer):
     #
 
     @staticmethod
-    def generateIdealWindowedSendPulse(f0, f1, tau, fs, slope):
+    def generateIdealWindowedTransmitSignal(f0, f1, tau, fs, slope):
         nsamples = int(np.floor(tau * fs))
         t = np.linspace(0, nsamples - 1, num=nsamples) * 1 / fs
         y = Calculation.chirp(t, f0, tau, f1)
@@ -92,7 +92,7 @@ class Calculation(EK80DataContainer):
         return y_mf_auto_n, tau_eff
 
     @staticmethod
-    def calcPulseCompressedQuadrants(quadrant_signals, y_mf_n):
+    def calcPulseCompressedSignals(quadrant_signals, y_mf_n):
         """
         Generate matched filtered signal for each quadrant
 
@@ -117,7 +117,7 @@ class Calculation(EK80DataContainer):
         return np.array(pulseCompressedQuadrants)
 
     @staticmethod
-    def calcAvgSumQuad(y_pc_nu):
+    def calcAverageSignal(y_pc_nu):
         """
         Calculate the mean signal over all transducer sectors
 
@@ -458,6 +458,6 @@ class Calculation(EK80DataContainer):
         return Sv_m_n
 
     @staticmethod
-    def calc_Psi_f(Psi_f_n, f_n, f_m):
+    def calc_psi_f(Psi_f_n, f_n, f_m):
         return Psi_f_n * (f_n / f_m)**2
 
