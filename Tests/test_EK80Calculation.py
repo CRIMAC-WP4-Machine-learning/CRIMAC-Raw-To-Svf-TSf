@@ -17,7 +17,7 @@ class TestEK80Calculation(unittest.TestCase):
 
         # Calculation trough implemented methods
         ycq = np.array([[4.85690181+11.37198657j, -5.3561974 + 0.20880486j], [5.64515755+11.23851476j, -5.28595187 +0.55263475j], [ 5.40798186+11.21237538j, -5.30801666 +0.45015535j], [5.17319057+11.08695032j, -5.31563328 +0.38322727j]])
-        yc = EK80CalculationPaper.calcAvgSumQuad(ycq)
+        yc = EK80CalculationPaper.calcAverageSignal(ycq)
 
         # Ground truth
         gt_yc = np.array([5.27081+11.2275j, -5.31645+0.398706j])
@@ -89,7 +89,7 @@ class TestEK80Calculation(unittest.TestCase):
         np.testing.assert_allclose(FFTvec, testData['FFTvec'].squeeze(), rtol=0.01, atol=0.1)
 
     def test_pulseCompression(self):
-        yc_q = self.calc.calcPulseCompressedQuadrants(self.calc.y_rx_org)
+        yc_q = self.calc.calcPulseCompressedSignals(self.calc.y_rx_org)
 
         yc_q_true = np.array([[-2.95021109e+01-89.58134313j,  2.07277970e+01-31.69831125j,
         -6.17307936e+01-20.10871076j, -3.68049196e-01+18.74086737j],
@@ -135,8 +135,8 @@ class TestEK80Calculation(unittest.TestCase):
         np.testing.assert_almost_equal(self.calc.tau_eff,9.986813363835193e-05,5)
 
     def test_Svf(self):
-        ycq = self.calc.calcPulseCompressedQuadrants(self.calc.y_rx_org)
-        yc = self.calc.calcAvgSumQuad(ycq)
+        ycq = self.calc.calcPulseCompressedSignals(self.calc.y_rx_org)
+        yc = self.calc.calcAverageSignal(ycq)
         Svf, svf_range, f = self.calc.calcSvf(yc,10,30)
 
         np.testing.assert_allclose(Svf[0,:][0:4], [-58.21107559, -58.23425062, -58.25742747, -58.28060613], rtol=0.0001, atol=0.001)

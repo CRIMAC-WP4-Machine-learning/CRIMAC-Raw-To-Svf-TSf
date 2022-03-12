@@ -67,12 +67,12 @@ if __name__ == '__main__':
     alpha_m = data.calc_alpha_f(f_m)
 
     # Calculate Psi for f_c and on the f_m grid
-    Psi_f_c = EK80CalculationPaper.calc_Psi_f(psi_f_n, f_n, f_c)
+    Psi_f_c = EK80CalculationPaper.calc_psi_f(psi_f_n, f_n, f_c)
     # TODO: double check this. I think it is ok:
-    Psi_m = EK80CalculationPaper.calc_Psi_f(psi_f_n, f_n, f_m)
+    Psi_m = EK80CalculationPaper.calc_psi_f(psi_f_n, f_n, f_m)
 
     # Generate ideal send pulse
-    y_tx_n, t = EK80CalculationPaper.generateIdealWindowedSendPulse(
+    y_tx_n, t = EK80CalculationPaper.generateIdealWindowedTransmitSignal(
         f_0, f_1, tau, f_s, slope)
 
     # The filter coefficients 'h_fl_iv' are accessible through 'data.filter_vn':
@@ -105,10 +105,10 @@ if __name__ == '__main__':
         y_mf_n, f_s_dec)
 
     # Calculating the pulse compressed quadrant signals separately on each channel
-    y_pc_nu = EK80CalculationPaper.calcPulseCompressedQuadrants(y_rx_nu, y_mf_n)
+    y_pc_nu = EK80CalculationPaper.calcPulseCompressedSignals(y_rx_nu, y_mf_n)
 
     # Calculating the average signal over the channels
-    y_pc_n = EK80CalculationPaper.calcAvgSumQuad(y_pc_nu)
+    y_pc_n = EK80CalculationPaper.calcAverageSignal(y_pc_nu)
 
     # Calcuate the power across transducer channels
     p_rx_e_n = EK80CalculationPaper.calcPower(
@@ -168,8 +168,8 @@ if __name__ == '__main__':
     #ekdata = EK80DataContainer(args.file)
     ekcalc = EK80CalculationPaper(args.file)
 
-    y_pc_u = ekcalc.calcPulseCompressedQuadrants(ekcalc.y_rx_nu)
-    y_pc = ekcalc.calcAvgSumQuad(y_pc_u)
+    y_pc_u = ekcalc.calcPulseCompressedSignals(ekcalc.y_rx_nu)
+    y_pc = ekcalc.calcAverageSignal(y_pc_u)
     p_rx_e = ekcalc.calcPower(y_pc)
 
     Sv, r = ekcalc.calcSv(p_rx_e, args.r0, args.r1)

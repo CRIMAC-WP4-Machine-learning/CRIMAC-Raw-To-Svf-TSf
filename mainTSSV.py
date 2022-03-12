@@ -61,14 +61,14 @@ def preCalculations(data):
     alpha_m = data.calc_alpha_f(f_m)
 
     # Calculate Psi for f_c and on the f_m grid
-    Psi_f_c = Calculation.calc_Psi_f(Psi_f_n, f_n, f_c)
-    Psi_m = Calculation.calc_Psi_f(Psi_f_n, f_n, f_m)
+    Psi_f_c = Calculation.calc_psi_f(Psi_f_n, f_n, f_c)
+    Psi_m = Calculation.calc_psi_f(Psi_f_n, f_n, f_m)
 
 def calcTS():
-    y_tx_n, t = Calculation.generateIdealWindowedSendPulse(
+    y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
         f_0, f_1, tau, f_s, slope)
 
-    y_tx_n05slope, t = Calculation.generateIdealWindowedSendPulse(
+    y_tx_n05slope, t = Calculation.generateIdealWindowedTransmitSignal(
         f_0, f_1, tau, f_s, .5)
 
     plt.figure()
@@ -168,10 +168,10 @@ def calcTS():
     plt.savefig('./Paper/Fig_ACF.png')
 
     # Calculating the pulse compressed quadrant signals separately on each channel
-    y_pc_nu = Calculation.calcPulseCompressedQuadrants(y_rx_nu, y_mf_n)
+    y_pc_nu = Calculation.calcPulseCompressedSignals(y_rx_nu, y_mf_n)
 
     # Calculating the average signal over the channels
-    y_pc_n = Calculation.calcAvgSumQuad(y_pc_nu)
+    y_pc_n = Calculation.calcAverageSignal(y_pc_nu)
 
     # Calculating the average signal over paired fore, aft, starboard, port channel
     y_pc_halves_n = Calculation.calcTransducerHalves(y_pc_nu)
@@ -300,7 +300,7 @@ def calcTS():
 
 def calcSv():
     # Generate ideal send pulse
-    y_tx_n, t = Calculation.generateIdealWindowedSendPulse(
+    y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
         f_0, f_1, tau, f_s, slope)
 
     # The sampling freq for each filter step
@@ -325,10 +325,10 @@ def calcSv():
         y_mf_n, f_s_dec)
 
     # Calculating the pulse compressed quadrant signals separately on each channel
-    y_pc_nu = Calculation.calcPulseCompressedQuadrants(y_rx_nu, y_mf_n)
+    y_pc_nu = Calculation.calcPulseCompressedSignals(y_rx_nu, y_mf_n)
 
     # Calculating the average signal over the channels
-    y_pc_n = Calculation.calcAvgSumQuad(y_pc_nu)
+    y_pc_n = Calculation.calcAverageSignal(y_pc_nu)
 
     # Calculating the average signal over paired fore, aft, starboard, port channel
     y_pc_halves_n = Calculation.calcTransducerHalves(y_pc_nu)

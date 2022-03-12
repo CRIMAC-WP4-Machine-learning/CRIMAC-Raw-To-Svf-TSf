@@ -70,7 +70,7 @@ if __name__ == '__main__':
     alpha_m = data.calc_alpha_f(f_m)
 
     # Generate ideal send pulse
-    y_tx_n, t = Calculation.generateIdealWindowedSendPulse(
+    y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
         f_0, f_1, tau, f_s, slope)
 
     # The filter coefficients 'h_fl_iv' are accessible through 'data.filter_vn':
@@ -104,10 +104,10 @@ if __name__ == '__main__':
         y_mf_n, f_s_dec)
 
     # Calculating the pulse compressed quadrant signals separately on each channel
-    y_pc_nu = Calculation.calcPulseCompressedQuadrants(y_rx_nu, y_mf_n)
+    y_pc_nu = Calculation.calcPulseCompressedSignals(y_rx_nu, y_mf_n)
 
     # Calculating the average signal over the channels
-    y_pc_n = Calculation.calcAvgSumQuad(y_pc_nu)
+    y_pc_n = Calculation.calcAverageSignal(y_pc_nu)
 
     # Calculating the average signal over paired fore, aft, starboard, port channel
     y_pc_halves_n = Calculation.calcTransducerHalves(y_pc_nu)
