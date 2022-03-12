@@ -11,33 +11,6 @@ from Core.FIL1 import FIL1
 # r -> r_n
 # Sp -> S_p_n
 
-
-class Derived:
-    def __init__(self, frqp, parm, trdu, envr):
-
-        Gfc = self.calc_Gfc(frqp, parm, trdu)
-
-        self.gfc = 10 * np.log10(Gfc/10)
-        PSI_f = 10 * np.log10(trdu.psi_f_n / 10) + 20 * np.log10(trdu.f_n / frqp.frequencies)
-
-        self.psi_f = np.power(PSI_f/10, 10)
-        self.g_0_f_c = np.power(Gfc/10, 10)
-        self.lambda_f_c = envr.c/parm.f_c
-
-    @staticmethod
-    def calc_Gfc(frqp, parm, trdu):
-        if frqp.isCalibrated:
-            # Calibrated case
-            return np.interp(parm.f_c, frqp.frequencies, frqp.gain)
-        else:
-            # Uncalibrated case
-            return trdu.G_fnom + 20 * np.log10(frqp.frequencies / trdu.f_n)
-
-
-    def getParameters(self):
-        return self.g_0_f_c, self.lambda_f_c, self.psi_f
-
-
 class Constants:
     def __init__(self, z_td_e, f_s, n_f_points):
         self.z_td_e = z_td_e
@@ -72,22 +45,22 @@ class Parameter:
 class Transducer:
     def __init__(self, xml):
         self.f_n = xml['Frequency']  # nominal design frequency for the transducer
-        self.G_fnom = xml['GainNom']
+        self.G_f_n = xml['GainNom']
         Psi_f_n = xml['EquivalentBeamAngle']
         self.psi_f_n = 10 ** (Psi_f_n / 10) # Make linear
-        self.angle_offset_alongship_fnom = xml['AngleOffsetAlongship']
-        self.angle_offset_athwartship_fnom = xml['AngleOffsetAthwartship']
-        self.angle_sensitivity_alongship_fnom = xml['AngleSensitivityAlongship']
-        self.angle_sensitivity_athwartship_fnom = xml['AngleSensitivityAthwartship']
-        self.beam_width_alongship_fnom = xml['BeamWidthAlongship']
-        self.beam_width_athwartship_fnom = xml['BeamWidthAthwartship']
+        self.angle_offset_alongship_f_n = xml['AngleOffsetAlongship']
+        self.angle_offset_athwartship_f_n = xml['AngleOffsetAthwartship']
+        self.angle_sensitivity_alongship_f_n = xml['AngleSensitivityAlongship']
+        self.angle_sensitivity_athwartship_f_n = xml['AngleSensitivityAthwartship']
+        self.beam_width_alongship_f_n = xml['BeamWidthAlongship']
+        self.beam_width_athwartship_f_n = xml['BeamWidthAthwartship']
         self.corrSa = xml['SaCorrection']
 
     def getParameters(self):
-        return self.f_n, self.G_fnom, self.psi_f_n, self.angle_offset_alongship_fnom, \
-               self.angle_offset_athwartship_fnom, self.angle_sensitivity_alongship_fnom, \
-               self.angle_sensitivity_athwartship_fnom, self.beam_width_alongship_fnom, \
-               self.beam_width_athwartship_fnom, self.corrSa
+        return self.f_n, self.G_f_n, self.psi_f_n, self.angle_offset_alongship_f_n, \
+               self.angle_offset_athwartship_f_n, self.angle_sensitivity_alongship_f_n, \
+               self.angle_sensitivity_athwartship_f_n, self.beam_width_alongship_f_n, \
+               self.beam_width_athwartship_f_n, self.corrSa
 
 class Environment:
     def __init__(self, xml):
@@ -194,9 +167,15 @@ class EK80DataContainer:
             self.frqp = FrequencyPar(self.jdict['XML0']['FrequencyPar'])
             self.filt = Filters(self.jdict)
             self.raw3 = Raw3(self.jdict['RAW3'])
-            self.deriv = Derived(self.frqp, self.parm, self.trdu, self.envr)
+            # self.deriv = Derived(self.frqp, self.parm, self.trdu, self.envr)
 
             self.isCalibrated = self.frqp.isCalibrated
+
+    @staticmethod
+    def  calcRange(sampleInterval, sampleCount, c, offset):
+        dr = sampleInterval * c * 0.5
+        r = np.array([(offset + i) * dr for i in range(0, sampleCount)])
+        return r, dr
 
     @staticmethod
     def calcAbsorption(t, s, d, ph, c, f):
@@ -220,62 +199,59 @@ class EK80DataContainer:
 
         return a / 1000
 
-    def calc_alpha_f(self, f):
+    def calc_alpha(self, f):
         return self.calcAbsorption(self.envr.temperature, self.envr.salinity, self.envr.depth, self.envr.acidity, self.envr.c, f)
 
-    def calc_lambda_f(self, f):
+    def calc_lambda(self, f):
         return self.envr.c/f
 
-    @staticmethod
-    def  calcRange(sampleInterval, sampleCount, c, offset):
-        dr = sampleInterval * c * 0.5
-        r = np.array([(offset + i) * dr for i in range(0, sampleCount)])
-        return r, dr
+    def calc_gamma_alongship(self, f):
+        return self.trdu.angle_sensitivity_alongship_f_n * (f / self.trdu.f_n)
 
+    def calc_gamma_athwartship(self, f):
+        return self.trdu.angle_sensitivity_athwartship_f_n * (f / self.trdu.f_n)
 
-
-    def calc_angle_offsets_m(self, f):
+    def calc_angle_offsets(self, f):
         if self.isCalibrated:
             # Calibrated case
-            angle_offset_alongship_m = np.interp(f, self.frqp.frequencies, self.frqp.angle_offset_alongship)
-            angle_offset_athwartship_m = np.interp(f, self.frqp.frequencies, self.frqp.angle_offset_athwartship)
+            angle_offset_alongship = np.interp(f, self.frqp.frequencies, self.frqp.angle_offset_alongship)
+            angle_offset_athwartship = np.interp(f, self.frqp.frequencies, self.frqp.angle_offset_athwartship)
         else:
             # Uncalibrated case
-            angle_offset_alongship_m = self.trdu.angle_offset_alongship_fnom * np.ones(len(f))
-            angle_offset_athwartship_m = self.trdu.angle_offset_athwartship_fnom * np.ones(len(f))
-        return angle_offset_alongship_m, angle_offset_athwartship_m
+            angle_offset_alongship = self.trdu.angle_offset_alongship_f_n * np.ones(len(f))
+            angle_offset_athwartship = self.trdu.angle_offset_athwartship_f_n * np.ones(len(f))
+        return angle_offset_alongship, angle_offset_athwartship
 
-    def calc_beam_widths_m(self, f):
+    def calc_beam_widths(self, f):
         if self.isCalibrated:
             # Calibrated case
-            beam_width_alongship_m = np.interp(f, self.frqp.frequencies, self.frqp.beam_width_alongship)
-            beam_width_athwartship_m = np.interp(f, self.frqp.frequencies, self.frqp.beam_width_athwartship)
+            beam_width_alongship = np.interp(f, self.frqp.frequencies, self.frqp.beam_width_alongship)
+            beam_width_athwartship = np.interp(f, self.frqp.frequencies, self.frqp.beam_width_athwartship)
         else:
             # Uncalibrated case
-            beam_width_alongship_m = self.trdu.beam_width_alongship_fnom * self.trdu.f_n / f
-            beam_width_athwartship_m = self.trdu.beam_width_athwartship_fnom * self.trdu.f_n / f
-        return beam_width_alongship_m, beam_width_athwartship_m
+            beam_width_alongship = self.trdu.beam_width_alongship_f_n * self.trdu.f_n / f
+            beam_width_athwartship = self.trdu.beam_width_athwartship_f_n * self.trdu.f_n / f
+        return beam_width_alongship, beam_width_athwartship
 
-    def calc_g0_m(self, f):
+    def calc_g0(self, f):
         if self.isCalibrated:
             # Calibrated case
             dB_G0 = np.interp(f, self.frqp.frequencies, self.frqp.gain)
         else:
             # Uncalibrated case
-            dB_G0 = self.trdu.G_fnom + 20 * np.log10(f / self.trdu.f_n)
+            dB_G0 = self.trdu.G_f_n + 20 * np.log10(f / self.trdu.f_n)
 
         return np.power(10,dB_G0/10)
 
-
-    def calc_b_theta_phi_m(self, theta, phi, f):
-        angle_offset_alongship_m, angle_offset_athwartship_m = self.calc_angle_offsets_m(f)
-        beam_width_alongship_m, beam_width_athwartship_m = self.calc_beam_widths_m(f)
+    def calc_b_theta_phi(self, theta, phi, f):
+        angle_offset_alongship, angle_offset_athwartship_m = self.calc_angle_offsets(f)
+        beam_width_alongship, beam_width_athwartship_m = self.calc_beam_widths(f)
 
         B_theta_phi_m = 0.5 \
                         * 6.0206 \
-                        * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2
+                        * ((np.abs(theta - angle_offset_alongship) / (beam_width_alongship / 2)) ** 2
                         + (np.abs(phi - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2
-                        - 0.18 * ((np.abs(theta - angle_offset_alongship_m) / (beam_width_alongship_m / 2)) ** 2
+                        - 0.18 * ((np.abs(theta - angle_offset_alongship) / (beam_width_alongship / 2)) ** 2
                         * (np.abs(phi - angle_offset_athwartship_m) / (beam_width_athwartship_m / 2)) ** 2))
 
 
@@ -283,6 +259,6 @@ class EK80DataContainer:
 
     def calc_g(self, theta, phi, f):
 
-        b_theta_phi_m = self.calc_b_theta_phi_m(theta, phi, f)
-        g0_m = self.calc_g0_m(f)
+        b_theta_phi_m = self.calc_b_theta_phi(theta, phi, f)
+        g0_m = self.calc_g0(f)
         return g0_m / b_theta_phi_m

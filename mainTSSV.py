@@ -57,12 +57,12 @@ def preCalculations(data):
     g_0_m = data.calc_g(0, 0, f_m)
 
     # Cacluate lambda and alpha on the f_m grid
-    lambda_m = data.calc_lambda_f(f_m)
-    alpha_m = data.calc_alpha_f(f_m)
+    lambda_m = data.calc_lambda(f_m)
+    alpha_m = data.calc_alpha(f_m)
 
     # Calculate Psi for f_c and on the f_m grid
-    Psi_f_c = Calculation.calc_psi_f(Psi_f_n, f_n, f_c)
-    Psi_m = Calculation.calc_psi_f(Psi_f_n, f_n, f_m)
+    Psi_f_c = Calculation.calc_psi(Psi_f_n, f_n, f_c)
+    Psi_m = Calculation.calc_psi(Psi_f_n, f_n, f_m)
 
 def calcTS():
     y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
@@ -188,11 +188,11 @@ def calcTS():
         N_u)
 
     # Calculate the angle sensitivities
-    gamma_theta = Calculation.calcGamma(
+    gamma_theta = Calculation.calc_gamma_alongship(
         angle_sensitivity_alongship_fnom,
         f_c,
         f_n)
-    gamma_phi = Calculation.calcGamma(
+    gamma_phi = Calculation.calc_gamma_alongship(
         angle_sensitivity_athwartship_fnom,
         f_c,
         f_n)
@@ -341,11 +341,11 @@ def calcSv():
         N_u)
 
     # Calculate the angle sensitivities
-    gamma_theta = Calculation.calcGamma(
+    gamma_theta = Calculation.calc_gamma_alongship(
         angle_sensitivity_alongship_fnom,
         f_c,
         f_n)
-    gamma_phi = Calculation.calcGamma(
+    gamma_phi = Calculation.calc_gamma_alongship(
         angle_sensitivity_athwartship_fnom,
         f_c,
         f_n)

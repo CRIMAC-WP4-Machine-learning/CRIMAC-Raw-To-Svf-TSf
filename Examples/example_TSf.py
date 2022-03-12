@@ -66,8 +66,8 @@ if __name__ == '__main__':
     g_0_m = data.calc_g(0, 0, f_m)
 
     # Cacluate lambda and alpha on the f_m grid
-    lambda_m = data.calc_lambda_f(f_m)
-    alpha_m = data.calc_alpha_f(f_m)
+    lambda_m = data.calc_lambda(f_m)
+    alpha_m = data.calc_alpha(f_m)
 
     # Generate ideal send pulse
     y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
@@ -120,11 +120,11 @@ if __name__ == '__main__':
         N_u)
 
     # Calculate the angle sensitivities
-    gamma_theta = Calculation.calcGamma(
+    gamma_theta_f_c = Calculation.calc_gamma_alongship(
         angle_sensitivity_alongship_fnom,
         f_c,
         f_n)
-    gamma_phi = Calculation.calcGamma(
+    gamma_phi_f_c = Calculation.calc_gamma_alongship(
         angle_sensitivity_athwartship_fnom,
         f_c,
         f_n)
@@ -132,8 +132,8 @@ if __name__ == '__main__':
     # Calculate the physical angles
     theta_n, phi_n = Calculation.calcAngles(
         y_pc_halves_n,
-        gamma_theta,
-        gamma_phi)
+        gamma_theta_f_c,
+        gamma_phi_f_c)
 
     # Get parameters
     r0 = args.r0

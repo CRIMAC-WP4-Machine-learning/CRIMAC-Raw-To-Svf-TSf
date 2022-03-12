@@ -108,7 +108,7 @@ class TestEK80Calculation(unittest.TestCase):
 
     def test_Gf(self):
 
-        Gf = self.calc.calc_g0_m(39500)
+        Gf = self.calc.calc_g0(39500)
 
         np.testing.assert_almost_equal(Gf,26.11500, 5)
 

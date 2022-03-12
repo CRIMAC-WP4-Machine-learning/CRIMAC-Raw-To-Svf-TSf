@@ -63,13 +63,13 @@ if __name__ == '__main__':
     g_0_m = data.calc_g(0, 0, f_m)
 
     # Cacluate lambda and alpha on the f_m grid
-    lambda_m = data.calc_lambda_f(f_m)
-    alpha_m = data.calc_alpha_f(f_m)
+    lambda_m = data.calc_lambda(f_m)
+    alpha_m = data.calc_alpha(f_m)
 
     # Calculate Psi for f_c and on the f_m grid
-    Psi_f_c = EK80CalculationPaper.calc_psi_f(psi_f_n, f_n, f_c)
+    Psi_f_c = EK80CalculationPaper.calc_psi(psi_f_n, f_n, f_c)
     # TODO: double check this. I think it is ok:
-    Psi_m = EK80CalculationPaper.calc_psi_f(psi_f_n, f_n, f_m)
+    Psi_m = EK80CalculationPaper.calc_psi(psi_f_n, f_n, f_m)
 
     # Generate ideal send pulse
     y_tx_n, t = EK80CalculationPaper.generateIdealWindowedTransmitSignal(

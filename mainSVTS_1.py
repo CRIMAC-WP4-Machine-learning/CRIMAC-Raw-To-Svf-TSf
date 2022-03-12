@@ -20,7 +20,7 @@ def preCalculations(data):
     global f_c, f_n, y_rx_nu, r_n, alpha_f_c, p_tx_e, lambda_f_c, g_0_f_c
     global n_f_points, f_m, alpha_m, p_tx_e, lambda_m, c, psi_f_c
     #global y_tx_n05slope, t
-    global gamma_theta, gamma_phi, psi_m, g_0_m, dr
+    global gamma_theta_f_c, gamma_phi_f_c, psi_m, g_0_m, dr
     global Sv_m_n, svf_range
 
     # Unpack variables
@@ -38,12 +38,12 @@ def preCalculations(data):
     c, alpha, temperature, salinity, \
     acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
 
-    frequencies, gain, angle_offset_athwartship, angle_offset_alongship, \
-    beam_width_athwartship, beam_width_alongship = data.frqp.getParameters()
-
     filter_v, N_v = data.filt.getParameters()
 
     offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
+
+    # Frequency vector for both TS and Sv (grid for index m)
+    f_m = np.linspace(f_0, f_1, n_f_points)
 
     # Range vector
     r_n, dr = data.calcRange(
@@ -52,44 +52,25 @@ def preCalculations(data):
         c,
         offset)
 
-    # Gain and wavelength at center frequency
-    g_0_f_c, lambda_f_c, _ = data.deriv.getParameters()
+    # Absorption coefficient at center frequency and f_m
+    alpha_f_c = data.calc_alpha(f_c)
+    alpha_m = data.calc_alpha(f_m)
 
-    # Absorption coefficient at center frequency
-    alpha_f_c = data.calcAbsorption(
-        temperature,
-        salinity,
-        depth,
-        acidity,
-        c,
-        f_c)
+    # Wavelength at center frequency and f_m
+    lambda_f_c = data.calc_lambda(f_c)
+    lambda_m = data.calc_lambda(f_m)
 
-    # Two-way equivalent beam angle at center frequency
-    psi_f_c = Calculation.calc_psi_f(psi_f_n, f_n, f_c)
+    # Angle sensitivities at center frequency
+    gamma_theta_f_c = data.calc_gamma_alongship(f_c)
+    gamma_phi_f_c = data.calc_gamma_athwartship(f_c)
 
-    # Frequency vector for both TS and Sv (grid for index m)
-    f_m = np.linspace(f_0, f_1, n_f_points)
-
-    # On-axis gain for f_m
+    # On-axis gain for center frequency and f_m
+    g_0_f_c = data.calc_g(0, 0, f_c)
     g_0_m = data.calc_g(0, 0, f_m)
 
-    # Wavelength and absorption for f_m
-    lambda_m = data.calc_lambda_f(f_m)
-    alpha_m = data.calc_alpha_f(f_m)
-
-    # Angle sensitivities
-    gamma_theta = Calculation.calcGamma(
-        angle_sensitivity_alongship_fnom,
-        f_c,
-        f_n)
-
-    gamma_phi = Calculation.calcGamma(
-        angle_sensitivity_athwartship_fnom,
-        f_c,
-        f_n)
-
-    # Two-way equivalent beam angle for f_m
-    psi_m = Calculation.calc_psi_f(psi_f_n, f_n, f_m)
+    # Two-way equivalent beam angle at center frequency and f_m
+    psi_f_c = Calculation.calc_psi(psi_f_n, f_n, f_c)
+    psi_m = Calculation.calc_psi(psi_f_n, f_n, f_m)
 
     # Ideal windowed transmit signal
     y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
@@ -200,8 +181,8 @@ def calc_TS():
     # Calculate the physical angles
     theta_n, phi_n = Calculation.calcAngles(
         y_pc_halves_n,
-        gamma_theta,
-        gamma_phi)
+        gamma_theta_f_c,
+        gamma_phi_f_c)
 
     plot_theta_phi()
 
@@ -395,21 +376,11 @@ def calc_Sv():
         z_rx_e,
         N_u)
 
-    # Calculate the angle sensitivities
-    gamma_theta = Calculation.calcGamma(
-        angle_sensitivity_alongship_fnom,
-        f_c,
-        f_n)
-    gamma_phi = Calculation.calcGamma(
-        angle_sensitivity_athwartship_fnom,
-        f_c,
-        f_n)
-
     # Calculate the physical angles
     theta_n, phi_n = Calculation.calcAngles(
         y_pc_halves_n,
-        gamma_theta,
-        gamma_phi)
+        gamma_theta_f_c,
+        gamma_phi_f_c)
 
     #
     # Chapter IV: VOLUME BACKSCATTERING STRENGTH

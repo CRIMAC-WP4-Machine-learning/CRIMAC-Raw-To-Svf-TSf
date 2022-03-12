@@ -151,10 +151,6 @@ class Calculation(EK80DataContainer):
         return C1Prx * np.abs(y_pc) ** 2
 
     @staticmethod
-    def calcGamma(angle_sensitivity_fnom, f_c, fnom):
-        return angle_sensitivity_fnom * (f_c / fnom)
-
-    @staticmethod
     def calcAngles(y_pc_halves, gamma_theta, gamma_phi):
         # Transducers might have different segment configuration
         # Here we assume 4 quadrants
@@ -282,7 +278,7 @@ class Calculation(EK80DataContainer):
         P_rx_e_t_m = N_u * (np.abs(Y_tilde_pc_t_m)/(2 * np.sqrt(2))) ** 2 * imp
         return P_rx_e_t_m
 
-    def calc_g0_m(self, f):
+    def calc_g0(self, f):
         if self.isCalibrated:
             # Calibrated case
             return np.interp(f, self.frequencies, self.gain)
@@ -458,6 +454,6 @@ class Calculation(EK80DataContainer):
         return Sv_m_n
 
     @staticmethod
-    def calc_psi_f(Psi_f_n, f_n, f_m):
+    def calc_psi(Psi_f_n, f_n, f_m):
         return Psi_f_n * (f_n / f_m)**2
 
