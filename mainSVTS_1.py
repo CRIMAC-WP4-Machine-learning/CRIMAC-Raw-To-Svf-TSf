@@ -278,8 +278,6 @@ def calc_Sv():
         Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
 
     # Calculate the Sv(f)
-    # TODO: Range == 0 does not work well with log10. another hack:
-
     Sv_m_n = Calculation.calcSvf(P_rx_e_t_m_n,
                                  alpha_m, p_tx_e, lambda_m, t_w,
                                  psi_m, g_0_m, c, svf_range)
