@@ -6,22 +6,17 @@ from Core.EK80DataContainer import EK80DataContainer
 
 def preCalculations(data):
 
-    #
-    # Chapter I: Signal generation
-    #
+    global z_td_e, z_rx_e, N_u
+    global f_0, f_1, tau, f_s, slope, p_tx_e
+    global filter_v, f_s_dec_v
+    global y_rx_nu
+    global lambda_f_c, alpha_f_c, gamma_theta_f_c, gamma_phi_f_c, g_0_f_c, psi_f_c
+    global n_f_points, f_m, lambda_m, alpha_m, g_0_m, psi_m
+    global r_n, dr, c
 
     # Obtain data from raw file
     # Estimate variable values at center frequency and other frequencies
     # Generate ideal windowed transmit signal
-
-    global filter_v, f_s_dec_v
-    global f_0, f_1, tau, f_s, slope, filter_v, z_td_e, z_rx_e, N_u, y_tx_n
-    global angle_sensitivity_alongship_fnom, angle_sensitivity_athwartship_fnom
-    global f_c, f_n, y_rx_nu, r_n, alpha_f_c, p_tx_e, lambda_f_c, g_0_f_c
-    global n_f_points, f_m, alpha_m, p_tx_e, lambda_m, c, psi_f_c
-    #global y_tx_n05slope, t
-    global gamma_theta_f_c, gamma_phi_f_c, psi_m, g_0_m, dr
-    global Sv_m_n, svf_range
 
     # Unpack variables
     z_td_e, f_s, n_f_points = data.cont.getParameters()
@@ -72,35 +67,23 @@ def preCalculations(data):
     psi_f_c = Calculation.calc_psi(psi_f_n, f_n, f_c)
     psi_m = Calculation.calc_psi(psi_f_n, f_n, f_m)
 
+
+def calc_basics(do_plot):
+    global f_s_dec_v, f_s_dec
+    global y_tx_n, y_mf_n, y_mf_auto_n, tau_eff
+    global y_pc_n, p_rx_e_n, theta_n, phi_n
+
+    #
+    # Chapter I: Signal generation
+    #
+
     # Ideal windowed transmit signal
     y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
         f_0, f_1, tau, f_s, slope)
 
     # Plots for paper
-    plot_ytx()
-
-
-def plot_ytx():
-
-    # Example of ideal windowed transmit signal with slope 0.5
-    y_tx_n05slope, t = Calculation.generateIdealWindowedTransmitSignal(
-        f_0, f_1, tau, f_s, .5)
-
-    plt.figure()
-    plt.plot(t * 1000, y_tx_n, t * 1000, y_tx_n05slope)
-    plt.title(
-        'Ideal windowed transmit pulse.{:.0f}kHz - {:.0f}kHz, slope {:.3f}'
-            .format(f_0 / 1000, f_1 / 1000, slope))
-    plt.xlabel('time (ms)')
-    plt.ylabel('amplitude')
-    plt.savefig('./Paper/Fig_ytx.png')
-
-
-def calc_TS():
-
-    global f_s_dec_v, y_mf_n, y_mf_auto_n, tau_eff, theta_n, phi_n
-    global f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m
-    global dum_r, dum_p, dum_phi, dum_theta, r_t, phi_t, y_mf_auto_red_n
+    if do_plot:
+        plot_ytx()
 
     #
     # Chapter IIC: Signal reception
@@ -129,7 +112,9 @@ def calc_TS():
     # The final decimated sampling frequency after last filter stage
     f_s_dec = f_s_dec_v[-1]
 
-    plot_fir()
+    # Plots for paper
+    if do_plot:
+        plot_fir()
 
     #
     # Chapter IID: Pulse compression
@@ -147,15 +132,16 @@ def calc_TS():
     y_mf_n = y_tilde_tx_nv[-1]
 
     # Plots for paper
-    plot_y_mf_n()
+    if do_plot:
+        plot_y_mf_n()
 
     # Auto correlation function and effective pulse duration of the matched
     # filter
-    y_mf_auto_n, tau_eff = Calculation.calcAutoCorrelation(
-        y_mf_n, f_s_dec)
+    y_mf_auto_n, tau_eff = Calculation.calcAutoCorrelation(y_mf_n, f_s_dec)
 
     # Plots for paper
-    plot_ACF()
+    if do_plot:
+        plot_ACF()
 
     # Pulse compressed signals for each channel (transducer sector)
     y_pc_nu = Calculation.calcPulseCompressedSignals(y_rx_nu, y_mf_n)
@@ -185,7 +171,14 @@ def calc_TS():
         gamma_phi_f_c)
 
     # Plots for paper
-    plot_theta_phi()
+    if do_plot:
+        plot_theta_phi()
+
+
+def calc_TS():
+
+    global f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m
+    global dum_r, dum_p, dum_phi, dum_theta, r_t, phi_t, y_mf_auto_red_n
 
     #
     # Chapter III: TARGET STRENGTH
@@ -244,6 +237,75 @@ def calc_TS():
 
     # Plots for paper
     plot_TS()
+
+
+def calc_Sv():
+
+    global p_rx_e_n, f_m, svf_range, Sv_m_n
+
+    #
+    # Chapter IV: VOLUME BACKSCATTERING STRENGTH
+    #
+
+    # Calculate average Sv
+    # TODO: I get zero power in the p_rx_e_n. Fails when doing log10. "Quickfix":
+    p_rx_e_n = p_rx_e_n + .0000000000000001
+
+    # TODO: Range equal to zero will not work. either remove first sample or
+    # reconsider the range vector (log10(0) does not exist). Hack:
+    r_n[r_n == 0] = 0.0000000001
+    Sv_n = Calculation.calc_Sv(p_rx_e_n, r_n, lambda_f_c,
+                               p_tx_e, alpha_f_c, c, tau_eff,
+                               psi_f_c, g_0_f_c)
+
+    # Calculate the pulse compressed signal adjusted for spherical loss
+    y_pc_s_n = Calculation.calc_PulseCompSphericalSpread(y_pc_n, r_n)
+
+    # Hanning window
+    w_tilde_i, N_w, t_w, t_w_n = Calculation.defHanningWindow(c, tau, dr,
+                                                              f_s_dec)
+
+    # Calculate the DFT on the pulse compressed signal
+
+    step = 1  # Needs some thoughts... 50% overlapp
+
+    # Sjekk at n_f_ponts er 2 pulslengder, det er det vi vil ha
+    Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range \
+        = Calculation.calcDFTforSv(
+        y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec,
+        r_n, step)
+
+    # Calculate the power
+    P_rx_e_t_m_n = Calculation.calcPowerFreqforSv(
+        Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
+
+    # Calculate the Sv(f)
+    # TODO: Range == 0 does not work well with log10. another hack:
+
+    Sv_m_n = Calculation.calcSvf(P_rx_e_t_m_n,
+                                 alpha_m, p_tx_e, lambda_m, t_w,
+                                 psi_m, g_0_m, c, svf_range)
+
+    # Plots for paper
+    plotSvf()
+
+
+# Plot functions
+
+def plot_ytx():
+
+    # Example of ideal windowed transmit signal with slope 0.5
+    y_tx_n05slope, t = Calculation.generateIdealWindowedTransmitSignal(
+        f_0, f_1, tau, f_s, .5)
+
+    plt.figure()
+    plt.plot(t * 1000, y_tx_n, t * 1000, y_tx_n05slope)
+    plt.title(
+        'Ideal windowed transmit pulse.{:.0f}kHz - {:.0f}kHz, slope {:.3f}'
+            .format(f_0 / 1000, f_1 / 1000, slope))
+    plt.xlabel('time (ms)')
+    plt.ylabel('amplitude')
+    plt.savefig('./Paper/Fig_ytx.png')
 
 
 def plot_fir():
@@ -339,103 +401,6 @@ def plot_TS():
     # Store TS(f) and f for further analysis
     # TSfOut = np.stack((f_m,TS_m), axis=0)
     # np.save('TSf.npy',TSfOut)
-    
-    #
-    # Chapter IV: VOLUME BACKSCATTERING STRENGTH
-    #
-
-
-def calc_Sv():
-
-    global f_m,svf_range,Sv_m_n
-
-    # Generate ideal send pulse
-    y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
-        f_0, f_1, tau, f_s, slope)
-
-    # The sampling freq for each filter step
-    f_s_dec_v = Calculation.calcDecmiatedSamplingRate(filter_v, f_s)
-
-    # The final sampling frequency
-    f_s_dec = f_s_dec_v[-1]
-
-    # The normalized ideal transmit signal
-    y_tilde_tx_n = Calculation.calcNormalizedTransmitSignal(y_tx_n)
-
-    # Passing the normalized and ideal transmit signal through the filter bank
-    y_tilde_tx_nv = Calculation.calcFilteredAndDecimatedSignal(
-        y_tilde_tx_n, filter_v)
-
-    # Use the normalized, filtered and decimated transmit signal from the last
-    # filter stage for the matched filter.
-    y_mf_n = y_tilde_tx_nv[-1]
-
-    # The autocorrelation function and efficient pulse duration of the mathced
-    # filter
-    y_mf_auto_n, tau_eff = Calculation.calcAutoCorrelation(
-        y_mf_n, f_s_dec)
-
-    # Calculating the pulse compressed quadrant signals separately on each channel
-    y_pc_nu = Calculation.calcPulseCompressedSignals(y_rx_nu, y_mf_n)
-
-    # Calculating the average signal over the channels
-    y_pc_n = Calculation.calcAverageSignal(y_pc_nu)
-
-    # Calculating the average signal over paired fore, aft, starboard, port channel
-    y_pc_halves_n = Calculation.calcTransducerHalves(y_pc_nu)
-
-    # Calcuate the power across transducer channels
-    p_rx_e_n = Calculation.calcPower(
-        y_pc_n,
-        z_td_e,
-        z_rx_e,
-        N_u)
-
-    #
-    # Chapter IV: VOLUME BACKSCATTERING STRENGTH
-    #
-
-    # Calculate average Sv
-    # TODO: I get zero power in the p_rx_e_n. Fails when doing log10. "Quickfix":
-    p_rx_e_n = p_rx_e_n + .0000000000000001
-
-    # TODO: Range equal to zero will not work. either remove first sample or
-    # reconsider the range vector (log10(0) does not exist). Hack:
-    r_n[r_n == 0] = 0.0000000001
-    Sv_n = Calculation.calc_Sv(p_rx_e_n, r_n, lambda_f_c,
-                               p_tx_e, alpha_f_c, c, tau_eff,
-                               psi_f_c, g_0_f_c)
-
-    # Calculate the pulse compressed signal adjusted for spherical loss
-    y_pc_s_n = Calculation.calc_PulseCompSphericalSpread(y_pc_n, r_n)
-
-    # Hanning window
-    w_tilde_i, N_w, t_w, t_w_n = Calculation.defHanningWindow(c, tau, dr,
-                                                              f_s_dec)
-
-    # Calculate the DFT on the pulse compressed signal
-
-    step = 1  # Needs some thoughts... 50% overlapp
-
-    # Sjekk at n_f_ponts er 2 pulslengder, det er det vi vil ha
-    Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range \
-        = Calculation.calcDFTforSv(
-        y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec,
-        r_n, step)
-
-    # Calculate the power
-    P_rx_e_t_m_n = Calculation.calcPowerFreqforSv(
-        Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
-
-    # Calculate the Sv(f)
-    # TODO: Range == 0 does not work well with log10. another hack:
-
-    Sv_m_n = Calculation.calcSvf(P_rx_e_t_m_n,
-                                 alpha_m, p_tx_e, lambda_m, t_w,
-                                 psi_m, g_0_m, c, svf_range)
-
-    # Plots for paper
-    plotSvf()
 
 
 def plotSvf():
@@ -446,7 +411,6 @@ def plotSvf():
     plt.title('Echogram [Sv]')
     plt.xlabel('Frequency [kHz]')
     plt.ylabel('Range [m]')
-    plt.show()
 
     # Plot Sv(f) in one depth in the middle of layer
     indices=np.where(np.logical_and(svf_range>=15, svf_range<=34))
@@ -481,10 +445,16 @@ def plotSvf():
 
 if __name__ == '__main__':
 
-    data = EK80DataContainer('./data/CRIMAC_Svf.json')
-    preCalculations(data)
-    calc_Sv()
-
     data = EK80DataContainer('./data/CRIMAC_SphereBeam.json')  # TS sphere
     preCalculations(data)
+    calc_basics(do_plot=True)
     calc_TS()
+
+    data = EK80DataContainer('./data/CRIMAC_Svf.json')
+    preCalculations(data)
+    calc_basics(do_plot=False)
+    calc_Sv()
+
+    if (True):
+        plt.show()
+
