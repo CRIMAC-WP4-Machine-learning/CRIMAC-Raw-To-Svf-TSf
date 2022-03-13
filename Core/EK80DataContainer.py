@@ -175,6 +175,8 @@ class EK80DataContainer:
     def  calcRange(sampleInterval, sampleCount, c, offset):
         dr = sampleInterval * c * 0.5
         r = np.array([(offset + i) * dr for i in range(0, sampleCount)])
+        # Avoid problems with log10 for r=0
+        r[r == 0] = 0.0000000001
         return r, dr
 
     @staticmethod

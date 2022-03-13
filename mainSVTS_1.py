@@ -178,7 +178,8 @@ def calc_basics(do_plot):
 def calc_TS():
 
     global f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m
-    global dum_r, dum_p, dum_phi, dum_theta, r_t, phi_t, y_mf_auto_red_n
+    global r_t, theta_t, phi_t, y_pc_t_n, dum_p, dum_theta, dum_phi, dum_r
+    global y_mf_auto_red_n
 
     #
     # Chapter III: TARGET STRENGTH
@@ -251,9 +252,6 @@ def calc_Sv():
     # TODO: I get zero power in the p_rx_e_n. Fails when doing log10. "Quickfix":
     p_rx_e_n = p_rx_e_n + .0000000000000001
 
-    # TODO: Range equal to zero will not work. either remove first sample or
-    # reconsider the range vector (log10(0) does not exist). Hack:
-    r_n[r_n == 0] = 0.0000000001
     Sv_n = Calculation.calc_Sv(p_rx_e_n, r_n, lambda_f_c,
                                p_tx_e, alpha_f_c, c, tau_eff,
                                psi_f_c, g_0_f_c)
