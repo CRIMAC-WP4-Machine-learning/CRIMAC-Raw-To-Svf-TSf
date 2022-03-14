@@ -1,13 +1,12 @@
 # CRIMAC-Raw-To-Sv(f)-TS(f)
 Python code illustrating the current basic steps for handling broadband echosounder data from raw data (exemplified using the EK80-family data) to frequency dependent volume backscattering strength (Sv(f)) and target strength (TS(f)).
 
-Example broadband data consisting of complex raw data from one ping callected with the EK80 is included and stored in json format following the structure of a raw file. The example data is located in \Examples
+Example broadband data consisting of complex raw data from one ping callected with a broadband echosounder (EK80) is included and stored in json format following the structure of a raw file. The example data are located in \Data.
 
-The example raw data can be processed to frequency dependent Sv and TS (to be implemented) using example scripts located in \Examples.
+The example raw data can be processed to frequency dependent Sv and TS using main.py.
 
-The majority of the calculations are performed in EK80Calculation.py found under \Core 
+The majority of the calculations are performed in Calculation.py found under \Core 
 
-Requirements to run the code are given in requirements_win.txt
 
 ## example_sendPulse.py
 
