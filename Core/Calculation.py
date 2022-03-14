@@ -147,8 +147,12 @@ class Calculation(EK80DataContainer):
         K2 = (np.abs(z_rx_e + z_td_e) / z_rx_e) ** 2
         K3 = 1.0 / np.abs(z_td_e)
         C1Prx = K1 * K2 * K3
+
+        Prx = C1Prx * np.abs(y_pc) ** 2
+
+        Prx[Prx == 0] = 1e-20
         
-        return C1Prx * np.abs(y_pc) ** 2
+        return Prx
 
     @staticmethod
     def calcAngles(y_pc_halves, gamma_theta, gamma_phi):
@@ -273,7 +277,7 @@ class Calculation(EK80DataContainer):
         return Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m
 
     @staticmethod
-    def calcPowerFreq(N_u, Y_tilde_pc_t_m, z_td_e, z_rx_e):
+    def calcPowerFreqTS(N_u, Y_tilde_pc_t_m, z_td_e, z_rx_e):
         imp = (np.abs(z_rx_e + z_td_e) / np.abs(z_rx_e)) ** 2 / np.abs(z_td_e)
         P_rx_e_t_m = N_u * (np.abs(Y_tilde_pc_t_m)/(2 * np.sqrt(2))) ** 2 * imp
         return P_rx_e_t_m
@@ -417,7 +421,7 @@ class Calculation(EK80DataContainer):
         return FFTvecin[idx]
 
     @staticmethod
-    def calcPowerFreqforSv(Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e):
+    def calcPowerFreqSv(Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e):
 
         # Initialize list of power values by range
         P_rx_e_v_m_n = []

@@ -222,7 +222,7 @@ def calc_TS():
                                  n_f_points, f_m, f_s_dec)
 
     # Received power spectrum for a single target
-    P_rx_e_t_m = Calculation.calcPowerFreq(
+    P_rx_e_t_m = Calculation.calcPowerFreqTS(
         N_u,
         Y_tilde_pc_t_m,
         z_td_e,
@@ -238,7 +238,7 @@ def calc_TS():
         g_theta_phi_m)
 
     # Plots for paper
-    plot_TS(f_m,Y_pc_t_m,Y_mf_auto_red_m,Y_tilde_pc_t_m,g_theta_phi_m,TS_m)
+    plot_TS(f_m,Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m)
 
 
 def calc_Sv():
@@ -249,15 +249,16 @@ def calc_Sv():
     # Chapter IV: VOLUME BACKSCATTERING STRENGTH
     #
 
-    # Calculate average Sv
-    # TODO: I get zero power in the p_rx_e_n. Fails when doing log10. "Quickfix":
-    p_rx_e_n = p_rx_e_n + .0000000000000001
+    # Sv estimation parameters
+    step = 1  # Needs some thoughts... 50% overlapp
+
+    # Volume backscattering strength compressed frequency band
 
     Sv_n = Calculation.calc_Sv(p_rx_e_n, r_n, lambda_f_c,
                                p_tx_e, alpha_f_c, c, tau_eff,
                                psi_f_c, g_0_f_c)
 
-    # Calculate the pulse compressed signal adjusted for spherical loss
+    # Pulse compressed signal adjusted for spherical loss
     y_pc_s_n = Calculation.calc_PulseCompSphericalSpread(y_pc_n, r_n)
 
     # Hanning window
@@ -266,7 +267,6 @@ def calc_Sv():
 
     # Calculate the DFT on the pulse compressed signal
 
-    step = 1  # Needs some thoughts... 50% overlapp
 
     # Sjekk at n_f_ponts er 2 pulslengder, det er det vi vil ha
     Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range \
@@ -274,11 +274,11 @@ def calc_Sv():
         y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec,
         r_n, step)
 
-    # Calculate the power
-    P_rx_e_t_m_n = Calculation.calcPowerFreqforSv(
+    # Received power spectrum for sliding window
+    P_rx_e_t_m_n = Calculation.calcPowerFreqSv(
         Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
 
-    # Calculate the Sv(f)
+    # Average volume backscattering strength spectrum for layer
     Sv_m_n = Calculation.calcSvf(P_rx_e_t_m_n,
                                  alpha_m, p_tx_e, lambda_m, t_w,
                                  psi_m, g_0_m, c, svf_range)
