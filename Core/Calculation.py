@@ -341,62 +341,47 @@ class Calculation(EK80DataContainer):
     def calcDFTforSv(y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w,
                      n_f_points, f_m, f_s_dec, r_c_n, step):
 
-        # Initialize the fft as list (and append for each depth bin)
+        # Prepare for append
         Y_pc_v_m_n = []
         Y_tilde_pc_v_m_n = []
+        svf_range = []
 
-        # The DFT of the ACf of the mathced filter signal
+        # DFT of auto correlation function of the matched filter signal
         _Y_mf_auto_m = np.fft.fft(y_mf_auto_n, n=N_w)
         Y_mf_auto_m = Calculation.freqtransf(_Y_mf_auto_m,
                                              f_s_dec, f_m)
 
-        svf_range = []
         min_sample = 0  # int(r0 / dr)
         max_sample = len(y_pc_s_n)  # int(r1 / dr)
 
         bin_start_sample = min_sample
-        last_bin = False
+        bin_stop_sample = bin_start_sample + N_w
         n_bins = 0
-        while not last_bin:
-            bin_stop_sample = bin_start_sample + N_w
+        while (bin_stop_sample < max_sample):
 
-            # Apply window to signal bin
-            if bin_stop_sample < max_sample:
-                # We have a whole bin use precalculated window
-                yspread_bin = w_tilde_i * y_pc_s_n[
-                    bin_start_sample:bin_stop_sample]
-            else:
-                # We might have partial bin, recalculated window
-                
-                # TODO: We need to present this in the paper. Nils Olav is
-                # sceptic to do this.Should we remove the edge cases? They will
-                # be very different to the "center" cases as they may have much
-                # fewer samples?
-                last_bin = True
-                bin_stop_sample = max_sample
-                sub_yspread = y_pc_s_n[bin_start_sample:bin_stop_sample]
-                w = Calculation.hann(len(sub_yspread))
-                w = w / (np.linalg.norm(w) / np.sqrt(len(sub_yspread)))
-                yspread_bin = w * sub_yspread
+            # Windowed data
+            yspread_bin = w_tilde_i * y_pc_s_n[bin_start_sample:bin_stop_sample]
 
-            # Find the range for this window
+            # TODO: Consider calculating range values simply as (bin_stop_sample + bin_start_sample) / 2
+            # Range for bin
             bin_center_sample = int((bin_stop_sample + bin_start_sample) / 2)
             bin_center_range = r_c_n[bin_center_sample]
             svf_range.append(bin_center_range)
 
-            # Calculate the dft of the windowed signal
+            # DFT of windowed data
             _Y_pc_v_m = np.fft.fft(yspread_bin, n=N_w)
             Y_pc_v_m = Calculation.freqtransf(_Y_pc_v_m, f_s_dec, f_m)
 
-            # Scale the DFT with the acf of the mathed filter signal
+            # Normalized DFT of windowed data
             Y_tilde_pc_v_m = Y_pc_v_m / Y_mf_auto_m
 
-            # TODO: Append to data structure for all ranges for this ping
+            # Append data
             Y_pc_v_m_n.append([Y_pc_v_m])
             Y_tilde_pc_v_m_n.append([Y_tilde_pc_v_m])
-            bin_start_sample += step
 
             # Next range bin
+            bin_start_sample += step
+            bin_stop_sample = bin_start_sample + N_w
             n_bins += 1
 
         svf_range = np.array(svf_range)
@@ -442,7 +427,7 @@ class Calculation(EK80DataContainer):
                 Psi_f, g_0_m, c, svf_range):
         
         # Initialize list of Svf by range
-        Sv_m_n=np.empty([len(svf_range),len(alpha_m)],dtype=float)
+        Sv_m_n = np.empty([len(svf_range), len(alpha_m)], dtype=float)
 
         G = (p_tx_e * lambda_m ** 2 * c * t_w * Psi_f * g_0_m ** 2)/(
             32 * np.pi ** 2)
@@ -452,7 +437,7 @@ class Calculation(EK80DataContainer):
             Sv_m = 10 * np.log10(
                 P_rx_e_t_m) + 2 * alpha_m * svf_range[n] - 10 * np.log10(G)
             # Add to array
-            Sv_m_n[n,]=Sv_m
+            Sv_m_n[n, ] = Sv_m
             n += 1
         
         return Sv_m_n

@@ -250,7 +250,7 @@ def calc_Sv():
     #
 
     # Sv estimation parameters
-    step = 1  # Needs some thoughts... 50% overlapp
+    step = 1  # Step in samples for sliding window
 
     # Volume backscattering strength compressed frequency band
 
@@ -265,10 +265,8 @@ def calc_Sv():
     w_tilde_i, N_w, t_w, t_w_n = Calculation.defHanningWindow(c, tau, dr,
                                                               f_s_dec)
 
-    # Calculate the DFT on the pulse compressed signal
-
-
-    # Sjekk at n_f_ponts er 2 pulslengder, det er det vi vil ha
+    # TODO: Currently step=1. Consider changing overlap.
+    # Normalized DFT of sliding window data
     Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range \
         = Calculation.calcDFTforSv(
         y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec,
@@ -278,6 +276,7 @@ def calc_Sv():
     P_rx_e_t_m_n = Calculation.calcPowerFreqSv(
         Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
 
+    # TODO: Currently we average over all data. Should be changed to actually calculate for a layer.
     # Average volume backscattering strength spectrum for layer
     Sv_m_n = Calculation.calcSvf(P_rx_e_t_m_n,
                                  alpha_m, p_tx_e, lambda_m, t_w,
