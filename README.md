@@ -7,32 +7,12 @@ The example raw data can be processed to frequency dependent Sv and TS using mai
 
 The majority of the calculations are performed in Calculation.py found under \Core 
 
+Requirements to run the code are given in requirements_win.txt
 
-## example_sendPulse.py
+## main.py
 
-example_sendPulse.py generate and plots an ideal enveloped transmit pulse and is run with:
+main.py initiates the calculations, and generate and plots the figures from the accompagning paper (xxx,xxx), using two broadband pings stored in json format, one for TS(f) calculation and one for Sv(f).
 
-python example_sendPulse.py --file ..\Data\pyEcholabEK80data.json
-
-This example uses the broadband data file and EK80Calculation.py to calculate the ideal transmit pulse used for pulse compression.
-
-## example_Svf.py
-
-example_Svf.py processes the raw data to Sv(f) and can be run using
-
-python example_Svf.py --file ..\Data\pyEcholabEK80data.json --r0 10 --r1 30
-
-where the values given after --r0 and --r1 is the range in meters from the transducer. In the example above Sv(f) is calculated over depth range 10 to 30m.
-Note that the actual values used for range depends on the length of the Hann window used, the code uses number of samples corresponding to twice the pulse duration (see EK80Calculation.py).
-
-The script also produces three plots
-1. An echogram showing range, acoustic frequency and Sv, overlayed Sv as a function of range
-2. Sv(f) in depth bins between r0 and r1
-3. Sv(f) over the entire depth layer
-
-## example_TSf.py
-
-To be implemented
 
 
 
