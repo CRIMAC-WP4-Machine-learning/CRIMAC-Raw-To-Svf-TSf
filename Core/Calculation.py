@@ -307,8 +307,8 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calc_Sv(p_rx_e_n, r_c_n, lambda_f_c,
                 p_tx_e, alpha_f_c, c, tau_eff,
-                Psi_f_c, g_0_f_c):
-        G = (p_tx_e * lambda_f_c ** 2 * c * tau_eff * Psi_f_c *
+                psi_f_c, g_0_f_c):
+        G = (p_tx_e * lambda_f_c ** 2 * c * tau_eff * psi_f_c *
              g_0_f_c ** 2) / (32 * np.pi ** 2)
         Sv_n = 10*np.log10(p_rx_e_n) + 20*np.log10(
             r_c_n) + 2 * alpha_f_c * r_c_n - 10*np.log10(G)
@@ -329,8 +329,8 @@ class Calculation(EK80DataContainer):
         
         N_w = int(2 ** np.ceil(np.log2(L)))
         # or : N_w = np.ceil(2 ** np.log2(L)) - Length of Hanning window
-        t_w_n = np.arange(0, N_w) * f_s_dec
-        t_w = N_w * f_s_dec
+        t_w_n = np.arange(0, N_w) / f_s_dec
+        t_w = N_w / f_s_dec
         
         w_i = Calculation.hann(N_w)
         w_tilde_i = w_i / (np.linalg.norm(w_i) / np.sqrt(N_w))
@@ -424,12 +424,12 @@ class Calculation(EK80DataContainer):
         return P_rx_e_v_m_n
 
     def calcSvf(P_rx_e_t_m_n, alpha_m, p_tx_e, lambda_m, t_w,
-                Psi_f, g_0_m, c, svf_range):
+                psi_m, g_0_m, c, svf_range):
         
         # Initialize list of Svf by range
         Sv_m_n = np.empty([len(svf_range), len(alpha_m)], dtype=float)
 
-        G = (p_tx_e * lambda_m ** 2 * c * t_w * Psi_f * g_0_m ** 2)/(
+        G = (p_tx_e * lambda_m ** 2 * c * t_w * psi_m * g_0_m ** 2) / (
             32 * np.pi ** 2)
         n = 0
         # Loop over list of power values along range
@@ -443,6 +443,6 @@ class Calculation(EK80DataContainer):
         return Sv_m_n
 
     @staticmethod
-    def calc_psi(Psi_f_n, f_n, f_m):
-        return Psi_f_n * (f_n / f_m)**2
+    def calc_psi(psi_f_n, f_n, f_m):
+        return psi_f_n * (f_n / f_m) ** 2
 
