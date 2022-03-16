@@ -276,8 +276,7 @@ def calc_Sv():
     P_rx_e_t_m_n = Calculation.calcPowerFreqSv(
         Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
 
-    # TODO: Currently we average over all data. Should be changed to actually calculate for a layer.
-    # Average volume backscattering strength spectrum for layer
+    # Volume backscattering strength spectrum for each range step
     Sv_m_n = Calculation.calcSvf(P_rx_e_t_m_n,
                                  alpha_m, p_tx_e, lambda_m, t_w,
                                  psi_m, g_0_m, c, svf_range)
