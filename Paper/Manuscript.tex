@@ -434,8 +434,6 @@ Volume backscattering samples compressed over the operational frequency band are
 \end{equation}
 noting that $\sv(\samplesymt)$ is an average over frequency of all echoes received at sample $\samplesymt$. In this case, the time window, $\tslide$, is the effective pulse duration, $\teff$, resulting from pulse compression.
 
-To estimate $\sv$ as a function of frequency a Fourier transform is used, repeatedly applied via a sliding window in range. However, the duration of this sliding window can be so long that the difference in spherical spreading loss compensation ($r_c^2$, implemented as the $20\log_{10}(\range_c)$ term in Eq. \ref{eq:Sv}) from the beginning of the window to the end can be significant, particularly for short range measurements. Thus, compensation for spreading loss is performed before applying the discrete Fourier transform. Absorption loss compensation is also range dependent (and frequency dependent), but since absorption loss compensation is insignificant for typical operating frequencies at short ranges and the difference in absorption loss compensation between the beginning and the end of the sliding window is insignificant at longer ranges, compensation for absorption loss is performed after applying the discrete Fourier transform.
-
 Compensation of spherical spreading loss requires compensation of received power by a factor of $r_c^2$, and hence compensation of amplitude by a factor of $\range_c$:
 %
 \begin{equation}
@@ -468,6 +466,9 @@ where $u(\genidxsym)$ is the step function and $\samplesymt$ is the sample data 
 \label{eq:FFT_TX_Auto}
 \ymfautof(\samplesymf)  =  \dft_\ndft (\ymfauto(\samplesymt)).
 \end{equation}
+
+
+
 %
 TODO: How to index samples along range? In the code \_n is used to indicate the range component of the FFt's. Needs attention.
 
@@ -494,6 +495,21 @@ Finally, the discretized estimate of $\sv(\freqsym)$, $\sv(\samplesymf)$, is giv
 - 10\log_{10}\left( \frac{\ptxe \wlen^2(\samplesymf) \cw \tslide \eqang(\samplesymf) \gainzero^2(\samplesymf) }{32\pi^2} \right).
 \end{equation}
 
+By rep pres of a set of centre samples n Sv values can be presented as a functon of range and frequencty for each ping
+Teh range fo sentre samples n could be chosen to halv the window length or any other grid that the user prefer the data presented to be in. This can be usefull when combining the Sv(f) across a range of transducers. In thode our ex we have simply chosen n to be on the same order of the range resoluteion (fig.~\ref{Fig_Sv_m_n}).
+
+\begin{figure}
+\includegraphics[width=16cm]{Fig_Sv_m_n}
+\caption{\label{Fig_Sv_m_n} Sv as a function of frequency ($m$) and range ($n$) for a single ping}
+\end{figure}
+
+For echo integration purposes it is common to integrate the Sv over a range, in our example we integrate the Sv from x-x m covering a school of non-swimbladdered fish (fig). We note that we normally require avg over several indivvidal pils to uptain an unbiased estimate of Sv for echo integration purposes. Here we present te sv(f) over the layer for our example ping for illustrative purposesn (fig.~\ref{Fig_Sv_m}).
+
+\begin{figure}
+\includegraphics[width=16cm]{Fig_Sv_m}
+\caption{\label{Fig_Sv_m_n} Sv as a function of frequency ($m$) averaged over a range intervall covering a fish school }
+\end{figure}
+
 \section{Illustrative examples}
 
 A frequency modulated pulse scattered by a metallic sphere will exhibit frequencies at which very little energy is returned due to destructive interference \citep{stanton2008}. This is visible in the $\ts$ (Fig. \ref{fi:ts_example}a, \ref{fi:ts_example}b) and agrees well with theoretical estimates of the backscatter from spheres \citep{maclennan1981}. The amplitude of the backscatter signal also clearly shows these nulls (Fig. \ref{fi:ts_example}c), which are readily visible here due to the use of a linear chirp where time through the pulse corresponds to specific frequencies. The marked increase in range resolution is apparent once pulse compression has been applied (Fig. \ref{fi:ts_example}d), as are the temporal effects of the pulse compression operation.
@@ -511,6 +527,23 @@ A metallic sphere is a rather simple and ideal scatterer and we also present $\s
 
 \section{Discussion}
 The use of broadband signals in fisheries acoustics is a developing area and we anticipate many valuable enhancements will occur in the coming years. For example, the use of $\ts(\freqsym)$ and $\sv(\freqsym)$ to improve acoustic target classification \citep{bassettBroadbandEchosounderMeasurements2018, korneliussen2018}, and the potential of the high range resolution from pulse compression to observe small-scale fish behviours \citep{skaret2020} and to detect objects adjacent to boundaries \citep{lavery2017}. The basic formulation for calculating $\ts(\freqsym)$ and $\sv(\freqsym)$ presented here provides the foundation for future enhancements.
+
+In this implementation (ref code) several choices have been made. Some of these are well founded in signal processing literature whereas others are of a more practical and ad-hoc nature, where other approaches could been equally valid. These include, as examples,  
+Transmit pulse
+Tapering of the transmit pulse
+Decimation factors and filters
+When Convoling the recieved signal with the transmit pulse - edge cases
+Assuemd four sector transducer
+Matched load - hvor stor effekt å gå utover 
+Assumed an impedance (trancuder)
+Effective pulse duration...
+Assuming SED algorithm, know the target depth. Improvements possible (SED for broadband). Number of samples for pulse comp - what is included, dense aggregations, sidelobes - pc, ...
+Window siz
+Edge cases - removed
+
+To estimate $\sv$ as a function of frequency a Fourier transform is used, repeatedly applied via a sliding window in range. However, the duration of this sliding window can be so long that the difference in spherical spreading loss compensation ($r_c^2$, implemented as the $20\log_{10}(\range_c)$ term in Eq. \ref{eq:Sv}) from the beginning of the window to the end can be significant, particularly for short range measurements. Thus, compensation for spreading loss is performed before applying the discrete Fourier transform. Absorption loss compensation is also range dependent (and frequency dependent), but since absorption loss compensation is insignificant for typical operating frequencies at short ranges and the difference in absorption loss compensation between the beginning and the end of the sliding window is insignificant at longer ranges, compensation for absorption loss is performed after applying the discrete Fourier transform.
+
+...
 
 Modern machine learning techniques are well suited for further processing of broadband echosounder data. Deep learning algorithms, including deep clustering, provide powerful methods to tease out patterns from high dimensional and complex data. By providing similar step sizes across frequencies it is possible to adapt this code to for an n-dimensional tensor typically employed by machine learning frameworks like Keras, Pytorch, and Tensor flow. 
 

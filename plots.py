@@ -117,13 +117,14 @@ def plot_TS(f_m,Y_pc_t_m,Y_mf_auto_red_m,Y_tilde_pc_t_m,g_theta_phi_m,TS_m):
 def plotSvf(f_m,Sv_m_n,svf_range):
     plt.figure()
     _f = f_m / 1000
-    plt.imshow(Sv_m_n, extent=[_f[0], _f[-1], svf_range[-1], svf_range[0]], origin='upper', vmin=-180, vmax=-120,
+    plt.imshow(Sv_m_n, extent=[_f[0], _f[-1], svf_range[-1], svf_range[0]], origin='upper',
                interpolation=None)
     plt.colorbar()
     plt.title('Echogram [Sv]')
     plt.xlabel('Frequency [kHz]')
     plt.ylabel('Range [m]')
     plt.axis('auto')
+    plt.savefig('./Paper/Fig_Sv_m_n.png')
 
     plt.figure()
     # Plot Sv(f) in one depth in the middle of layer
@@ -134,6 +135,7 @@ def plotSvf(f_m,Sv_m_n,svf_range):
     plt.xlabel('Frequency [kHz]')
     plt.ylabel('Sv')
     plt.grid()
+
 
     indices = np.where(np.logical_and(svf_range >= 60, svf_range <= 70))
     # returns (array([3, 4, 5]),)
@@ -152,7 +154,7 @@ def plotSvf(f_m,Sv_m_n,svf_range):
     plt.xlabel('Frequency [kHz]')
     plt.ylabel('Range [m]')
     plt.grid()
-
+    plt.savefig('./Paper/Fig_Sv_m.png')
     # Store Sv(f) and f for further analysis
     SvfOut = np.concatenate((f_m[np.newaxis],Sv_m_n), axis=0)
     # np.save('Svf.npy',SvfOut)
