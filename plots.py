@@ -16,7 +16,7 @@ def plot_ytx(f_0, f_1, tau, f_s,y_tx_n,slope):
     #        .format(f_0 / 1000, f_1 / 1000, slope))
     plt.xlabel('time (ms)')
     plt.ylabel('amplitude')
-    plt.savefig('./Paper/Fig_ytx.png')
+    plt.savefig('./Paper/Fig_ytx.png',dpi=300)
 
 
 def plot_fir(filter_v,f_s_dec_v,f_0, f_1):
@@ -44,7 +44,7 @@ def plot_fir(filter_v,f_s_dec_v,f_0, f_1):
     plt.xlabel('frequency (Hz)')
     plt.ylabel('Gain (dB)')
     plt.xlim([50000, 210000])
-    plt.savefig('./Paper/Fig_fir.png')
+    plt.savefig('./Paper/Fig_fir.png',dpi=300)
 
 
 def plot_y_mf_n(y_mf_n):
@@ -53,7 +53,7 @@ def plot_y_mf_n(y_mf_n):
     #plt.title('The absolute value of the filtered and decimated output signal')
     plt.xlabel('samples ()')
     plt.ylabel('amplitude')
-    plt.savefig('./Paper/Fig_y_mf_n.png')
+    plt.savefig('./Paper/Fig_y_mf_n.png',dpi=300)
 
 
 def plot_ACF(y_mf_auto_n):
@@ -62,7 +62,7 @@ def plot_ACF(y_mf_auto_n):
     #plt.title('The autocorrelation function of the matched filter.')
     plt.xlabel('Samples')
     plt.ylabel('ACF')
-    plt.savefig('./Paper/Fig_ACF.png')
+    plt.savefig('./Paper/Fig_ACF.png',dpi=300)
 
 
 def plot_theta_phi(theta_n,phi_n):
@@ -73,7 +73,7 @@ def plot_theta_phi(theta_n,phi_n):
     #plt.title('The physical angles.')
     plt.xlabel(' ')
     plt.ylabel('Angles')
-    plt.savefig('./Paper/Fig_theta_phi.png')
+    plt.savefig('./Paper/Fig_theta_phi.png',dpi=300)
 
 
 def plt_single_target(dum_r, dum_p,dum_theta,r_t,dum_phi,phi_t,y_mf_auto_red_n):
@@ -90,7 +90,7 @@ def plt_single_target(dum_r, dum_p,dum_theta,r_t,dum_phi,phi_t,y_mf_auto_red_n):
     axs[2].plot(dum_r, np.abs(y_mf_auto_red_n))
     axs[2].set_ylabel(' ')
     axs[2].set_xlabel('Range [m]')
-    plt.savefig('./Paper/Fig_singleTarget.png')
+    plt.savefig('./Paper/Fig_singleTarget.png',dpi=300)
 
 
 def plot_TS(f_m,Y_pc_t_m,Y_mf_auto_red_m,Y_tilde_pc_t_m,g_theta_phi_m,TS_m):
@@ -107,7 +107,7 @@ def plot_TS(f_m,Y_pc_t_m,Y_mf_auto_red_m,Y_tilde_pc_t_m,g_theta_phi_m,TS_m):
     axs[4].plot(f_m, TS_m)
     axs[4].set_xlabel('f (Hz)')
     axs[4].set_ylabel('TS(f)')
-    plt.savefig('./Paper/Fig_TS.png')
+    plt.savefig('./Paper/Fig_TS.png',dpi=300)
 
     # Store TS(f) and f for further analysis
     TSfOut = np.stack((f_m,TS_m), axis=0)
@@ -124,7 +124,7 @@ def plotSvf(f_m,Sv_m_n,svf_range):
     plt.xlabel('Frequency [kHz]')
     plt.ylabel('Range [m]')
     plt.axis('auto')
-    plt.savefig('./Paper/Fig_Sv_m_n.png')
+    plt.savefig('./Paper/Fig_Sv_m_n.png',dpi=300)
 
     # # Plot Sv(f) in one depth in the middle of layer
     # plt.figure()
@@ -153,7 +153,7 @@ def plotSvf(f_m,Sv_m_n,svf_range):
     plt.xlabel('Frequency [kHz]')
     plt.ylabel('Range [m]')
     plt.grid()
-    plt.savefig('./Paper/Fig_Sv_avg.png')
+    plt.savefig('./Paper/Fig_Sv_avg.png',dpi=300)
     # Store Sv(f) and f for further analysis
     SvfOut = np.concatenate((f_m[np.newaxis],Sv_m_n), axis=0)
     np.save('Svf.npy',SvfOut)
