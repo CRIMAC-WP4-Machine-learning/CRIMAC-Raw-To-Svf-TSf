@@ -121,7 +121,7 @@
 \affiliation{Kongsberg Maritime AS, Strandpromenaden 50, 3191, Horten, Norway}
 
 \author{Geir Pedersen}
-\affiliation{Ecosystem Acoustics, Institute of Marine Research, Bergen, 5001, Norway}
+\affiliation{Marine Ecosystem Acoustics, Institute of Marine Research, Bergen, 5001, Norway}
 
 \author{Dezhang Chu}
 \affiliation{Fishery Resource Analysis and Monitoring Division, Northwest Fisheries Science Center, National Marine Fisheries Service, National Oceanic and Atmospheric Administration, 2725 Montlake Blvd. E. Seattle, WA, 98112, USA}
@@ -129,12 +129,16 @@
 \author{Harald Heimvoll}
 \affiliation{Kongsberg Maritime AS, Strandpromenaden 50, 3191, Horten, Norway}
 
-\author{Geir Pedersen}
 \author{Rolf Korneliussen}
 \author{Gavin J. Macaulay}
 \author{Egil Ona}
+\affiliation{Marine Ecosystem Acoustics, Institute of Marine Research, Bergen, 5001, Norway}
+
+\author{Ruben Patel}
+\affiliation{Codelab, Bergen, Norway}
+
 \author{Nils Olav Handegard}
-\affiliation{Ecosystem Acoustics, Institute of Marine Research, Bergen, 5001, Norway}
+\affiliation{Marine Ecosystem Acoustics, Institute of Marine Research, Bergen, 5001, Norway}
 
 
 \begin{abstract}
@@ -166,7 +170,6 @@ To tap the full potential of broadband echosounder data, further methods for pro
 The code accompanying this paper is written in Python and is available as supplementary materials. All processing steps with respective figures in the paper can be reproduced by running main script (Main.py). Without loss of generality, we use the Simrad EK80 as an example since it is currently the most used broadband echosounder in the marine ecosystem acoustics field. By presenting the design goals, implementation details, and recommended procedures and processing required to obtain quantitative broadband data, the authors hope to encourage and facilitate the realistic use of broadband signals in marine ecosystem acoustics.
 
 Our presentation uses nomenclature and approaches that are commonly used for narrowband echosounder systems, which were derived from radar processing \citep{cook1967}. In particular, the expressions for target strength ($\ts$) and volume backscattering strength ($\sv$) \citep{MacLennan2002consistent} are presented in a similar manner for broadband signals as for narrowband signals.
-
 
 \subsection{System overview}
 A basic echosounder system consists of a transducer, a transceiver, and a computer program that controls the operation of the transceiver and records received signals. During transmission the program defines the signals which are created as electric signals in the transceiver, converted to acoustic signals by the transducer and transmitted into the water. The acoustic signals propagate through the water, are reflected or scattered by objects in the water, and propagate back to the transducer. During reception the transducer converts the received acoustic signals to electric signals, which are received, pre-amplified, filtered, digitized, and processed in the transceiver, and then transferred to the controlling program for further data processing and storage (Fig. \ref{fi:ek_sys}). Many types of transmit signals are feasible - this paper considers only the transmission of linear frequency modulated signals (also known as linear chirps).
@@ -327,6 +330,13 @@ where $\anglefalong$ and $\anglefathw$ are constants that convert from phase ang
 
 \section{Target strength}
 
+To illustrate each step of the process to obtain $TS(f)$ we use a single ping from a data file where a single metallic calibration sphere is suspended approximately 6 m below a 120 kHz transducer (fig.~\ref{Fig_TS_echogram}). 
+
+\begin{figure}
+\includegraphics[width=16cm]{Fig_TS_echogram}
+\caption{\label{Fig_TS_echogram} Sv as a function of frequency ($m$) and range ($n$) for a echogram raw data file. The red vertical line indicates ping to be processed in this section for TS(f). Single target calibration sphere is seen at approximately 6 m range and the seafloor at approximately 12 m.}
+\end{figure}
+
 Echoes from single targets are often characterised by their $\ts$, which is related to the differential backscattering cross section, $\bs$, via
 %
 \begin{equation}
@@ -401,9 +411,14 @@ Target strength can then be estimated using Eq. \ref{eq:TS}, but with $\freqsym$
 \caption{\label{fi:SED}The $\ypctargetf(\samplesymf)$ (upper), $\ymfautoredf(\samplesymf)$ (middle) and $\ypctargetnormf(\samplesymf)$ (lower).}
 \end{figure}
 
+A frequency modulated pulse scattered by a metallic sphere will exhibit frequencies at which very little energy is returned due to destructive interference \citep{stanton2008}. This is visible in the $\ts$ (Fig. \ref{fi:SED}) and agrees well with theoretical estimates of the backscatter from spheres \citep{maclennan1981}. The amplitude of the backscatter signal also clearly shows these nulls (Fig. \ref{fi:ts_example}c), which are readily visible here due to the use of a linear chirp where time through the pulse corresponds to specific frequencies. 
+
+
 Comment from Nils Olav: Using $m$ as an argument to a function is not ideal. If we use the function argument perhaps using $f_m$ would be more logical, i.e. $\lambda(f_m)$. Alternatively using $lambda_m$ is possible. The latter is perhaps more in line with the code since the parameter is an array windexed with $m$ and not a function. $Psi(f)$, on the the other hand is derived from a function, see below.
 
 \section{Volume backscattering strength}
+
+As a metallic sphere is a rather simple and ideal scatterer, we present $\sv$ from a school of non-swimbladdered fish (\textit{tobis}) (fig.~\ref{Fig_Sv_echogram}) in the processes to obtain $Sv((f)$. 
 
 Echoes from multiple scatterers can be quantified using volume backscattering strength, $\sv$, being the density of backscattering cross sections, and is given by:
 %
@@ -426,6 +441,11 @@ where $\prxevf(\freqsym)$ is the received electric power in a matched load for t
 \eqang(f) = \eqang(\fn)\left(\frac{\fn}{f}\right)^2.
 \end{equation}
 
+\begin{figure}
+\includegraphics[width=16cm]{Fig_Sv_echogram}
+\caption{\label{Fig_Sv_echogram} Sv as a function of frequency ($m$) and range ($n$) for a echogram raw data file. The red vertical line indicates ping to be processed in this section.}
+\end{figure}
+
 Volume backscattering samples compressed over the operational frequency band are estimated by applying Eq. \ref{eq:sv_f} to the received digitized power samples using the on-axis gain value with $f$ set to the centre frequency of the broadband pulse, $\fc$:
 \begin{equation}
 \label{eq:Sv}
@@ -441,11 +461,11 @@ Compensation of spherical spreading loss requires compensation of received power
 \ypcspread(\samplesymt) = \ypc(\samplesymt)\range_c(\samplesymt).
 \end{equation}
 %
-where $\ypcspread(\samplesymt)$ is the pulse compressed signal compensated for spherical spreading. A discrete Fourier transform is performed on the range compensated pulse compressed sample data using a normalized sliding Hanning window, $\hannw(\genidxsym)$. The duration, $\tslide$, of the sliding window is chosen as a compromise between along-beam range resolution and frequency resolution. We suggest that it be at least twice the pulse duration and for computational efficiency reasons should result in a number of samples, $\nw$, which is a power of 2.
+where $\ypcspread(\samplesymt)$ is the pulse compressed signal compensated for spherical spreading. A discrete Fourier transform is performed on the range compensated pulse compressed sample data using a normalized sliding Hann window, $\hannw(\genidxsym)$. The duration, $\tslide$, of the sliding window is chosen as a compromise between along-beam range resolution and frequency resolution. We suggest that it be at least twice the pulse duration and for computational efficiency reasons should result in a number of samples, $\nw$, which is a power of 2.
 
 TODO: Explain edge cases.
 
-The normalised Hanning window, $\hannwnorm$, is given by: 
+The normalised Hann window, $\hannwnorm$, is given by: 
 %
 \begin{equation}
 \label{eq:hannw}
@@ -495,51 +515,37 @@ Finally, the discretized estimate of $\sv(\freqsym)$, $\sv(\samplesymf)$, is giv
 - 10\log_{10}\left( \frac{\ptxe \wlen^2(\samplesymf) \cw \tslide \eqang(\samplesymf) \gainzero^2(\samplesymf) }{32\pi^2} \right).
 \end{equation}
 
-By rep pres of a set of centre samples n Sv values can be presented as a functon of range and frequencty for each ping
-Teh range fo sentre samples n could be chosen to halv the window length or any other grid that the user prefer the data presented to be in. This can be usefull when combining the Sv(f) across a range of transducers. In thode our ex we have simply chosen n to be on the same order of the range resoluteion (fig.~\ref{Fig_Sv_m_n}).
+By selecting a set of centre samples $n$, $Sv$ values can be presented as a function of range (n) and frequency (m) for each ping. The range for centre samples n could be chosen to half the window length or any other grid that the user prefer the data presented to be in. This can be useful when combining the Sv(f) across a range of transducers. In our example we have simply chosen n to be on the same order of the range resolution (fig.~\ref{Fig_Sv_m_n}).
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_Sv_m_n}
 \caption{\label{Fig_Sv_m_n} Sv as a function of frequency ($m$) and range ($n$) for a single ping}
 \end{figure}
 
-For echo integration purposes it is common to integrate the Sv over a range, in our example we integrate the Sv from x-x m covering a school of non-swimbladdered fish (fig). We note that we normally require avg over several indivvidal pils to uptain an unbiased estimate of Sv for echo integration purposes. Here we present te sv(f) over the layer for our example ping for illustrative purposesn (fig.~\ref{Fig_Sv_m}).
+For echo integration purposes it is common to integrate the Sv over a range, in our example we integrate the Sv from 15 to 34 m covering a school of non-swimbladdered fish (fig). We note that we normally require averaging over several individual pings to obtain an unbiased estimate of Sv for echo integration purposes. Here we present the sv(f) over the layer for our example ping for illustrative purposes (fig.~\ref{Fig_Sv_avg}). Even though this is for a single ping, we still observe a positive slope of the frequency response indicative of non-swimbladdered fish. 
 
 \begin{figure}
-\includegraphics[width=16cm]{Fig_Sv_m}
-\caption{\label{Fig_Sv_m_n} Sv as a function of frequency ($m$) averaged over a range intervall covering a fish school }
+\includegraphics[width=16cm]{Fig_Sv_avg}
+\caption{\label{Fig_Sv_avg} Sv as a function of frequency ($m$) averaged over a range interval covering a fish school }
 \end{figure}
 
-\section{Illustrative examples}
-
-A frequency modulated pulse scattered by a metallic sphere will exhibit frequencies at which very little energy is returned due to destructive interference \citep{stanton2008}. This is visible in the $\ts$ (Fig. \ref{fi:ts_example}a, \ref{fi:ts_example}b) and agrees well with theoretical estimates of the backscatter from spheres \citep{maclennan1981}. The amplitude of the backscatter signal also clearly shows these nulls (Fig. \ref{fi:ts_example}c), which are readily visible here due to the use of a linear chirp where time through the pulse corresponds to specific frequencies. The marked increase in range resolution is apparent once pulse compression has been applied (Fig. \ref{fi:ts_example}d), as are the temporal effects of the pulse compression operation.
-
-A metallic sphere is a rather simple and ideal scatterer and we also present $\sv$ from a school of Atlantic mackerel (\textit{Scomber scombrus}) (Fig. \ref{fi:sv_example}a). The trend for increasing $\sv$ with frequency is well-known \citep{korneliussen2010} and is consistent with the trend observed in this example. In contrast to data from isolated scatterers, such as metallic spheres, the benefit of pulse compression on the backscatter from an object that generates many overlapping echoes is not immediately obvious (Fig. \ref{fi:sv_example}b, \ref{fi:sv_example}c), although in regions where the fish density decreases (e.g., top left of the school), single target echoes become visible.
-
-\begin{figure}
-\includegraphics[width=16cm]{Fig_ts_example}
-\caption{\label{fi:ts_example}(color online) Target strength of 57.2 mm (a) and 22.0 mm (b) diameter tungsten carbide (with 6\% cobalt binder) calibration spheres, theoretical (solid line) and measured and derived using Eq. (\ref{eq:TS_f}) (dotted line). Echogram of non pulse compressed backscatter [dB re 1 W] (c) and pulse compressed backscatter [dB re 1 $\textrm{m}^2$] (d) from 57.2 mm (lower band) and 22.0 mm (upper band) diameter tungsten carbide spheres using a 2.048 ms duration linear frequency modulated pulse (160--260 kHz). The range from the spheres to the transducer varied during the time period shown.}
-\end{figure}
-
-\begin{figure}
-%\includegraphics[width=16cm]{Figure5}
-\caption{\label{fi:sv_example}(color online) (a): Mean frequency response (solid line) and standard error (dashed line) from a school of Atlantic mackerel (\textit{Scomber scombrus}) from three simultaneously operating linear frequency modulated echosounder channels (90--170, 160--260, and 280--450 kHz). Echogram of backscattered power [dB re 1 W] (b) and pulse compressed $\sv$ [dB re 1 $m^{-1}$] (c) from the 160--260 kHz pulse. The school is the trapezoid-shaped object between 25 and 90 m below the surface. The echo from the seafloor is visible at 130 m depth.} \end{figure}
+The trend for increasing $\sv$ with frequency is well-known \citep{korneliussen2010} and is consistent with the trend observed in this example. In contrast to data from isolated scatterers, such as metallic spheres, the benefit of pulse compression on the backscatter from an object that generates many overlapping echoes is not immediately obvious (fig.~\ref{Fig_Sv_echogram}).
 
 \section{Discussion}
 The use of broadband signals in fisheries acoustics is a developing area and we anticipate many valuable enhancements will occur in the coming years. For example, the use of $\ts(\freqsym)$ and $\sv(\freqsym)$ to improve acoustic target classification \citep{bassettBroadbandEchosounderMeasurements2018, korneliussen2018}, and the potential of the high range resolution from pulse compression to observe small-scale fish behviours \citep{skaret2020} and to detect objects adjacent to boundaries \citep{lavery2017}. The basic formulation for calculating $\ts(\freqsym)$ and $\sv(\freqsym)$ presented here provides the foundation for future enhancements.
 
-In this implementation (ref code) several choices have been made. Some of these are well founded in signal processing literature whereas others are of a more practical and ad-hoc nature, where other approaches could been equally valid. These include, as examples,  
-Transmit pulse
-Tapering of the transmit pulse
-Decimation factors and filters
-When Convoling the recieved signal with the transmit pulse - edge cases
-Assuemd four sector transducer
-Matched load - hvor stor effekt å gå utover 
-Assumed an impedance (trancuder)
-Effective pulse duration...
-Assuming SED algorithm, know the target depth. Improvements possible (SED for broadband). Number of samples for pulse comp - what is included, dense aggregations, sidelobes - pc, ...
-Window siz
-Edge cases - removed
+In this implementation (ref code) several choices have been made. Some of these are well founded in signal processing literature whereas others are of a more practical and ad-hoc nature, where other approaches could been equally valid. These include, as examples,\\ 
+Transmit pulse\\
+Tapering of the transmit pulse\\
+Decimation factors and filters\\
+When Convoling the recieved signal with the transmit pulse - edge cases\\
+Assuemd four sector transducer\\
+Matched load - hvor stor effekt å gå utover \\
+Assumed an impedance (trancuder)\\
+Effective pulse duration...\\
+Assuming SED algorithm, know the target depth. Improvements possible (SED for broadband). Number of samples for pulse comp - what is included, dense aggregations, sidelobes - pc, ...\\
+Window size\\
+Edge cases - removed\\
 
 To estimate $\sv$ as a function of frequency a Fourier transform is used, repeatedly applied via a sliding window in range. However, the duration of this sliding window can be so long that the difference in spherical spreading loss compensation ($r_c^2$, implemented as the $20\log_{10}(\range_c)$ term in Eq. \ref{eq:Sv}) from the beginning of the window to the end can be significant, particularly for short range measurements. Thus, compensation for spreading loss is performed before applying the discrete Fourier transform. Absorption loss compensation is also range dependent (and frequency dependent), but since absorption loss compensation is insignificant for typical operating frequencies at short ranges and the difference in absorption loss compensation between the beginning and the end of the sliding window is insignificant at longer ranges, compensation for absorption loss is performed after applying the discrete Fourier transform.
 

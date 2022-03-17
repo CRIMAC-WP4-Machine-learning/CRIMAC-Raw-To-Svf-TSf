@@ -11,9 +11,9 @@ def plot_ytx(f_0, f_1, tau, f_s,y_tx_n,slope):
 
     plt.figure()
     plt.plot(t * 1000, y_tx_n, t * 1000, y_tx_n05slope)
-    plt.title(
-        'Ideal windowed transmit pulse.{:.0f}kHz - {:.0f}kHz, slope {:.3f}'
-            .format(f_0 / 1000, f_1 / 1000, slope))
+    #plt.title(
+    #    'Ideal windowed transmit pulse.{:.0f}kHz - {:.0f}kHz, slope {:.3f}'
+    #        .format(f_0 / 1000, f_1 / 1000, slope))
     plt.xlabel('time (ms)')
     plt.ylabel('amplitude')
     plt.savefig('./Paper/Fig_ytx.png')
@@ -50,7 +50,7 @@ def plot_fir(filter_v,f_s_dec_v,f_0, f_1):
 def plot_y_mf_n(y_mf_n):
     plt.figure()
     plt.plot(np.abs(y_mf_n))
-    plt.title('The absolute value of the filtered and decimated output signal')
+    #plt.title('The absolute value of the filtered and decimated output signal')
     plt.xlabel('samples ()')
     plt.ylabel('amplitude')
     plt.savefig('./Paper/Fig_y_mf_n.png')
@@ -59,7 +59,7 @@ def plot_y_mf_n(y_mf_n):
 def plot_ACF(y_mf_auto_n):
     plt.figure()
     plt.plot(np.abs(y_mf_auto_n))
-    plt.title('The autocorrelation function of the matched filter.')
+    #plt.title('The autocorrelation function of the matched filter.')
     plt.xlabel('Samples')
     plt.ylabel('ACF')
     plt.savefig('./Paper/Fig_ACF.png')
@@ -70,7 +70,7 @@ def plot_theta_phi(theta_n,phi_n):
     plt.figure()
     plt.plot(theta_n)
     plt.plot(phi_n)
-    plt.title('The physical angles.')
+    #plt.title('The physical angles.')
     plt.xlabel(' ')
     plt.ylabel('Angles')
     plt.savefig('./Paper/Fig_theta_phi.png')
@@ -78,7 +78,7 @@ def plot_theta_phi(theta_n,phi_n):
 
 def plt_single_target(dum_r, dum_p,dum_theta,r_t,dum_phi,phi_t,y_mf_auto_red_n):
     fig, axs = plt.subplots(3)
-    fig.suptitle('Single target')
+    #fig.suptitle('Single target')
     axs[0].plot(dum_r, dum_p)
     axs[0].set_ylabel('Power')
     line1, = axs[1].plot(dum_r, dum_theta, label='$\\theta$')
@@ -110,8 +110,8 @@ def plot_TS(f_m,Y_pc_t_m,Y_mf_auto_red_m,Y_tilde_pc_t_m,g_theta_phi_m,TS_m):
     plt.savefig('./Paper/Fig_TS.png')
 
     # Store TS(f) and f for further analysis
-    # TSfOut = np.stack((f_m,TS_m), axis=0)
-    # np.save('TSf.npy',TSfOut)
+    TSfOut = np.stack((f_m,TS_m), axis=0)
+    np.save('TSf.npy',TSfOut)
 
 
 def plotSvf(f_m,Sv_m_n,svf_range):
@@ -120,25 +120,24 @@ def plotSvf(f_m,Sv_m_n,svf_range):
     plt.imshow(Sv_m_n, extent=[_f[0], _f[-1], svf_range[-1], svf_range[0]], origin='upper',
                interpolation=None)
     plt.colorbar()
-    plt.title('Echogram [Sv]')
+    #plt.title('Echogram [Sv]')
     plt.xlabel('Frequency [kHz]')
     plt.ylabel('Range [m]')
     plt.axis('auto')
     plt.savefig('./Paper/Fig_Sv_m_n.png')
 
-    plt.figure()
-    # Plot Sv(f) in one depth in the middle of layer
-    indices=np.where(np.logical_and(svf_range>=15, svf_range<=34))
-    Sv=[]
-    plt.plot(Sv_m_n[int(len(indices[0]) / 2) - 1,])
-    plt.title('Sv(f) at one depth')
-    plt.xlabel('Frequency [kHz]')
-    plt.ylabel('Sv')
-    plt.grid()
+    # # Plot Sv(f) in one depth in the middle of layer
+    # plt.figure()
+    # indices=np.where(np.logical_and(svf_range>=15, svf_range<=34))
+    # Sv=[]
+    # plt.plot(Sv_m_n[int(len(indices[0]) / 2) - 1,])
+    # plt.title('Sv(f) at one depth')
+    # plt.xlabel('Frequency [kHz]')
+    # plt.ylabel('Sv')
+    # plt.grid()
 
-
-    indices = np.where(np.logical_and(svf_range >= 60, svf_range <= 70))
-    # returns (array([3, 4, 5]),)
+    indices = np.where(np.logical_and(svf_range >= 15, svf_range <= 34))
+    # returns indices for depth layer of school
     Sv = []
     for i in range(len(f_m)):
         sv = 10 ** (Sv_m_n[indices, i] / 10)
@@ -150,11 +149,11 @@ def plotSvf(f_m,Sv_m_n,svf_range):
     #fig1 = figure()
     plt.figure()
     plt.plot(f_m / 1000, Sv)  # values are for some reason to low, add ~17dB
-    plt.title('Sv(f) averaged over school depths')
+    #plt.title('Sv(f) averaged over school depths')
     plt.xlabel('Frequency [kHz]')
     plt.ylabel('Range [m]')
     plt.grid()
-    plt.savefig('./Paper/Fig_Sv_m.png')
+    plt.savefig('./Paper/Fig_Sv_avg.png')
     # Store Sv(f) and f for further analysis
     SvfOut = np.concatenate((f_m[np.newaxis],Sv_m_n), axis=0)
-    # np.save('Svf.npy',SvfOut)
+    np.save('Svf.npy',SvfOut)
