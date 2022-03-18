@@ -285,7 +285,10 @@ def calcSv():
     plotSvf(f_m,Sv_m_n,svf_range)
 
 
-
+# Example Usage :
+#   main.py --tfile ./data/CRIMAC_SphereBeam.json --sfile ./data/CRIMAC_Svf.json
+#   main.py --tfile ./data/CRIMAC_SphereBeam.json --sfile ./data/CRIMAC_Svf.json --plots false
+#   main.py --tfile ./data/CRIMAC_SphereBeam.json --sfile none
 if __name__ == '__main__':
 
     # Handle command line parameters
