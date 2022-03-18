@@ -65,8 +65,8 @@ def preCalculations(data):
     g_0_m = data.calc_g(0, 0, f_m)
 
     # Two-way equivalent beam angle at center frequency and f_m
-    psi_f_c = Calculation.calc_psi(psi_f_n, f_n, f_c)
-    psi_m = Calculation.calc_psi(psi_f_n, f_n, f_m)
+    psi_f_c = Calculation.calcpsi(psi_f_n, f_n, f_c)
+    psi_m = Calculation.calcpsi(psi_f_n, f_n, f_m)
 
 
 def calcBasics(do_plot):
@@ -254,12 +254,12 @@ def calcSv():
 
     # Volume backscattering strength compressed frequency band
 
-    Sv_n = Calculation.calc_Sv(p_rx_e_n, r_n, lambda_f_c,
-                               p_tx_e, alpha_f_c, c, tau_eff,
-                               psi_f_c, g_0_f_c)
+    Sv_n = Calculation.calcSv(p_rx_e_n, r_n, lambda_f_c,
+                              p_tx_e, alpha_f_c, c, tau_eff,
+                              psi_f_c, g_0_f_c)
 
     # Pulse compressed signal adjusted for spherical loss
-    y_pc_s_n = Calculation.calc_PulseCompSphericalSpread(y_pc_n, r_n)
+    y_pc_s_n = Calculation.calcPulseCompSphericalSpread(y_pc_n, r_n)
 
     # Hanning window
     w_tilde_i, N_w, t_w, t_w_n = Calculation.defHanningWindow(c, tau, dr,

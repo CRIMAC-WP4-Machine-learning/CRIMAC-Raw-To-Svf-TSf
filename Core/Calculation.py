@@ -282,7 +282,7 @@ class Calculation(EK80DataContainer):
         P_rx_e_t_m = N_u * (np.abs(Y_tilde_pc_t_m)/(2 * np.sqrt(2))) ** 2 * imp
         return P_rx_e_t_m
 
-    def calc_g0(self, f):
+    def calcg0(self, f):
         if self.isCalibrated:
             # Calibrated case
             return np.interp(f, self.frequencies, self.gain)
@@ -305,9 +305,9 @@ class Calculation(EK80DataContainer):
     #
 
     @staticmethod
-    def calc_Sv(p_rx_e_n, r_c_n, lambda_f_c,
-                p_tx_e, alpha_f_c, c, tau_eff,
-                psi_f_c, g_0_f_c):
+    def calcSv(p_rx_e_n, r_c_n, lambda_f_c,
+               p_tx_e, alpha_f_c, c, tau_eff,
+               psi_f_c, g_0_f_c):
         G = (p_tx_e * lambda_f_c ** 2 * c * tau_eff * psi_f_c *
              g_0_f_c ** 2) / (32 * np.pi ** 2)
         Sv_n = 10*np.log10(p_rx_e_n) + 20*np.log10(
@@ -315,7 +315,7 @@ class Calculation(EK80DataContainer):
         return Sv_n
 
     @staticmethod
-    def calc_PulseCompSphericalSpread(y_pc_n, r_c_n):
+    def calcPulseCompSphericalSpread(y_pc_n, r_c_n):
         y_pc_s_n = y_pc_n * r_c_n
         return y_pc_s_n
 
@@ -443,6 +443,6 @@ class Calculation(EK80DataContainer):
         return Sv_m_n
 
     @staticmethod
-    def calc_psi(psi_f_n, f_n, f_m):
+    def calcpsi(psi_f_n, f_n, f_m):
         return psi_f_n * (f_n / f_m) ** 2
 
