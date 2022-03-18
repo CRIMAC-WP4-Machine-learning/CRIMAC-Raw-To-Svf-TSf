@@ -1,5 +1,7 @@
 \documentclass[preprint,12pt,TurnOnLineNumbers]{JASAnew}
 
+\usepackage{color,soul}
+
 \pdfoutput=1
 \hyphenation{echo-sounders}
 \renewcommand{\figurename}{Figure}
@@ -151,18 +153,17 @@ The use of quantitative broadband echosounders for biological studies and survey
 
 \section{Introduction}
 
-Active acoustics is an efficient method for remote sensing of marine ecosystems. These methods have been efficiently used to cover a wide range of spatial and temporal scales from the aquatic ecosystem, ranging from tens of km (Makris) to small scale behaviour patterns (refs). These methods are also a crucial component of fisheries resource management. Several different configurations of acoustic instruments are available, these include multibeam sonars, synthetic aperature sonar, omnidirectional sonars, acoustic imaging sonars as well as echosounders (refs).
+Active acoustics is an efficient method for remote sensing of marine ecosystems. These methods have been efficiently used to cover a wide range of spatial and temporal scales from the aquatic ecosystem, ranging from tens of km (Duane et al., 2021) to small scale behaviour patterns (Handegard et al., 2003). These methods are also a crucial component of fisheries resource management. Several different configurations of acoustic instruments are available, these include multibeam sonars, synthetic aperture sonar, omnidirectional sonars, acoustic imaging sonars as well as single- and multibeam echosounders (\hl{refs}).
 
-Single- beam echosounders have extensively been used in fisheries management and ecosystem monitoring. Methodology for using these systems are well developed and in particular the ability for accurate calibration of the system has made these specially useful. Single-beam echosounders have provided important information for fisheries resource management (Simmonds and MacLennan, 2005) as well as insight in ecological processes for the aquatic ecosystem (Godø 2014). 
+Single-beam echosounders have extensively been used in fisheries management and ecosystem monitoring. Methodology for using these systems are well developed and in particular the ability for accurate calibration of the system has made these specially useful. Single-beam echosounders have provided important information for fisheries resource management (Simmonds and MacLennan, 2005) as well as insight in ecological processes for the aquatic ecosystem (Godø, 2014). 
 
-Conventional echosounders generate an acoustic pulse with a narrow bandwidth (several kHz at most), and the simultaneous operation at widely spaced frequencies (such as 18, 38, 70, 120, 200, and 333 kHz). The method has been used to  study predator-prey interactions (Benoit-Bird and Au, 2003; Friedlaender et al., 2009; Veit et al., 1993), interactions between marine organisms and the physical environment (Crawford et al., 2012; Freeman et al., 2004; Georgiadis et al., 2009; Ludsin et al., 2009; Godø...), abundance and distribution of prey and predators (Thompson et al., 1991) and non-fish species or group of species (Brierley et al., 2001), and the individual or group behavior of marine organisms (Axelsen et al., 2000; Benoit-Bird et al., 2001; Kaartvedt et al., 2009).
+Conventional echosounders generate an acoustic pulse with a narrow bandwidth (several kHz at most), and the simultaneous operation at widely spaced frequencies (such as 18, 38, 70, 120, 200, and 333 kHz). The method has been used to  study predator-prey interactions (Benoit-Bird and Au, 2003; Friedlaender et al., 2009; Veit et al., 1993), interactions between marine organisms and the physical environment (Crawford et al., 2012; Freeman et al., 2004; Georgiadis et al., 2009; Ludsin et al., 2009; Godø, 2014), abundance and distribution of prey and predators (Thompson et al., 1991) and non-fish species or group of species (Brierley et al., 2001), and the individual or group behavior of marine organisms (Axelsen et al., 2000; Benoit-Bird et al., 2001; Kaartvedt et al., 2009).
 
-Recent echosounders produce pulses with a wide and continuous frequency range (broadband pulses), as opposed to conventional single frequency systems, i.e. a continuous frequency coverage over a wide frequency band. provide significantly better along-beam resolution and a higher signal to noise ratio than narrowband pulses (Chu and Stanton, 1998; Ehrenberg and Torkelson, 2000). These benefits can lead to improved backscatter categorization (R. Korneliussen, 2018; R. J. Korneliussen et al., 2016; Martin Traykovski et al., 1998; Stanton et al., 2012) and hence more accurate distribution and abundance estimates, as well as enhanced information on ecosystem structure and functioning 
-(skriv om: e.g. Lavery et al., 2017; Basset et al., 2017; 2020; Skaret et al., 2020; Kubilius et al., 2020; Benoit-Bird and Waluk, 2020; Hasegawa et al., 2021; Gugele et al., 2021; Cotter et al., 2021; Blaunet et al., 2021; Agersted et al., 2021; Khodabandeloo et al., 2021a;2021b).
+Recent echosounders produce pulses with a wide and continuous frequency range (broadband pulses), as opposed to conventional single frequency systems, i.e. a continuous frequency coverage over a wide frequency band. This provides significantly better along-beam resolution and a higher signal to noise ratio than narrowband pulses (Chu and Stanton, 1998; Ehrenberg and Torkelson, 2000). These benefits can lead to improved backscatter categorization (R. Korneliussen, 2018; R. J. Korneliussen et al., 2016; Martin Traykovski et al., 1998; Stanton et al., 2012) and hence more accurate distribution and abundance estimates, as well as enhanced information on ecosystem structure and functioning. Early work with recent commercial systems indicate the potential improvement in detection near boundaries (Lavery et al., 2017) and remote sizing of fish (Kubilius et al., 2020;), capabilities of fine-scale observations of interactions between prey and predators (Skaret et al., 2020), the potential for species discrimination (Basset et al., 2018; Blanluet et al., 2019; Benoit-Bird and Waluk, 2020; Hasegawa et al., 2021; Gugele et al., 2021), and the potential for enhanced information on mesopelagic layers (Cotter et al., 2021; Agersted et al., 2021; Khodabandeloo et al., 2021a;2021b).
 
 There have been several scientific broadband echosounder systems developed for laboratory use (Chu et al., 1992; Conti and Demer, 2003; Forland et al., 2014), some prototype or custom-made systems (Barr et al., 2002; Brise~no-Avena et al., 2015; Foote et al., 2005; Imaizumi et al., 2009; Simmonds et al., 1996; Zakharia et al., 1989, 1996) and some commercially available systems (Denny and Simpson, 1998; Ehrenberg and Torkelson, 2000; Gordon and Zedel, 1998; Stanton et al., 2010; Zedel et al., 2003). 
 
-To tap the full potential of broadband echosounder data, further methods for processing such data must be developed. Examples include adapting pulses to improve target separation as well as further parameters from the individual targets. Different send pulses can be envisioned as well as various methods for acoustic target classification. The objective of this paper is to present a systematic and comprehensive explanation of how to process calibrated broadband echosounder data. By making associated code available, we provide a starting point for further developing signal processing methods for applying broadband acoustic to aquatic ecology. 
+To tap the full potential of broadband echosounder data, further methods for processing such data must be developed (Lavery et al., 2017; Basset et al., 2018). Examples include adapting pulses to improve target separation as well as further parameters from the individual targets. Different send pulses can be envisioned as well as various methods for acoustic target classification. The objective of this paper is to present a systematic and comprehensive explanation of how to process calibrated broadband echosounder data. By making associated code available, we provide a starting point for further developing signal processing methods for applying broadband acoustic to aquatic ecology. 
 
 \section{Signal flow and initial processing}
 
@@ -183,10 +184,10 @@ A basic echosounder system consists of a transducer, a transceiver, and a comput
 
 The controlling computer program generates a short-duration digital transmit signal (a ping), $\ytx(\samplesymt)$, where $\samplesymt$ is a sample index in the discrete time domain. Typical BB pulses are linear upsweep pulses windowed by an envelope function. The generated signal $\ytxe(\timesym)$ is converted to an analogue electric signal and amplified by the transceiver to obtain analogue signal $\ytxe(\timesym)$. The analogue and amplified signal is passed on to the transducer to generate the transmitted acoustic signal $\ytxa(\timesym)$ in the water column, where $\timesym$ is the time for the (analog) signal. For a split-aperture echosounder system, there are typically three or four channels to allow estimation of the angle of arriving echoes, and the signal is typically transmitted with equal power across the channels.
 
-In the example a linear sweep enveloped by a Hann function is implemented (Fig.~\ref{fi:ytx}). This is found in the class \verb|Core.EK80Calculation.generateIdealWindowedSendPulse|, where the parameters are the initial frequency, the final frequency, the pulse duration, the sampling rate, and the proportion of the signal that is tapered in each end, respectively. A tapering of 0 and .5 indicates no tapering and tapering across the whole signal, respectively.
+In the example a linear sweep enveloped by a Hann function is implemented (Fig.~\ref{fi:ytx}). This is found in the class \verb|Calculation.generateIdealWindowedTransmitSignal|, where the parameters are the initial frequency, the final frequency, the pulse duration, the sampling rate, and the proportion of the signal that is tapered in each end, respectively. A tapering of 0 and .5 indicates no tapering and tapering across the whole signal, respectively.
 \begin{figure}
 \includegraphics[width=16cm]{Fig_ytx}
-\caption{\label{fi:ytx} Ideal and enveloped send pulse between 34kHz to 45kHz with a slope of 0.057, as implemented in the EK80. The orange curve illustrate the effect of setting the slope to 0.5.}
+\caption{\label{fi:ytx} Ideal and enveloped transmit pulse between 34 kHz to 45 kHz with a slope of 0.057, as implemented in the EK80. The orange curve illustrate the effect of setting the slope to 0.5.}
 \end{figure}
 
 \subsection{Signal reception}
@@ -212,10 +213,10 @@ The characteristics of the bandpass filter and decimation factors are chosen wit
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_fir}
-\caption{\label{fi:fir} The frequency (power) response of the filters in from our test set.}
+\caption{\label{fi:fir} The frequency (power) response of the filters in our test set.}
 \end{figure}
 
-The original sample data $\yrxorg(\samplesymt,\channelsym)$ are not available in the EK80 data files. Instead,the resulting filtered and decimated complex samples from each transducer channel $\yrx(\samplesymt,\channelsym)$ are stored in the data files. The data are recorded together with additional data such as from position and motion sensors and system configuration data in raw data files for display and analysis by processing software. The filter parameters are in this paper used to generate the transmit pulse for the matched filter, see below.
+The original sample data $\yrxorg(\samplesymt,\channelsym)$ are not available in the EK80 data files. Instead, the resulting filtered and decimated complex samples from each transducer channel $\yrx(\samplesymt,\channelsym)$ are stored in the data files. The data are recorded together with additional data such as from position and motion sensors and system configuration data in raw data files for display and analysis by processing software. The filter parameters are in this paper used to generate the transmit pulse for the matched filter, see below.
 
 
 \subsection{Pulse compression}
@@ -259,7 +260,7 @@ is the square of the absolute value of the matched filter autocorrelation functi
 
 \begin{figure}
 \includegraphics{Fig_ACF}
-\caption{The aoutocorrekation function $\ptxauto$ from the example. The corresponding $\teff=0.1ms$ and $\tnom=2ms$\label{fi:ACF}.}
+\caption{The autocorrelation function $\ptxauto$ from the example. The corresponding $\teff=0.1 ms$ and $\tnom=2 ms$\label{fi:ACF}.}
 \end{figure}
 
 
@@ -325,16 +326,16 @@ where $\anglefalong$ and $\anglefathw$ are constants that convert from phase ang
 %
 \begin{figure}
 \includegraphics[width=16cm]{Fig_theta_phi}
-\caption{\label{fi:theta_phi}Physical angles.}
+\caption{\label{fi:theta_phi}Physical angles $\along$ and $\athw$.}
 \end{figure}
 
 \section{Target strength}
 
-To illustrate each step of the process to obtain $TS(f)$ we use a single ping from a data file where a single metallic calibration sphere is suspended approximately 6 m below a 120 kHz transducer (fig.~\ref{Fig_TS_echogram}). 
+To illustrate each step of the process to obtain $TS(m)$ we use a single ping from a data file where a single metallic calibration sphere with 35 mm diameter (WC35) is suspended approximately 6 m below a 120 kHz transducer (fig.~\ref{Fig_TS_echogram}). 
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_TS_echogram}
-\caption{\label{Fig_TS_echogram} Sv as a function of frequency ($m$) and range ($n$) for a echogram raw data file. The red vertical line indicates ping to be processed in this section for TS(f). Single target calibration sphere is seen at approximately 6 m range and the seafloor at approximately 12 m.}
+\caption{\label{Fig_TS_echogram} Sv as a function of frequency ($m$) and range ($n$) for a echogram raw data file. The red vertical line indicates ping to be processed in this section for TS(m). Single target calibration sphere is seen at approximately 6 m range and the seafloor at approximately 12 m.}
 \end{figure}
 
 Echoes from single targets are often characterised by their $\ts$, which is related to the differential backscattering cross section, $\bs$, via
@@ -388,7 +389,7 @@ The nomalized discrete Fourier transform of the target signal, $\ypctargetnormf(
 \ypctargetnormf(\samplesymf) = \frac{\ypctargetf(\samplesymf)} {\ymfautoredf(\samplesymf)}.
 \end{equation}
 %
-The corresponding frequencies f\_m\_t (?) are calculate as follows... See the function EK80CalculationPaper.calcDFTforTS. Nils Olav did not quite get this so please enlighten me...
+\hl{The corresponding frequencies f\_m\_t (?) are calculate as follows... See the function EK80CalculationPaper.calcDFTforTS. Nils Olav did not quite get this so please enlighten me...}
 
 Assuming, as a first approximation, that the impedances of the transceiver and transducer are independent of frequency, the received power into a matched load, $\prxetf(\samplesymf)$, is then estimated by:
 \begin{equation}
@@ -411,14 +412,14 @@ Target strength can then be estimated using Eq. \ref{eq:TS}, but with $\freqsym$
 \caption{\label{fi:SED}The $\ypctargetf(\samplesymf)$ (upper), $\ymfautoredf(\samplesymf)$ (middle) and $\ypctargetnormf(\samplesymf)$ (lower).}
 \end{figure}
 
-A frequency modulated pulse scattered by a metallic sphere will exhibit frequencies at which very little energy is returned due to destructive interference \citep{stanton2008}. This is visible in the $\ts$ (Fig. \ref{fi:SED}) and agrees well with theoretical estimates of the backscatter from spheres \citep{maclennan1981}. The amplitude of the backscatter signal also clearly shows these nulls (Fig. \ref{fi:ts_example}c), which are readily visible here due to the use of a linear chirp where time through the pulse corresponds to specific frequencies. 
+A frequency modulated pulse scattered by a metallic sphere will exhibit frequencies at which very little energy is returned due to destructive interference \citep{stanton2008}. This is visible in the $\ts$ (Fig. \ref{fi:SED}) and agrees well with theoretical estimates of the backscatter from spheres \citep{maclennan1981}. The amplitude of the backscatter signal also clearly shows these nulls (Fig. \ref{fi:SED}), which are readily visible here due to the use of a linear chirp where time through the pulse corresponds to specific frequencies. 
 
 
-Comment from Nils Olav: Using $m$ as an argument to a function is not ideal. If we use the function argument perhaps using $f_m$ would be more logical, i.e. $\lambda(f_m)$. Alternatively using $lambda_m$ is possible. The latter is perhaps more in line with the code since the parameter is an array windexed with $m$ and not a function. $Psi(f)$, on the the other hand is derived from a function, see below.
+\hl{Comment from Nils Olav: Using $m$ as an argument to a function is not ideal. If we use the function argument perhaps using $f_m$ would be more logical, i.e. $\lambda(f_m)$. Alternatively using $lambda_m$ is possible. The latter is perhaps more in line with the code since the parameter is an array windexed with $m$ and not a function. $Psi(f)$, on the the other hand is derived from a function, see below.}
 
 \section{Volume backscattering strength}
 
-As a metallic sphere is a rather simple and ideal scatterer, we present $\sv$ from a school of non-swimbladdered fish (\textit{tobis}) (fig.~\ref{Fig_Sv_echogram}) in the processes to obtain $Sv((f)$. 
+As a metallic sphere is a rather simple and ideal scatterer, we use $\sv$ from a school of non-swimbladdered fish (\textit{tobis}) (fig.~\ref{Fig_Sv_echogram}) to illustrate the processes to obtain $Sv(m)$. 
 
 Echoes from multiple scatterers can be quantified using volume backscattering strength, $\sv$, being the density of backscattering cross sections, and is given by:
 %
@@ -463,7 +464,7 @@ Compensation of spherical spreading loss requires compensation of received power
 %
 where $\ypcspread(\samplesymt)$ is the pulse compressed signal compensated for spherical spreading. A discrete Fourier transform is performed on the range compensated pulse compressed sample data using a normalized sliding Hann window, $\hannw(\genidxsym)$. The duration, $\tslide$, of the sliding window is chosen as a compromise between along-beam range resolution and frequency resolution. We suggest that it be at least twice the pulse duration and for computational efficiency reasons should result in a number of samples, $\nw$, which is a power of 2.
 
-TODO: Explain edge cases.
+\hl{TODO: Explain edge cases.}
 
 The normalised Hann window, $\hannwnorm$, is given by: 
 %
@@ -487,10 +488,8 @@ where $u(\genidxsym)$ is the step function and $\samplesymt$ is the sample data 
 \ymfautof(\samplesymf)  =  \dft_\ndft (\ymfauto(\samplesymt)).
 \end{equation}
 
-
-
 %
-TODO: How to index samples along range? In the code \_n is used to indicate the range component of the FFt's. Needs attention.
+\hl{TODO: How to index samples along range? In the code \_n is used to indicate the range component of the FFt's. Needs attention.}
 
 The normalized discrete Fourier transform of the windowed data, $\ypcvolumenormf(\samplesymf)$, is then given by:
 %
@@ -515,18 +514,18 @@ Finally, the discretized estimate of $\sv(\freqsym)$, $\sv(\samplesymf)$, is giv
 - 10\log_{10}\left( \frac{\ptxe \wlen^2(\samplesymf) \cw \tslide \eqang(\samplesymf) \gainzero^2(\samplesymf) }{32\pi^2} \right).
 \end{equation}
 
-By selecting a set of centre samples $n$, $Sv$ values can be presented as a function of range (n) and frequency (m) for each ping. The range for centre samples n could be chosen to half the window length or any other grid that the user prefer the data presented to be in. This can be useful when combining the Sv(f) across a range of transducers. In our example we have simply chosen n to be on the same order of the range resolution (fig.~\ref{Fig_Sv_m_n}).
+By selecting a set of centre samples $n$, $Sv$ values can be presented as a function of range ($n$) and frequency ($m$) for each ping. The range for centre samples $n$ could be chosen to half the window length or any other grid that the user prefer the data presented to be in. This can be useful when combining the $Sv(m)$ across a range of transducers. In our example we have simply chosen n to be on the same order of the range resolution (fig.~\ref{Fig_Sv_m_n}).
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_Sv_m_n}
 \caption{\label{Fig_Sv_m_n} Sv as a function of frequency ($m$) and range ($n$) for a single ping}
 \end{figure}
 
-For echo integration purposes it is common to integrate the Sv over a range, in our example we integrate the Sv from 15 to 34 m covering a school of non-swimbladdered fish (fig). We note that we normally require averaging over several individual pings to obtain an unbiased estimate of Sv for echo integration purposes. Here we present the sv(f) over the layer for our example ping for illustrative purposes (fig.~\ref{Fig_Sv_avg}). Even though this is for a single ping, we still observe a positive slope of the frequency response indicative of non-swimbladdered fish. 
+For acoustic abundance estimation and classification purposes it is common to integrate the Sv over a range, in our example we integrate $Sv$ from 15 to 34 m covering a school of non-swimbladdered fish (fig.~\ref{Fig_Sv_echogram}). We note that we normally require averaging over several pings to obtain an unbiased estimate of $Sv$ for echo integration purposes. Here we present the $Sv(m)$ over the layer for our example ping for illustrative purposes (fig.~\ref{Fig_Sv_avg}). Even though this is for a single ping, we still observe a positive slope of the frequency response indicative of non-swimbladdered fish. 
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_Sv_avg}
-\caption{\label{Fig_Sv_avg} Sv as a function of frequency ($m$) averaged over a range interval covering a fish school }
+\caption{\label{Fig_Sv_avg} $Sv$ as a function of frequency ($m$) averaged over a range interval covering a fish school }
 \end{figure}
 
 The trend for increasing $\sv$ with frequency is well-known \citep{korneliussen2010} and is consistent with the trend observed in this example. In contrast to data from isolated scatterers, such as metallic spheres, the benefit of pulse compression on the backscatter from an object that generates many overlapping echoes is not immediately obvious (fig.~\ref{Fig_Sv_echogram}).
