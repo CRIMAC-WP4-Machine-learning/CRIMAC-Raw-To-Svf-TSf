@@ -69,7 +69,7 @@ def preCalculations(data):
     psi_m = Calculation.calc_psi(psi_f_n, f_n, f_m)
 
 
-def calc_basics(do_plot):
+def calcBasics(do_plot):
     global f_s_dec_v, f_s_dec
     global y_tx_n, y_mf_n, y_mf_auto_n, tau_eff
     global y_pc_n, p_rx_e_n, theta_n, phi_n
@@ -84,7 +84,7 @@ def calc_basics(do_plot):
 
     # Plots for paper
     if do_plot:
-        plot_ytx(f_0, f_1, tau, f_s, y_tx_n, slope)
+        plotytx(f_0, f_1, tau, f_s, y_tx_n, slope)
 
     #
     # Chapter IIC: Signal reception
@@ -115,7 +115,7 @@ def calc_basics(do_plot):
 
     # Plots for paper
     if do_plot:
-        plot_fir(filter_v,f_s_dec_v,f_0, f_1)
+        plotfir(filter_v, f_s_dec_v, f_0, f_1)
 
     #
     # Chapter IID: Pulse compression
@@ -134,7 +134,7 @@ def calc_basics(do_plot):
 
     # Plots for paper
     if do_plot:
-        plot_y_mf_n(y_mf_n)
+        plotymfn(y_mf_n)
 
     # Auto correlation function and effective pulse duration of the matched
     # filter
@@ -142,7 +142,7 @@ def calc_basics(do_plot):
 
     # Plots for paper
     if do_plot:
-        plot_ACF(y_mf_auto_n)
+        plotACF(y_mf_auto_n)
 
     # Pulse compressed signals for each channel (transducer sector)
     y_pc_nu = Calculation.calcPulseCompressedSignals(y_rx_nu, y_mf_n)
@@ -173,10 +173,10 @@ def calc_basics(do_plot):
 
     # Plots for paper
     if do_plot:
-        plot_theta_phi(theta_n,phi_n)
+        plotThetaPhi(theta_n, phi_n)
 
 
-def calc_TS():
+def calcTS():
 
     global f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m
     global r_t, theta_t, phi_t, y_pc_t_n, dum_p, dum_theta, dum_phi, dum_r
@@ -213,7 +213,7 @@ def calc_TS():
     y_mf_auto_red_n = Calculation.alignAuto(y_mf_auto_n, y_pc_t_n)
 
     # Plots for paper
-    plt_single_target(dum_r, dum_p,dum_theta,r_t,dum_phi,phi_t,y_mf_auto_red_n)
+    plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red_n)
 
     # DFT of target signal, DFT of reduced auto correlation signal, and
     # normalized DFT of target signal
@@ -238,10 +238,10 @@ def calc_TS():
         g_theta_phi_m)
 
     # Plots for paper
-    plot_TS(f_m,Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m)
+    plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m)
 
 
-def calc_Sv():
+def calcSv():
 
     global p_rx_e_n, f_m, svf_range, Sv_m_n
 
@@ -315,14 +315,14 @@ if __name__ == '__main__':
     if has_TS_file:
         data = EK80DataContainer(args.tfile)  # TS sphere
         preCalculations(data)
-        calc_basics(do_plot=show_plots)
-        calc_TS()
+        calcBasics(do_plot=show_plots)
+        calcTS()
 
     if has_Sv_file:
         data = EK80DataContainer(args.sfile)
         preCalculations(data)
-        calc_basics(do_plot=not has_TS_file and show_plots)
-        calc_Sv()
+        calcBasics(do_plot=not has_TS_file and show_plots)
+        calcSv()
 
     if (has_TS_file or has_Sv_file) and show_plots:
         plt.show()

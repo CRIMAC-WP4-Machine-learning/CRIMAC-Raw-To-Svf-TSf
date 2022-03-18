@@ -3,7 +3,7 @@ import numpy as np
 from Core.Calculation import Calculation
 
 
-def plot_ytx(f_0, f_1, tau, f_s,y_tx_n,slope):
+def plotytx(f_0, f_1, tau, f_s, y_tx_n, slope):
 
     # Example of ideal windowed transmit signal with slope 0.5
     y_tx_n05slope, t = Calculation.generateIdealWindowedTransmitSignal(
@@ -19,7 +19,7 @@ def plot_ytx(f_0, f_1, tau, f_s,y_tx_n,slope):
     plt.savefig('./Paper/Fig_ytx.png',dpi=300)
 
 
-def plot_fir(filter_v,f_s_dec_v,f_0, f_1):
+def plotfir(filter_v, f_s_dec_v, f_0, f_1):
     # The frequency response function of the filter is given by its
     # discrete time fourier transform:
     H0 = np.fft.fft(filter_v[0]["h_fl_i"])
@@ -47,7 +47,7 @@ def plot_fir(filter_v,f_s_dec_v,f_0, f_1):
     plt.savefig('./Paper/Fig_fir.png',dpi=300)
 
 
-def plot_y_mf_n(y_mf_n):
+def plotymfn(y_mf_n):
     plt.figure()
     plt.plot(np.abs(y_mf_n))
     #plt.title('The absolute value of the filtered and decimated output signal')
@@ -56,7 +56,7 @@ def plot_y_mf_n(y_mf_n):
     plt.savefig('./Paper/Fig_y_mf_n.png',dpi=300)
 
 
-def plot_ACF(y_mf_auto_n):
+def plotACF(y_mf_auto_n):
     plt.figure()
     plt.plot(np.abs(y_mf_auto_n))
     #plt.title('The autocorrelation function of the matched filter.')
@@ -65,7 +65,7 @@ def plot_ACF(y_mf_auto_n):
     plt.savefig('./Paper/Fig_ACF.png',dpi=300)
 
 
-def plot_theta_phi(theta_n,phi_n):
+def plotThetaPhi(theta_n, phi_n):
     # Plot angles
     plt.figure()
     plt.plot(theta_n)
@@ -76,7 +76,7 @@ def plot_theta_phi(theta_n,phi_n):
     plt.savefig('./Paper/Fig_theta_phi.png',dpi=300)
 
 
-def plt_single_target(dum_r, dum_p,dum_theta,r_t,dum_phi,phi_t,y_mf_auto_red_n):
+def plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red_n):
     fig, axs = plt.subplots(3)
     #fig.suptitle('Single target')
     axs[0].plot(dum_r, dum_p)
@@ -93,7 +93,7 @@ def plt_single_target(dum_r, dum_p,dum_theta,r_t,dum_phi,phi_t,y_mf_auto_red_n):
     plt.savefig('./Paper/Fig_singleTarget.png',dpi=300)
 
 
-def plot_TS(f_m,Y_pc_t_m,Y_mf_auto_red_m,Y_tilde_pc_t_m,g_theta_phi_m,TS_m):
+def plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m):
     fig, axs = plt.subplots(5)
     axs[0].plot(f_m, np.abs(Y_pc_t_m))
     axs[0].set_ylabel('Y_tilde_pc_t_m')
