@@ -1,4 +1,4 @@
-dear editor 
+Dear editor,
 
 We would like to submit our paper for consideration as an “application” contribution in MEE, and we refer to the pre-submission enquiry to thr senior editor Bob O'Hara Did dated 20th of January 2020. An earlier version of the paper, without the code, can be found at Arxiv (ref). The paper and the code is intendended as a reference implementation of signal processing of data from broadbanded echosounders. The paper outlines the standard processing steps and combines this with Python code where the users can follow the processing step by step.  
 
