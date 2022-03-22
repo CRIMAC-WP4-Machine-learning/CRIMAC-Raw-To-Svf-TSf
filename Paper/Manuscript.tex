@@ -365,7 +365,7 @@ The point scattering strength, $\mysp(\samplesymt)$, is estimated by applying Eq
 %
 noting that $\mysp(\samplesymt)$ is an average over frequency of all echoes from single or multiple targets received at sample $\samplesymt$.
 
-Based on the point scattering strength samples and the phase angle samples, single targets can be detected, and range and bearing to the single targets can be estimated. This is typically achieved through a single echo detection algorithm (SED). Here we will assume that the samples from the pulse compressed data $\ypc(\samplesymt)$ originating from single target already have been identified, noting that the number of samples after the detected target may be higher than those those before the peak to include scattering processes for beyond ideal point targets. The alongship angle $\along_n$, athwartship angle $\athw_n$ and range $r_n$ at the \emph{peak} power $\prxe(\samplesymt)$ within the detected target is used as estimates for $\along_t$, $\athw_t$ and $r_t$, respectively. A simple pseudo SED algorithm is implemented in the code for illustrative purposes.
+Based on the point scattering strength samples and the phase angle samples, single targets can be detected, and range and bearing to the single targets can be estimated. This is typically achieved through a single echo detection algorithm (SED). Here we will assume that the samples from the pulse compressed data $\ypc(\samplesymt)$ originating from single target already have been identified, noting that the number of samples after the detected target may be higher than those those before the peak to include scattering processes for beyond ideal point targets. The alongship angle $\along_n$, athwartship angle $\athw_n$ and range $r_n$ at the \emph{peak} power $\prxe(\samplesymt)$ within the detected target is used as estimates for $\along_t$, $\athw_t$ and $r_t$, respectively (Fig. \ref{fi:TS}. A simple pseudo SED algorithm is implemented in the code for illustrative purposes.
 
 From the autocorrelation function of the matched filter signal, $\ymfauto(\samplesymt)$, the equivalent number of samples around the peak are extracted to create the reduced autocorrelation signal of the matched filter signal, $\ymfautored(\samplesymt)$. Depending on the target scattering characteristics and the distance to any adjacent single targets, the number of samples around the peak echo level in $\ypctarget(\samplesymt)$ that contain the majority of the echo energy can be more or less than the total number of samples around the peak of $\ymfauto(\samplesymt)$. If the number of samples around the target is more than the total number of samples around the peak of $\ymfauto(\samplesymt)$ all samples around the peak of $\ymfauto(\samplesymt)$ are used. If the number of samples around the target is less than the total number of samples around the peak of $\ymfauto(\samplesymt)$, this lower number is used to create a reduced autocorrelation signal, $\ymfautored(\samplesymt)$.
 %
@@ -381,7 +381,7 @@ The discrete Fourier transforms of the target signal, $\ypctargetf(\samplesymf)$
 \ymfautoredf(\samplesymf) & = & \dft_\ndft(\ymfautored(\samplesymt)),
 \end{eqnarray}
 where $\dft$ indicates the Fourier transform of length $\ndft$ and $\samplesymf$ the sample index in the frequency domain.
-The nomalized discrete Fourier transform of the target signal, $\ypctargetnormf(\samplesymf)$, (\ref{fi:SED}) is then calculated by: 
+The nomalized discrete Fourier transform of the target signal, $\ypctargetnormf(\samplesymf)$, (Fig. \ref{fi:TS}) is then calculated by: 
 %
 \begin{equation}
 \label{eq:DFT_Target_Auto_Norm}
@@ -408,10 +408,10 @@ Target strength can then be estimated using Eq. \ref{eq:TS}, but with $\freqsym$
 %
 \begin{figure}
 \includegraphics[width=16cm]{Fig_TS}
-\caption{\label{fi:SED}The $\ypctargetf(\samplesymf)$ (upper), $\ymfautoredf(\samplesymf)$ (middle) and $\ypctargetnormf(\samplesymf)$ (lower).}
+\caption{\label{fi:TS}The $\ypctargetf(\samplesymf)$ (upper), $\ymfautoredf(\samplesymf)$ (middle) and $\ypctargetnormf(\samplesymf)$ (lower).}
 \end{figure}
 
-A frequency modulated pulse scattered by a metallic sphere will exhibit frequencies at which very little energy is returned due to destructive interference \citep{stanton2008}. This is visible in the $\ts$ (Fig. \ref{fi:SED}) and agrees well with theoretical estimates of the backscatter from spheres \citep{maclennan1981}. The amplitude of the backscatter signal also clearly shows these nulls (Fig. \ref{fi:SED}), which are readily visible here due to the use of a linear chirp where time through the pulse corresponds to specific frequencies. 
+A frequency modulated pulse scattered by a metallic sphere will exhibit frequencies at which very little energy is returned due to destructive interference \citep{stanton2008}. This is visible in the $\ts$ (Fig. \ref{fi:TS}) and agrees well with theoretical estimates of the backscatter from spheres \citep{maclennan1981}. The amplitude of the backscatter signal also clearly shows these nulls (Fig. \ref{fi:TS}), which are readily visible here due to the use of a linear chirp where time through the pulse corresponds to specific frequencies. 
 
 
 \hl{Comment from Nils Olav: Using $m$ as an argument to a function is not ideal. If we use the function argument perhaps using $f_m$ would be more logical, i.e. $\lambda(f_m)$. Alternatively using $lambda_m$ is possible. The latter is perhaps more in line with the code since the parameter is an array windexed with $m$ and not a function. $Psi(f)$, on the the other hand is derived from a function, see below.}
