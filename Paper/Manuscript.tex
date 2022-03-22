@@ -536,19 +536,21 @@ The trend for increasing $\sv$ with frequency is well-known \citep{korneliussen2
 \section{Discussion}
 The use of broadband signals in fisheries acoustics is a developing area and we anticipate many valuable enhancements will occur in the coming years. For example, the use of $\ts(\freqsym)$ and $\sv(\freqsym)$ to improve acoustic target classification \citep{bassett_broadband_2018, korneliussen2018}, and the potential of the high range resolution from pulse compression to observe small-scale fish behviours \citep{skaret_diel_2020} and to detect objects adjacent to boundaries \citep{lavery2017}. The basic formulation for calculating $\ts(\freqsym)$ and $\sv(\freqsym)$ presented here provides the foundation for future enhancements.
 
-In this implementation (ref code) several choices have been made. Some of these are well founded in signal processing literature whereas others are of a more practical and ad-hoc nature, where other approaches could been equally valid. These include, as examples,\\ 
-How to handle calibration, interpolation, missing calibration\\
-Transmit pulse\\
-Tapering of the transmit pulse\\
-Decimation factors and filters\\
-When Convoling the recieved signal with the transmit pulse - edge cases\\
-Assuemd four sector transducer\\
-Matched load - hvor stor effekt å gå utover \\
-Assumed an impedance (trancuder)\\
-Effective pulse duration...\\
-Assuming SED algorithm, know the target depth. Improvements possible (SED for broadband). Number of samples for pulse comp - what is included, dense aggregations, sidelobes - pc, ...\\
-Window size\\
-Edge cases - removed\\
+In this implementation (ref code) several choices have been made. Some of these are well founded in signal processing literature whereas others are of a more practical and ad-hoc nature, where other approaches could been equally valid. These include, as examples,
+\begin{itemize}
+\item How to handle calibration, interpolation, missing calibration
+\item Transmit pulse
+\item Tapering of the transmit pulse
+\item Decimation factors and filters
+\item When Convoling the recieved signal with the transmit pulse - edge cases
+\item Assuemd four sector transducer
+\item Matched load - hvor stor effekt å gå utover 
+\item Assumed an impedance (trancuder)
+\item Effective pulse duration...
+\item Assuming SED algorithm, know the target depth. Improvements possible (SED for broadband). Number of samples for pulse comp - what is included, dense aggregations, sidelobes - pc, ...
+\item Window size
+\item Edge cases - removed
+\end{itemize}
 
 To estimate $\sv$ as a function of frequency a Fourier transform is used, repeatedly applied via a sliding window in range. However, the duration of this sliding window can be so long that the difference in spherical spreading loss compensation ($r_c^2$, implemented as the $20\log_{10}(\range_c)$ term in Eq. \ref{eq:Sv}) from the beginning of the window to the end can be significant, particularly for short range measurements. Thus, compensation for spreading loss is performed before applying the discrete Fourier transform. Absorption loss compensation is also range dependent (and frequency dependent), but since absorption loss compensation is insignificant for typical operating frequencies at short ranges and the difference in absorption loss compensation between the beginning and the end of the sliding window is insignificant at longer ranges, compensation for absorption loss is performed after applying the discrete Fourier transform.
 
