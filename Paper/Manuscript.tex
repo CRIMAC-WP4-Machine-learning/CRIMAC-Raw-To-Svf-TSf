@@ -388,7 +388,9 @@ The nomalized discrete Fourier transform of the target signal, $\ypctargetnormf(
 \ypctargetnormf(\samplesymf) = \frac{\ypctargetf(\samplesymf)} {\ymfautoredf(\samplesymf)}.
 \end{equation}
 %
-\hl{The corresponding frequencies f\_m\_t (?) are calculate as follows... See the function EK80CalculationPaper.calcDFTforTS. Nils Olav did not quite get this so please enlighten me...}
+\hl{The corresponding frequencies f\_m\_t (?) are calculate as follows... 
+
+See the function EK80CalculationPaper.calcDFTforTS. Nils Olav did not quite get this so please enlighten me...}
 
 Assuming, as a first approximation, that the impedances of the transceiver and transducer are independent of frequency, the received power into a matched load, $\prxetf(\samplesymf)$, is then estimated by:
 \begin{equation}
@@ -449,8 +451,10 @@ where $\prxevf(\freqsym)$ is the received electric power in a matched load for t
 Volume backscattering samples compressed over the operational frequency band are estimated by applying Eq. \ref{eq:sv_f} to the received digitized power samples using the on-axis gain value with $f$ set to the centre frequency of the broadband pulse, $\fc$:
 \begin{equation}
 \label{eq:Sv}
-\sv(\samplesymt)  =  10\log_{10}(\prxe(\samplesymt)) + 20\log_{10}(\range_c(\samplesymt)) + 2\absorp(\fc)\range_c(\samplesymt) 
+\begin{split}
+\sv(\samplesymt)  =  10\log_{10}(\prxe(\samplesymt)) + 20\log_{10}(\range_c(\samplesymt)) + 2\absorp(\fc)\range_c(\samplesymt) \\
 - 10\log_{10}\left( \frac{\ptxe \wlen^2(\fc) \cw \teff \eqang(\fc) \gainzero^2(\fc)}{32\pi^2} \right),
+\end{split}
 \end{equation}
 noting that $\sv(\samplesymt)$ is an average over frequency of all echoes received at sample $\samplesymt$. In this case, the time window, $\tslide$, is the effective pulse duration, $\teff$, resulting from pulse compression.
 
