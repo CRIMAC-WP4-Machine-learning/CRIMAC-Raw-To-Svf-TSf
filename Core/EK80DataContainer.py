@@ -88,6 +88,7 @@ class FrequencyPar:
             self.angle_offset_alongship = xml['angle_offset_alongship']
             self.beam_width_athwartship = xml['beam_width_athwartship']
             self.beam_width_alongship = xml['beam_width_alongship']
+            self.sortPairs()
             self.isCalibrated = True
         elif not xml['frequencies']:
             print("Broadband calibration values does not exist - use nominal and fit function")
@@ -107,6 +108,18 @@ class FrequencyPar:
             # decimation
 
             self.frequencies = np.linspace(self.f0, self.f1, self.n_f_points)
+
+    def sortPairs(self):
+         I = np.argsort(self.frequencies)
+
+         self.frequencies = np.array(self.frequencies)[I]
+         self.gain = np.array(self.gain)[I]
+         self.angle_offset_athwartship = np.array(self.angle_offset_athwartship)[I]
+         self.angle_offset_alongship = np.array(self.angle_offset_alongship)[I]
+         self.beam_width_athwartship = np.array(self.beam_width_athwartship)[I]
+         self.beam_width_alongship = np.array(self.beam_width_alongship)[I]
+
+
 
     def getParameters(self):
         return self.frequencies, self.gain, self.angle_offset_athwartship, self.angle_offset_alongship, \
