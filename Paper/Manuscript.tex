@@ -393,10 +393,6 @@ The nomalized discrete Fourier transform of the target signal, $\ypctargetnormf(
 \label{eq:DFT_Target_Auto_Norm}
 \ypctargetnormf(\samplesymf) = \frac{\ypctargetf(\samplesymf)} {\ymfautoredf(\samplesymf)}.
 \end{equation}
-%
-\hl{The corresponding frequencies f\_m\_t (?) are calculate as follows... 
-
-See the function EK80CalculationPaper.calcDFTforTS. Nils Olav did not quite get this so please enlighten me...}
 
 Assuming, as a first approximation, that the impedances of the transceiver and transducer are independent of frequency, the received power into a matched load, $\prxetf(\samplesymf)$, is then estimated by:
 \begin{equation}
@@ -407,11 +403,15 @@ Assuming, as a first approximation, that the impedances of the transceiver and t
 %
 noting that any variation of impedance with frequency will be reflected in the $\gainzero$ obtained from the calibration process.
 
-Target strength can then be estimated using Eq. \ref{eq:TS}, but with $\freqsym$ replaced by the discrete index of frequency, $\samplesymf$:
+Target strength can then be estimated using Eq. \ref{eq:TS}:
 \begin{equation}
 \label{eq:TS_f}
-\ts(\samplesymf) = 10\log_{10}(\prxetf(\samplesymf)) + 40\log_{10}(\range_t) + 2\absorp(\samplesymf)\range_t 
-- 10\log_{10}\left( \frac{\ptxe \wlen_\samplesymf^2 \gain^2(\along_t,\athw_t,f_\samplesymf)}{16\pi^2} \right).
+\ts(\freqsym) = 10\log_{10}(\prxetf(\samplesymf)) + 40\log_{10}(\range_t) + 2\absorp(\freqsym)\range_t - 10\log_{10}\left( \frac{\ptxe \wlen^2 \gain^2(\along_t,\athw_t,f)}{16\pi^2} \right)
+\end{equation}
+where the sample index $\samplesymf$ corresponding to frequency $\freqsym$ can be estimated using
+\begin{equation}
+\label{eq:m(f)}
+\samplesymf = \lfloor \frac{\freqsym}{\fsdec} \ndft \rfloor \mod \ndft
 \end{equation}
 %
 \begin{figure}
@@ -420,9 +420,6 @@ Target strength can then be estimated using Eq. \ref{eq:TS}, but with $\freqsym$
 \end{figure}
 
 A frequency modulated pulse scattered by a metallic sphere will exhibit frequencies at which very little energy is returned due to destructive interference \citep{stanton2008}. This is visible in the $\ts$ (Fig. \ref{fi:TS}) and agrees well with theoretical estimates of the backscatter from spheres \citep{maclennan1981}. The amplitude of the backscatter signal also clearly shows these nulls (Fig. \ref{fi:TS}), which are readily visible here due to the use of a linear chirp where time through the pulse corresponds to specific frequencies. 
-
-
-\hl{Comment from Nils Olav: Using $m$ as an argument to a function is not ideal. If we use the function argument perhaps using $f_m$ would be more logical, i.e. $\lambda(f_m)$. Alternatively using $lambda_m$ is possible. The latter is perhaps more in line with the code since the parameter is an array windexed with $m$ and not a function. $Psi(f)$, on the the other hand is derived from a function, see below.}
 
 \section{Volume backscattering strength}
 
@@ -473,8 +470,6 @@ Compensation of spherical spreading loss requires compensation of received power
 %
 where $\ypcspread(\samplesymt)$ is the pulse compressed signal compensated for spherical spreading. A discrete Fourier transform is performed on the range compensated pulse compressed sample data using a normalized sliding Hann window, $\hannw(\genidxsym)$. The duration, $\tslide$, of the sliding window is chosen as a compromise between along-beam range resolution and frequency resolution. We suggest that it be at least twice the pulse duration and for computational efficiency reasons should result in a number of samples, $\nw$, which is a power of 2.
 
-\hl{TODO: Explain edge cases.}
-
 The normalised Hann window, $\hannwnorm$, is given by: 
 %
 \begin{equation}
@@ -497,9 +492,6 @@ where $u(\genidxsym)$ is the step function and $\samplesymt$ is the sample data 
 \ymfautof(\samplesymf)  =  \dft_\ndft (\ymfauto(\samplesymt)).
 \end{equation}
 
-%
-\hl{TODO: How to index samples along range? In the code \_n is used to indicate the range component of the FFt's. Needs attention.}
-
 The normalized discrete Fourier transform of the windowed data, $\ypcvolumenormf(\samplesymf)$, is then given by:
 %
 \begin{equation}
@@ -516,11 +508,16 @@ and received power into a matched load, $\prxevf(\samplesymf)$, is estimated fro
 \end{equation}
 %
 Finally, the discretized estimate of $\sv(\freqsym)$, $\sv(\samplesymf)$, is given by:
+
 %
 \begin{equation}
 \label{eq:Sv_FFT}
-\sv(\samplesymf) = 10\log_{10}(\prxevf(\samplesymf)) + 2\absorp(\samplesymf) \range_c \\
-- 10\log_{10}\left( \frac{\ptxe \wlen^2(\samplesymf) \cw \tslide \eqang(\samplesymf) \gainzero^2(\samplesymf) }{32\pi^2} \right).
+\sv(\freqsym) = 10\log_{10}(\prxevf(\samplesymf)) + 2\absorp(\freqsym) \range_c - 10\log_{10}\left( \frac{\ptxe \wlen^2 \cw \tslide \eqang(\freqsym) \gainzero^2(\freqsym) }{32\pi^2} \right).
+\end{equation}
+where the sample index $\samplesymf$ corresponding to frequency $\freqsym$ can be estimated using
+\begin{equation}
+\label{eq:m(f)}
+\samplesymf = \lfloor \frac{\freqsym}{\fsdec} \ndft \rfloor \mod \ndft
 \end{equation}
 
 By selecting a set of centre samples $n$, $Sv$ values can be presented as a function of range ($n$) and frequency ($m$) for each ping. The range for centre samples $n$ could be chosen to half the window length or any other grid that the user prefer the data presented to be in. This can be useful when combining the $Sv(m)$ across a range of transducers. In our example we have simply chosen n to be on the same order of the range resolution (fig.~\ref{Fig_Sv_m_n}).
