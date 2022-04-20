@@ -96,11 +96,12 @@ def plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red
 def plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m):
     fig, axs = plt.subplots(5)
     axs[0].plot(f_m/1000, np.abs(Y_pc_t_m))
-    axs[0].set_ylabel(r'$Y_{pc,t}(m)$')
+
+    axs[0].set_ylabel(r'|$Y_{pc,t}(m)$|')
     axs[1].plot(f_m/1000, np.abs(Y_mf_auto_red_m))
-    axs[1].set_ylabel(r'$Y_{mf,auto,red}(m)$')
+    axs[1].set_ylabel(r'$|Y_{mf,auto,red}(m)$|')
     axs[2].plot(f_m/1000, np.abs(Y_tilde_pc_t_m))
-    axs[2].set_ylabel(r'$\tilde{Y}_{pc,t}(m)$')
+    axs[2].set_ylabel(r'|$\tilde{Y}_{pc,t}(m)$|')
     axs[3].plot(f_m/1000,g_theta_phi_m)  # weird gain might be tracked down to  xml['angle_offset_alongship'] and xml['angle_offset_alongship']
     axs[3].set_ylabel('gain')
     axs[4].plot(f_m/1000, TS_m)
