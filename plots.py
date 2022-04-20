@@ -38,12 +38,12 @@ def plotfir(filter_v, f_s_dec_v, f_0, f_1):
     G1l = np.append(G1l, G1)
     G1l = np.append(G1l, G1)
     plt.figure()
-    plt.plot(F0, G0,
-             F1l, G1l,
-             [f_0, f_1], [-140, -140])
-    plt.xlabel('frequency (Hz)')
+    plt.plot(F0/1000, G0,
+             F1l/1000, G1l,
+             [f_0/1000, f_1/1000], [-140, -140])
+    plt.xlabel('frequency (kHz)')
     plt.ylabel('Gain (dB)')
-    plt.xlim([50000, 210000])
+    plt.xlim([50000/1000, 210000/1000])
     plt.savefig('./Paper/Fig_fir.png',dpi=300)
 
 
@@ -95,17 +95,17 @@ def plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red
 
 def plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m):
     fig, axs = plt.subplots(5)
-    axs[0].plot(f_m, np.abs(Y_pc_t_m))
+    axs[0].plot(f_m/1000, np.abs(Y_pc_t_m))
     axs[0].set_ylabel('Y_tilde_pc_t_m')
-    axs[1].plot(f_m, np.abs(Y_mf_auto_red_m))
+    axs[1].plot(f_m/1000, np.abs(Y_mf_auto_red_m))
     axs[1].set_ylabel('Y_mf_auto_red_m')
-    axs[2].plot(f_m, np.abs(Y_tilde_pc_t_m))
+    axs[2].plot(f_m/1000, np.abs(Y_tilde_pc_t_m))
     axs[2].set_ylabel('Y_tilde_pc_t_m')
-    axs[3].plot(f_m,
+    axs[3].plot(f_m/1000,
                 g_theta_phi_m)  # weird gain might be tracked down to  xml['angle_offset_alongship'] and xml['angle_offset_alongship']
     axs[3].set_ylabel('gain')
-    axs[4].plot(f_m, TS_m)
-    axs[4].set_xlabel('f (Hz)')
+    axs[4].plot(f_m/1000, TS_m)
+    axs[4].set_xlabel('f (kHz)')
     axs[4].set_ylabel('TS(f)')
     plt.savefig('./Paper/Fig_TS.png',dpi=300)
 
