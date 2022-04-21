@@ -94,6 +94,14 @@ def plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red
 
 
 def plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m):
+    
+    
+    def text_coords(axs=None,scalex=0.9,scaley=0.9):
+        xlims = axs.get_xlim()
+        ylims = axs.get_ylim()
+        return {'x':scalex*np.diff(xlims)+xlims[0],
+                'y':scaley*np.diff(ylims)+ylims[0]}
+    
     fig, axs = plt.subplots(5)
     axs[0].plot(f_m/1000, np.abs(Y_pc_t_m))
 
@@ -107,6 +115,15 @@ def plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m):
     axs[4].plot(f_m/1000, TS_m)
     axs[4].set_xlabel('f (kHz)')
     axs[4].set_ylabel('TS(f)')
+
+    scalex = [0.02,0.02,0.02,0.02,0.02]
+    scaley = [0.75,0.75,0.75,0.75,0.75]
+    labels = ['(a)','(b)','(c)','(d)','(e)']
+
+    # f,ax = plt.subplots(2,2)
+    for sx,sy,a,l in zip(scalex,scaley,np.ravel(axs),labels):
+        a.text(s=l,**text_coords(axs=a,scalex=sx,scaley=sy))
+    
     plt.savefig('./Paper/Fig_TS.png',dpi=300)
 
     # Store TS(f) and f for further analysis
