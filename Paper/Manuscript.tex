@@ -418,7 +418,7 @@ where the sample index $\samplesymf$ corresponding to frequency $\freqsym$ can b
 \includegraphics[width=16cm]{Fig_TS}
 \caption{\label{fi:TS}The discrete Fourier transform of the target signal $\ypctargetf(\samplesymf)$ (a) and the reduced auto correlation signal $\ymfautoredf(\samplesymf)$ (b), the normalized discrete Fourier transform of the target signal $\ypctargetnormf(\samplesymf)$ (c), gain (d) and the estimated TS(f) (e).}
 \end{figure}
-
+%
 A frequency modulated pulse scattered by a metallic sphere will exhibit frequencies at which very little energy is returned due to destructive interference \citep{stanton2008}. This is visible in the $\ts$ (Fig. \ref{fi:TS}) and agrees well with theoretical estimates of the backscatter from spheres \citep{maclennan1981}. The amplitude of the backscatter signal also clearly shows these nulls (Fig. \ref{fi:TS}), which are readily visible here due to the use of a linear chirp where time through the pulse corresponds to specific frequencies. 
 
 \section{Volume backscattering strength}
@@ -448,7 +448,7 @@ where $\prxevf(\freqsym)$ is the received electric power in a matched load for t
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_Sv_echogram}
-\caption{\label{Fig_Sv_echogram} Sv as a function of frequency ($samplesymf$) and range ($samplesymt$) for a echogram raw data file. The red vertical line indicates the ping processed in this section.}
+\caption{\label{Fig_Sv_echogram} Sv as a function of frequency ($\samplesymf$) and range ($\samplesymt$) for a echogram raw data file. The red vertical line indicates the ping processed in this section.}
 \end{figure}
 
 Volume backscattering samples compressed over the operational frequency band are estimated by applying Eq. \ref{eq:sv_f} to the received digitized power samples using the on-axis gain value with $f$ set to the centre frequency of the broadband pulse, $\fc$:
@@ -519,7 +519,7 @@ By selecting a set of centre samples $\timesym$, $\sv$ values can be presented a
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_Sv_m_n}
-\caption{\label{Fig_Sv_m_n} Sv as a function of frequency ($\samplesymf$) and range ($\samplesymt$) for a single ping}
+\caption{\label{Fig_Sv_m_n} $\sv$ as a function of frequency ($\samplesymf$) and range ($\samplesymt$) for a single ping.}
 \end{figure}
 
 For acoustic abundance estimation and classification purposes it is common to integrate the $\sv$ over a range (15 to 34 m in the example, covering a school of non-swimbladdered fish, Fig.~\ref{Fig_Sv_echogram}). It is normal to average $\sv$ over several pings to obtain an unbiased estimate, but here just one ping is used for illustrative purposes (Fig.~\ref{Fig_Sv_avg}). Even though this is for a single ping it is still possible to observe a positive slope of the frequency response that is indicative of non-swimbladdered fish. 
