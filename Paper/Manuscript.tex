@@ -114,6 +114,8 @@
 
 \newcommand{\sigmabs}{\sigma_{\textrm{bs}}}
 
+\newcommand{\code}[1]{\texttt{#1}} 
+
 \begin{document}
 
 \title[]{Quantitative processing of broadband data as implemented in a scientific splitbeam echosounder}
@@ -166,19 +168,19 @@ An equally interesting outcome from the increased resolution and broad frequency
 
 There have been several scientific broadband echosounder systems developed for laboratory use \citep{Conti2003Wide-bandwidth, Forland2014Scattering, chu1992}, some prototype or custom-made systems \citep{Zakharia1989Wide-band, Zakharia1996Wideband, Simmonds1996Species, Foote2005Measuring, Imaizumi2009Detection, Briseno-Avena2015ZOOPS, Barr2002Target} and some commercially available systems \citep{Gordon1998FishMASS, Zedel2003Acoustic, Stanton2010New, ehrenbergFMSlideChirp2000, dennyBroadbandAcousticFish1998}. Commercially available systems are now produced by several manufacturers.
 
-The theoretical foundation for signal processing comes from radar applications and has been documented for broadband echosounders \citep{stanton2008}. To tap the full potential of broadband echosounder data, further data processing methods are being developed \citep{lavery2017,bassett_broadband_2018}. Examples include adapting pulses to improve target separation as well as further parameters from the individual targets. Different transmission pulse forms can be envisioned as well as various methods for acoustic target classification. When translating equations into computer processing code, several choices must be made - some of these are well founded in signal processing literature whereas others are of a more practical and ad-hoc nature. The latter is typically missing in the literature, making it difficult to test the implementation of the signal processing methods in new echo sounders and post processing software.
+The theoretical foundation for signal processing comes from radar applications and has been documented for broadband echosounders \citep{stanton2008}. To tap the full potential of broadband echosounder data, further data processing methods are being developed \citep{lavery2017,bassett_broadband_2018}. Examples include adapting pulses to improve target separation as well as further parameters from the individual targets. Different transmission pulse forms can be envisioned as well as various methods for acoustic target classification. When translating equations into computer processing code, several choices must be made - some of these are well founded in signal processing literature whereas others are of a more practical and ad-hoc nature. The latter is typically missing in the literature, making it difficult to test the implementation of the signal processing methods in new echo sounders and post processing software. By presenting the design goals, implementation details, and recommended procedures and processing required to obtain quantitative broadband data, the authors hope to encourage and facilitate the realistic use of broadband signals in marine ecosystem acoustics.
 
 The objective of this paper and associated code is to present a systematic and comprehensive description of the data processing steps for calibrated broadband echosounder data. The steps include pulse compression, target strength as a function of frequency [$\ts(\freqsym)$], and volume backscattering strength as a function of frequency [$\sv(\freqsym)$]. The intention is that the code will be used to validate implementations in various relevant data processing software, provide a starting point for further developing active acoustic broadband signal processing, and to serve as a learning resource.  
 
 \section{Signal flow and initial processing}
 
 \subsection{Accompanying code}
-The code accompanying this paper is written in Python and is available as supplementary materials. All processing steps with respective figures in the paper can be reproduced by running the main scripts (TSf.py and Svf.py). Without loss of generality, we use the Simrad EK80 as an example since it is currently the most used broadband echosounder in the marine ecosystem acoustics field. By presenting the design goals, implementation details, and recommended procedures and processing required to obtain quantitative broadband data, the authors hope to encourage and facilitate the realistic use of broadband signals in marine ecosystem acoustics.
+The code accompanying this paper is written in the Python programming language and is available in the supplementary materials. All processing steps with respective figures in the paper can be reproduced by running the main scripts (\code{TSf.py} and \code{Svf.py}). Without loss of generality, we use the Simrad EK80 echosounder as an example since it is currently the most commonly used broadband system in the marine ecosystem acoustics field. 
 
 Our presentation uses nomenclature and approaches that are commonly used for narrowband echosounder systems, which were derived from radar processing \citep{cook1967}. In particular, the expressions for target strength ($\ts$) and volume backscattering strength ($\sv$) \citep{MacLennan2002consistent} are presented in a similar manner for broadband signals as for narrowband signals.
 
 \subsection{System overview}
-A basic echosounder system consists of a transducer, a transceiver, and a computer program that controls the operation of the transceiver and records received signals. During transmission the program defines the signals which are created as electric signals in the transceiver, converted to acoustic signals by the transducer and transmitted into the water. The acoustic signals propagate through the water, are reflected or scattered by objects in the water, and propagate back to the transducer. During reception the transducer converts the received acoustic signals to electric signals, which are received, pre-amplified, filtered, digitized, and processed in the transceiver, and then transferred to the controlling program for further data processing and storage (Fig. \ref{fi:ek_sys}). Many types of transmit signals are feasible - this paper considers only the transmission of linear frequency modulated signals (also known as linear chirps).
+A basic quantitative echosounder system consists of a transducer, a transceiver, and a computer program that controls the operation of the transceiver and records received signals. During transmission the program defines the signals that are created as electric signals in the transceiver, converted to acoustic signals by the transducer and transmitted into the water. The acoustic signals propagate through the water, are reflected or scattered by objects in the water, and propagate back to the transducer. During reception the transducer converts the received acoustic signals to electric signals, which are received, pre-amplified, filtered, digitized, processed in the transceiver, and then transferred to the controlling program for further data processing and storage (Fig. \ref{fi:ek_sys}). Many types of transmit signals are feasible - this paper considers only linear frequency modulated signals (also known as linear chirps).
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_ek_sys}
@@ -187,19 +189,19 @@ A basic echosounder system consists of a transducer, a transceiver, and a comput
 
 \subsection{Signal generation}
 
-The controlling computer program generates a short-duration digital transmit signal (a ping), $\ytx(\samplesymt)$, where $\samplesymt$ is a sample index in the discrete time domain. Typical BB pulses are linear upsweep pulses windowed by an envelope function. The generated signal $\ytxe(\timesym)$ is converted to an analogue electric signal and amplified by the transceiver to obtain analogue signal $\ytxe(\timesym)$. The analogue and amplified signal is passed on to the transducer to generate the transmitted acoustic signal $\ytxa(\timesym)$ in the water column, where $\timesym$ is the time for the (analog) signal. For a split-aperture echosounder system, there are typically three or four channels to allow estimation of the angle of arriving echoes, and the signal is typically transmitted with equal power across the channels.
+The controlling computer program generates a short-duration digital transmit signal (a ping), $\ytx(\samplesymt)$, where $\samplesymt$ is a sample index in the discrete time domain. Typical broadband pulses are linear upsweep pulses windowed by an envelope function. The generated signal $\ytxe(\timesym)$ is converted to an analogue electric signal and amplified by the transceiver to obtain an analogue signal $\ytxe(\timesym)$. The analogue and amplified signals are passed on to the transducer to generate the transmitted acoustic signal $\ytxa(\timesym)$ in the water, where $\timesym$ is the time for the (analog) signal. For a split-aperture echosounder system, there are typically three or four channels to allow estimation of the angle of arriving echoes, and the signal is typically transmitted with equal power across the channels.
 
 In the example a linear sweep enveloped by a Hann function is implemented (Fig.~\ref{fi:ytx}), where the parameters are the initial frequency, the final frequency, the pulse duration, the sampling rate, and the proportion of the signal that is tapered in each end, respectively. A tapering of 0 and .5 indicates no tapering and tapering across the whole signal, respectively.
 \begin{figure}
 \includegraphics[width=16cm]{Fig_ytx}
-\caption{\label{fi:ytx} Ideal and enveloped transmit pulse between 34 kHz to 45 kHz with a slope of 0.057, as implemented in the EK80. The orange curve illustrates the effect of setting the slope to 0.5.}
+\caption{\label{fi:ytx} Linear chirp pulses from 34 kHz to 45 kHz with a slope of 0.057 (blue) and 0.5 (orange), as implemented in the EK80.}
 \end{figure}
 
 \subsection{Signal reception}
 
 The returning acoustic signal, $\yrxa(\timesym)$, is received by each transducer sector, $\channelsym$, and converted to an analog electric signal, $\yrxe(\timesym,\channelsym)$, in the transducer and received by corresponding receiver channels, $\channelsym$, in the transceiver. The received electric signal, $\yrxe(\timesym,\channelsym)$, from each channel, $\channelsym$, is pre-amplified, filtered by an analog anti-aliasing filter, and digitized in the transceiver at a frequency of $\fs$, creating the digital signal, $\yrxorg(\samplesymt,\channelsym)$.
 
-To remove noise and reduce the quantity of data, the sampled signal from each channel is filtered and decimated in multiple stages, $\stagesym$, using complex bandpass filters, $\hfl(\genidxsym,\stagesym)$, and decimation factors, $\decfac(\stagesym)$. The individual filter coefficients for each filter and decimation stage are indexed by $i$. The output signal from each channel, $\channelsym$, from each filter and decimation stage, $\stagesym$, is then given by:
+To remove noise and reduce the quantity of data, the sampled signal from each channel is filtered and decimated in multiple stages, $\stagesym$, using complex bandpass filters, $\hfl(\genidxsym,\stagesym)$, and decimation factors, $\decfac(\stagesym)$. The individual filter coefficients for each filter and decimation stage are indexed by $\genidxsym$. The output signal from each channel, $\channelsym$, from each filter and decimation stage, $\stagesym$, is then given by:
 %
 \begin{equation}
 \label{eq:yrx}
@@ -214,15 +216,14 @@ where $\yrx(\samplesymt,\channelsym,0)$ is set to $\yrxorg(\samplesymt,\channels
 \fsdec = \fs\prod_{\stagesym=1}^{\nstages} \frac{1}{\decfac(\stagesym)}.
 \end{equation}
 %
-The characteristics of the bandpass filter and decimation factors are chosen with regard to the desired operating bandwidth, noise suppression levels, impulse response duration, and other common filter characteristics, with the aim of maintaining sufficient information in the data. In the example $N_v=2$. The frequency responses of the filters are shown in Figure~\ref{fi:fir}, and the corresponding filter coefficients and decimation factors are found in the test data set.
+The characteristics of the bandpass filter and decimation factors are chosen with regard to the desired operating bandwidth, noise suppression levels, impulse response duration, and other common filter characteristics, with the aim of maintaining sufficient information in the data. In the example $N_v=2$. The frequency responses of the filters are shown in Figure~\ref{fi:fir} and the corresponding filter coefficients and decimation factors are given in the test data set.
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_fir}
 \caption{\label{fi:fir} The frequency (power) response of the filters in our test set.}
 \end{figure}
 
-The original sample data $\yrxorg(\samplesymt,\channelsym)$ are not available in the EK80 data files. Instead, the resulting filtered and decimated complex samples from each transducer channel $\yrx(\samplesymt,\channelsym)$ are stored in the data files. The data are recorded together with additional data such as from position and motion sensors and system configuration data in raw data files for display and analysis by processing software. The filter parameters are in this paper used to generate the transmit pulse for the matched filter, see below.
-
+The original sample data $\yrxorg(\samplesymt,\channelsym)$ are not available in the EK80 data files. Instead, the filtered and decimated complex samples from each transducer channel $\yrx(\samplesymt,\channelsym)$ are stored in the data files. The data are recorded in computer data files for display and analysis by processing software. Additional information, such as that from position and motion sensors and system configuration data is also included in the files.
 
 \subsection{Pulse compression}
 To increase signal-to-noise ratio and resolution along the acoustic beam a matched filter may be applied to the raw data samples \citep{turin1960}. This technique is also known as pulse compression \citep{klauder1960}. One approach for a matched filter is to use a normalized version of the ideal transmit signal as the replicate signal, filtered and decimated using the same filters and decimation factors as applied in Eq. \ref{eq:yrx}. The normalized ideal transmit signal, $\ytxnorm(\samplesymt)$, is given by:
@@ -243,7 +244,7 @@ where $\ytxnorm(\samplesymt,0)$ is set to $\ytxnorm(\samplesymt)$ and $\downarro
 %
 \begin{figure}
 \includegraphics[width=16cm]{Fig_y_mf_n}
-\caption{\label{fi:y_mf_n} The absolute value of the filtered and decimated output signal $\ymf(\samplesymt)$ used by the pulse compression.}
+\caption{\label{fi:y_mf_n} The absolute value of the filtered and decimated output signal, $\ymf(\samplesymt)$, that is used for the pulse compression.}
 \end{figure}
 
 The auto correlation function of the matched filter signal and the effective pulse duration, defined as the pulse duration at transmit power $\ptxe$ which produces the same energy as the actual transmitted pulse, will be used in later processing steps and are defined as
@@ -268,14 +269,13 @@ is the square of the absolute value of the matched filter autocorrelation functi
 \caption{The autocorrelation function $\ptxauto$ from the example. The corresponding $\teff=0.1 ms$ and $\tnom=2 ms$\label{fi:ACF}.}
 \end{figure}
 
-
 To perform pulse compression the received signal, $\yrx(\samplesymt,\channelsym)$, is convolved with a complex conjugated and time-reversed version of the matched filter signal with the matched filter signal, and here also normalized with the $l^2$-norm of the matched filter to maintain received signal power. The pulse compressed signal, $\ypc(\samplesymt,\channelsym)$, then becomes
 \begin{equation}
 \label{eq:PulseComp}
 \ypc(\samplesymt,\channelsym) = \frac{\yrx(\samplesymt,\channelsym)*\ymf^*(-\samplesymt)}{||\ymf||^2_2},
 \end{equation}
 %
-where $||\ymf||$ indicates the $l^2$-norm of $\ymf$, also known as the Euclidean norm. The received power samples are then used to estimate target strength and volume backscattering strength. For estimating received power samples, the mean signal, $\ypc(\samplesymt)$, over all transducer sectors, $\nchannels$, will be used:
+where $||\ymf||$ indicates the $l^2$-norm of $\ymf$, also known as the Euclidean norm. The received power samples are then used to estimate target strength and volume backscattering strength. For estimating received power samples, the mean signal, $\ypc(\samplesymt)$, over all transducer sectors, $\nchannels$, is used:
 %
 \begin{equation}
 \label{eq:SumSig}
@@ -300,7 +300,7 @@ where fore, aft, star(board), and port indicate the relevant transducer halves.
 
 
 \subsection{Power and angle samples}
-The transceiver measures voltage over a load, $\zrxe$, connected in series with the transducer impedance, $\ztde$. When calculating various acoustic properties a system gain parameter will be used which assumes a matched receiver load. The total received power, $\prxe(\samplesymt)$, from all transducer sectors for a matched receiver load (Fig. \ref{fi:impedances}) is given by: 
+The transceiver measures voltage over a load, $\zrxe$, connected in series with the transducer impedance, $\ztde$. When calculating various acoustic properties, a system gain parameter will be used which assumes a matched receiver load. The total received power, $\prxe(\samplesymt)$, from all transducer sectors for a matched receiver load (Fig. \ref{fi:impedances}) is given by: 
 \begin{equation}
 \label{eq:prx}
 \prxe(\samplesymt) = \nchannels\left( \frac{|\ypc(\samplesymt)|}{2\sqrt{2}} \right)^2 \left( \frac{|\zrxe+\ztde|}{\zrxe} \right)^2 \frac{1}{|\ztde|}.
@@ -327,7 +327,7 @@ where $y_\along(\samplesymt)$ is the electrical angle along the minor axis of th
 \athw(\samplesymt) & = & \arcsin\left( \frac{\atan\left( \Im(y_\athw(\samplesymt)), \Re(y_\athw(\samplesymt) \right)}{\anglefathw}\right).
 \end{eqnarray}
 %
-where $\anglefalong$ and $\anglefathw$ are constants that convert from phase angles to physical echo arrival angles and are derived from the transducer geometry and $\fc$ the centre frequency of the chirp pulse \citep{ehrenberg1979}. The inverse sine is indicated by $\arcsin$, the four quadrant inverse tangent which returns values in the interval $[-\pi, \pi]$ inclusive is indicated by $\atan$, the real part of a complex number by $\Re$ and the imaginary part by $\Im$. As a mnemonic, the horizontal line in the symbol used for the forward/aft direction, $\along$, represents the pivot axis for the alongship angles and the near-vertical line in the $\athw$ symbol indicates the pivot axis for port/starboard angles.
+where $\anglefalong$ and $\anglefathw$ are constants that convert from phase angles to physical echo arrival angles and are derived from the transducer geometry and, $\fc$, the centre frequency of the chirp pulse \citep{ehrenberg1979}. The inverse sine is indicated by $\arcsin$,the four quadrant inverse tangent which returns values in the interval $[-\pi, \pi]$ inclusive is indicated by $\atan$, the real part of a complex number by $\Re$ and the imaginary part by $\Im$. As a mnemonic, the horizontal line in the symbol used for the forward/aft direction, $\along$, represents the pivot axis for the alongship angles and the near-vertical line in the $\athw$ symbol indicates the pivot axis for port/starboard angles.
 %
 \begin{figure}
 \includegraphics[width=16cm]{Fig_theta_phi}
@@ -336,7 +336,7 @@ where $\anglefalong$ and $\anglefathw$ are constants that convert from phase ang
 
 \section{Target strength}
 
-To illustrate each step of the process to obtain $TS(m)$ we use a single ping from a data file where a single metallic calibration sphere with 35 mm diameter (WC35) is suspended approximately 6 m below a 120 kHz transducer (fig.~\ref{Fig_TS_echogram}). 
+To illustrate each step of the process in obtaining $TS(m)$ we use a single ping from a data file where a 35 mm diameter tungsten carbide calibration sphere (WC35) was suspended approximately 6 m below a 120 kHz transducer (Fig.~\ref{Fig_TS_echogram}). 
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_TS_echogram}
@@ -371,13 +371,13 @@ The point scattering strength, $\mysp(\samplesymt)$, is estimated by applying Eq
 %
 noting that $\mysp(\samplesymt)$ is an average over frequency of all echoes from single or multiple targets received at sample $\samplesymt$.
 
-Based on the point scattering strength samples and the phase angle samples, single targets can be detected, and range and bearing to the single targets can be estimated. This is typically achieved through a single echo detection algorithm (SED). Here we will assume that the samples from the pulse compressed data $\ypc(\samplesymt)$ originating from single target already have been identified, noting that the number of samples after the detected target may be higher than those those before the peak to include scattering processes for beyond ideal point targets. The alongship angle $\along_n$, athwartship angle $\athw_n$ and range $r_n$ at the \emph{peak} power $\prxe(\samplesymt)$ within the detected target is used as estimates for $\along_t$, $\athw_t$ and $r_t$, respectively (Fig. \ref{fi:TS}. A simple pseudo SED algorithm is implemented in the code for illustrative purposes.
+Based on the point scattering strength samples and the phase angle samples, single targets can be detected, and range and bearing to the single targets can be estimated. This is typically achieved through a single echo detection algorithm (SED). Here we will assume that the samples from the pulse compressed data $\ypc(\samplesymt)$ originating from single target already have been identified, noting that the number of samples after the detected target may be higher than those those before the peak to include scattering processes that occur in actual targets (as opposed to ideal point targets). The alongship angle $\along_n$, athwartship angle $\athw_n$ and range $r_n$ at the \emph{peak} power $\prxe(\samplesymt)$ within the detected target are used as estimates for $\along_t$, $\athw_t$ and $r_t$, respectively (Fig. \ref{fi:TS}). A simple pseudo SED algorithm is implemented in the code for illustrative purposes.
 
 From the autocorrelation function of the matched filter signal, $\ymfauto(\samplesymt)$, the equivalent number of samples around the peak are extracted to create the reduced autocorrelation signal of the matched filter signal, $\ymfautored(\samplesymt)$. Depending on the target scattering characteristics and the distance to any adjacent single targets, the number of samples around the peak echo level in $\ypctarget(\samplesymt)$ that contain the majority of the echo energy can be more or less than the total number of samples around the peak of $\ymfauto(\samplesymt)$. If the number of samples around the target is more than the total number of samples around the peak of $\ymfauto(\samplesymt)$ all samples around the peak of $\ymfauto(\samplesymt)$ are used. If the number of samples around the target is less than the total number of samples around the peak of $\ymfauto(\samplesymt)$, this lower number is used to create a reduced autocorrelation signal, $\ymfautored(\samplesymt)$.
 %
 \begin{figure}
 \includegraphics[width=16cm]{Fig_singleTarget}
-\caption{\label{fi:SED} The $\prxe(\samplesymt)$ power (upper) and split beam angles ($\along_t$ and $\athw_t$) (middle) for the single target. The vertical line corresponds to the range $r_t$ for the single target. The $\ymfautored(\samplesymt)$ (lower) is the autocorrelation function of the transmit signal reduced to the length of the target signal and aligned with the peak power of the target.}
+\caption{\label{fi:SED} The $\prxe(\samplesymt)$ power (upper) and split beam angles ($\along_t$ and $\athw_t$) (middle) for the single target. The orange vertical line corresponds to the range $r_t$ for the single target. The $\ymfautored(\samplesymt)$ (lower) is the autocorrelation function of the transmit signal reduced to the length of the target signal and aligned with the peak power of the target.}
 \end{figure}
 
 The discrete Fourier transforms of the target signal, $\ypctargetf(\samplesymf)$, and the reduced auto correlation signal, $\ymfautoredf(\samplesymf)$, are given by:
@@ -423,7 +423,7 @@ A frequency modulated pulse scattered by a metallic sphere will exhibit frequenc
 
 \section{Volume backscattering strength}
 
-As a metallic sphere is a rather simple and ideal scatterer, we use $\sv$ from a school of non-swimbladdered fish (fig.~\ref{Fig_Sv_echogram}) collected with a 120 kHz centre frequency transducer to illustrate the processes to obtain $S_v(m)$. 
+As a metallic sphere is a rather simple and near-ideal scatterer, we use $\sv$ from a school of non-swimbladdered fish (fig.~\ref{Fig_Sv_echogram}) collected with a 120 kHz centre frequency transducer to illustrate the processes to obtain $\sv(m)$. 
 
 Echoes from multiple scatterers can be quantified using volume backscattering strength, $\sv$, being the density of backscattering cross sections, and is given by:
 %
@@ -448,7 +448,7 @@ where $\prxevf(\freqsym)$ is the received electric power in a matched load for t
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_Sv_echogram}
-\caption{\label{Fig_Sv_echogram} Sv as a function of frequency ($m$) and range ($n$) for a echogram raw data file. The red vertical line indicates ping to be processed in this section.}
+\caption{\label{Fig_Sv_echogram} Sv as a function of frequency ($samplesymf$) and range ($samplesymt$) for a echogram raw data file. The red vertical line indicates the ping processed in this section.}
 \end{figure}
 
 Volume backscattering samples compressed over the operational frequency band are estimated by applying Eq. \ref{eq:sv_f} to the received digitized power samples using the on-axis gain value with $f$ set to the centre frequency of the broadband pulse, $\fc$:
@@ -520,18 +520,18 @@ where the sample index $\samplesymf$ corresponding to frequency $\freqsym$ can b
 \samplesymf = \lfloor \frac{\freqsym}{\fsdec} \ndft \rfloor \mod \ndft
 \end{equation}
 
-By selecting a set of centre samples $n$, $Sv$ values can be presented as a function of range ($n$) and frequency ($m$) for each ping. The range for centre samples $n$ could be chosen to half the window length or any other grid that the user prefer the data presented to be in. This can be useful when combining the $Sv(m)$ across a range of transducers. In our example we have simply chosen n to be on the same order of the range resolution (fig.~\ref{Fig_Sv_m_n}).
+By selecting a set of centre samples $\timesym$, $\sv$ values can be presented as a function of range ($\samplesymt$) and frequency ($freqsym$) for each ping. The range for centre samples $\samplesymt$ could be chosen to half the window length or any other grid that the user prefer the data presented to be in. This can be useful when combining the $\sv(\freqsym)$ across a range of transducers. In our example we have simply chosen n to be on the same order of the range resolution (fig.~\ref{Fig_Sv_m_n}).
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_Sv_m_n}
-\caption{\label{Fig_Sv_m_n} Sv as a function of frequency ($m$) and range ($n$) for a single ping}
+\caption{\label{Fig_Sv_m_n} Sv as a function of frequency ($\samplesymf$) and range ($\samplesymt$) for a single ping}
 \end{figure}
 
-For acoustic abundance estimation and classification purposes it is common to integrate the Sv over a range, in our example we integrate $Sv$ from 15 to 34 m covering a school of non-swimbladdered fish (fig.~\ref{Fig_Sv_echogram}). We note that we normally require averaging over several pings to obtain an unbiased estimate of $Sv$ for echo integration purposes. Here we present the $Sv(m)$ over the layer for our example ping for illustrative purposes (fig.~\ref{Fig_Sv_avg}). Even though this is for a single ping, we still observe a positive slope of the frequency response indicative of non-swimbladdered fish. 
+For acoustic abundance estimation and classification purposes it is common to integrate the $\sv$ over a range (15 to 34 m in the example, covering a school of non-swimbladdered fish, Fig.~\ref{Fig_Sv_echogram}). It is normal to average $\sv$ over several pings to obtain an unbiased estimate, but here just one ping is used for illustrative purposes (fig.~\ref{Fig_Sv_avg}). Even though this is for a single ping it is still possible to observe a positive slope of the frequency response that is indicative of non-swimbladdered fish. 
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_Sv_avg}
-\caption{\label{Fig_Sv_avg} $Sv$ as a function of frequency ($m$) averaged over a range interval covering a fish school }
+\caption{\label{Fig_Sv_avg} $\sv$ as a function of frequency ($\samplesymf$) averaged over a range interval covering a fish school.}
 \end{figure}
 
 The trend for increasing $\sv$ with frequency is well-known \citep{korneliussen2010} and is consistent with the trend observed in this example. In contrast to data from isolated scatterers, such as metallic spheres, the benefit of pulse compression on the backscatter from an object that generates many overlapping echoes is not immediately obvious (fig.~\ref{Fig_Sv_echogram}).
