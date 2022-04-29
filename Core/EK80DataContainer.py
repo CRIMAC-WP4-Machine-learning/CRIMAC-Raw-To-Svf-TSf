@@ -84,7 +84,7 @@ class FrequencyPar:
             print("Broadband calibration values exists")
             self.frequencies = xml['frequencies']
             self.gain = xml['gain']
-            self.angle_offset_athwartship = xml['angle_offset_alongship']
+            self.angle_offset_athwartship = xml['angle_offset_athwartship']
             self.angle_offset_alongship = xml['angle_offset_alongship']
             self.beam_width_athwartship = xml['beam_width_athwartship']
             self.beam_width_alongship = xml['beam_width_alongship']
