@@ -14,8 +14,8 @@ def plotytx(f_0, f_1, tau, f_s, y_tx_n, slope):
     #plt.title(
     #    'Ideal windowed transmit pulse.{:.0f}kHz - {:.0f}kHz, slope {:.3f}'
     #        .format(f_0 / 1000, f_1 / 1000, slope))
-    plt.xlabel('time (ms)')
-    plt.ylabel('amplitude')
+    plt.xlabel('Time [ms]')
+    plt.ylabel('Normalised amplitude')
     plt.savefig('./Paper/Fig_ytx.png',dpi=300)
 
 
@@ -41,8 +41,8 @@ def plotfir(filter_v, f_s_dec_v, f_0, f_1):
     plt.plot(F0/1000, G0,
              F1l/1000, G1l,
              [f_0/1000, f_1/1000], [-140, -140])
-    plt.xlabel('frequency (kHz)')
-    plt.ylabel('Gain (dB)')
+    plt.xlabel('Frequency [kHz]')
+    plt.ylabel('Gain [dB]')
     plt.xlim([50000/1000, 210000/1000])
     plt.savefig('./Paper/Fig_fir.png',dpi=300)
 
@@ -51,8 +51,8 @@ def plotymfn(y_mf_n):
     plt.figure()
     plt.plot(np.abs(y_mf_n))
     #plt.title('The absolute value of the filtered and decimated output signal')
-    plt.xlabel('samples ()')
-    plt.ylabel('amplitude')
+    plt.xlabel('Samples')
+    plt.ylabel('Normalised amplitude')
     plt.savefig('./Paper/Fig_y_mf_n.png',dpi=300)
 
 
@@ -61,7 +61,7 @@ def plotACF(y_mf_auto_n):
     plt.plot(np.abs(y_mf_auto_n))
     #plt.title('The autocorrelation function of the matched filter.')
     plt.xlabel('Samples')
-    plt.ylabel('ACF')
+    plt.ylabel('Autocorrelation function')
     plt.savefig('./Paper/Fig_ACF.png',dpi=300)
 
 
@@ -72,23 +72,24 @@ def plotThetaPhi(theta_n, phi_n):
     plt.plot(phi_n)
     #plt.title('The physical angles.')
     plt.xlabel(' ')
-    plt.ylabel('Angles')
+    plt.ylabel('Angles [rad]')
+    plt.xlabel('')
     plt.savefig('./Paper/Fig_theta_phi.png',dpi=300)
 
 
 def plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red_n):
-    fig, axs = plt.subplots(3)
+    fig, axs = plt.subplots(3, sharex=True)
     #fig.suptitle('Single target')
     axs[0].plot(dum_r, dum_p)
-    axs[0].set_ylabel('Power')
+    axs[0].set_ylabel('Power []')
     line1, = axs[1].plot(dum_r, dum_theta, label='$\\theta$')
     axs[1].plot([r_t, r_t], [-2, 2])
     line2, = axs[1].plot(dum_r, dum_phi, label='$\phi$')
     axs[1].plot(r_t, phi_t)
     axs[1].legend(handles=[line1, line2])
-    axs[1].set_ylabel('Angles')
+    axs[1].set_ylabel('Angles [$\deg$]')
     axs[2].plot(dum_r, np.abs(y_mf_auto_red_n))
-    axs[2].set_ylabel(' ')
+    axs[2].set_ylabel('$y_{mf,auto,red}(n)$')
     axs[2].set_xlabel('Range [m]')
     plt.savefig('./Paper/Fig_singleTarget.png',dpi=300)
 
@@ -102,18 +103,18 @@ def plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m):
         return {'x':scalex*np.diff(xlims)+xlims[0],
                 'y':scaley*np.diff(ylims)+ylims[0]}
     
-    fig, axs = plt.subplots(5)
+    fig, axs = plt.subplots(5, sharex=True)
     axs[0].plot(f_m/1000, np.abs(Y_pc_t_m))
 
-    axs[0].set_ylabel(r'|$Y_{pc,t}(m)$|')
+    axs[0].set_ylabel(r'|$Y_{pc,t}(m)$|', fontsize=8)
     axs[1].plot(f_m/1000, np.abs(Y_mf_auto_red_m))
-    axs[1].set_ylabel(r'$|Y_{mf,auto,red}(m)$|')
+    axs[1].set_ylabel(r'$|Y_{mf,auto,red}(m)$|', fontsize=8)
     axs[2].plot(f_m/1000, np.abs(Y_tilde_pc_t_m))
-    axs[2].set_ylabel(r'|$\tilde{Y}_{pc,t}(m)$|')
+    axs[2].set_ylabel(r'|$\tilde{Y}_{pc,t}(m)$|', fontsize=8)
     axs[3].plot(f_m/1000,g_theta_phi_m)  # weird gain might be tracked down to  xml['angle_offset_alongship'] and xml['angle_offset_alongship']
     axs[3].set_ylabel('gain')
     axs[4].plot(f_m/1000, TS_m)
-    axs[4].set_xlabel('f (kHz)')
+    axs[4].set_xlabel('f [kHz]')
     axs[4].set_ylabel('TS(f)')
 
     scalex = [0.02,0.02,0.02,0.02,0.02]
@@ -136,7 +137,8 @@ def plotSvf(f_m,Sv_m_n,svf_range):
     _f = f_m / 1000
     plt.imshow(Sv_m_n, extent=[_f[0], _f[-1], svf_range[-1], svf_range[0]], origin='upper',
                interpolation=None)
-    plt.colorbar()
+    cb = plt.colorbar()
+    cb.set_label('Sv (re 1 m$^1$) [dB]')
     #plt.title('Echogram [Sv]')
     plt.xlabel('Frequency [kHz]')
     plt.ylabel('Range [m]')
