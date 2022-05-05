@@ -262,7 +262,7 @@ where
 %\label{eq:TauEff}
 \ptxauto(\samplesymt)  =  |\ymfauto(\samplesymt)|^2
 \end{equation*}
-is the square of the absolute value of the matched filter autocorrelation function, and the summation is calculated over a duration of twice the nominal pulse duration, $2\tnom$. For an ideal system, i.e., no tapering at the rising and trailing edges of the transmitted signal, the effective pulse duration is the same as the transmit pulse duration.
+is the square of the absolute value of the matched filter autocorrelation function, and the summation is calculated over a duration of twice the nominal pulse duration, $2\tnom$. For an ideal system, i.e., no tapering at the rising and trailing edges of the in-water signal, the effective pulse duration is the same as the transmit pulse duration.
 
 \begin{figure}
 \includegraphics{Fig_ACF}
@@ -340,7 +340,7 @@ To illustrate each step of the process in obtaining $TS(m)$ we use a single ping
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_TS_echogram}
-\caption{\label{Fig_TS_echogram} Sv as a function of ping number and range ($n$) for a calibration sphere. The sphere is located at approximately 6 m range and the seafloor at approximately 12 m. The red vertical line indicates the ping that is used for illustraing the $\ts(\freqsym)$ processing.}
+\caption{\label{Fig_TS_echogram} Sv as a function of ping number and range ($n$) for a calibration sphere. The sphere is located at approximately 6 m range. The red vertical line indicates the ping that is used for illustraing the $\ts(\freqsym)$ processing.}
 \end{figure}
 
 Echoes from single targets are often characterised by their $\ts$, which is related to the differential backscattering cross section, $\bs$, via
@@ -423,7 +423,10 @@ A frequency modulated pulse scattered by a metallic sphere will exhibit frequenc
 
 \section{Volume backscattering strength}
 
-As a metallic sphere is a rather simple and near-ideal scatterer, we use $\sv$ from a school of non-swimbladdered fish (Fig.~\ref{Fig_Sv_echogram}) collected with a 120 kHz centre frequency transducer to illustrate the processes to obtain $\sv(m)$. 
+
+
+
+As a metallic sphere is a rather simple and ideal scatterer suitable for investigating TS of single scatterers, we use $\sv$ from a school of non-swimbladdered fish (Fig.~\ref{Fig_Sv_echogram}) collected with a 120 kHz centre frequency transducer to illustrate the processes to obtain $\sv(m)$. 
 
 Echoes from multiple scatterers can be quantified using volume backscattering strength, $\sv$, being the density of backscattering cross sections, and is given by:
 %
@@ -448,7 +451,7 @@ where $\prxevf(\freqsym)$ is the received electric power in a matched load for t
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_Sv_echogram}
-\caption{\label{Fig_Sv_echogram} Sv as a function of ping number and range range ($\samplesymt$) for a echogram raw data file. A fish school is seen between 15 and 35 m range, and the sea flor is seen at approximately 50 m. The red vertical line indicates the ping that is used for illustraing the $\sv(\freqsym)$ processing.}
+\caption{\label{Fig_Sv_echogram} Sv as a function of ping number and range range ($\samplesymt$) for a echogram raw data file. The upper yellow area shows the transmit pulse, a fish school is seen as a registration between 15 and 35 m range, and the sea flor is seen at approximately 50 m. The red vertical line indicates the ping that is used for illustraing the $\sv(\freqsym)$ processing.}
 \end{figure}
 
 Volume backscattering samples compressed over the operational frequency band are estimated by applying Eq. \ref{eq:sv_f} to the received digitized power samples using the on-axis gain value with $f$ set to the centre frequency of the broadband pulse, $\fc$:
@@ -539,7 +542,7 @@ The contribution includes all the minor details required for the processing step
 
 $\ts(\freqsym)$ is a common metric for studying single targets, used to extract features for single individuals. These features includes size, target classification and can be used to extract behaviour through tracking. In our implementation, the target strength by frequency calculation assumes that a single target has successfully been identified. For this to work well in practise, a robust single target detector is required. Several SED algorithms exist and differing such algorithms may be required depending on the situation. Typical SED algorithms are based on traditional single frequency pulses and by utilizing the additional information in broadband echoes improved SEDs may be envisioned, but this is outside the scope of this paper. One existing improvement is that broadband pulse compression is itself a type of single target detector.
 
-$\sv(\freqsym)$ is a key parameter for echo integration. To estimate $\sv(\freqsym)$ a Fourier transform is used, repeatedly applied via a sliding window in range. The recommended size of the window is two times the pulse length, and is chosen as a compromise between spatial and frequency resolution. Since the duration of the sliding window can cause the spreading loss compensation to differ between the beginning and end of the window, the compensation for spreading loss is performed on the pulse compressed time domain data before the transform. Absorption loss compensation is also range dependent (and frequency dependent), but is insignificant for typical marine ecosystem echosounder operating frequencies at short ranges and between the beginning and the end of the window at longer ranges. The compensation for absorption loss is therefore performed after applying the discrete Fourier transform. The choice of window also allows the data to be split onto a predefined range-frequency grid, which can then be used to fit data across transducers to an n-dimensional tensor typically employed by machine learning frameworks like Keras, Pytorch, and Tensor flow.
+$\sv(\freqsym)$ is a key parameter for echo integration. To estimate $\sv(\freqsym)$ a Fourier transform is used, repeatedly applied via a sliding window in range. The recommended size of the window is two times the pulse length, and is chosen as a compromise between spatial and frequency resolution. Since the duration of the sliding window can cause the spreading loss compensation to differ between the beginning and end of the window, the compensation for spreading loss is performed on the pulse compressed time domain data before the transform. Absorption loss compensation is also range dependent (and frequency dependent), but is insignificant for typical marine ecosystem echosounder operating frequencies at short ranges and between the beginning and the end of the window at longer ranges. The compensation for absorption loss is therefore performed after applying the discrete Fourier transform. The choice of window also allows the data to be split onto a predefined range-frequency grid, which can then be used to fit data across transducers to an n-dimensional tensor typically employed by deep learning methods \citep[e.g.]{brautaset_acoustic_2020}.
 
 The formulation presented in this paper requires several frequency dependent parameters, such as transducer gain, two-way equivalent beam angle, and the water absorption coefficient, to quantitatively estimate $\ts(\freqsym)$ and $\sv(\freqsym)$. Methods to estimate these are not within the scope of this paper, but common practise is to use the conventional sphere backscatter calibration methodology \citep{demerCalibrationAcousticInstruments2015} slightly enhanced for broadband \citep{hobaekCharacterizationTargetSpheres2013,lavery2017}. We note that these methods do not provide an operational method to estimate $\teff$ or $\Phi(f)$, especially for ship-mounted transducers, and that empirical measurements of these parameters are necessary to fully calibrate both narrowband and broadband echosounders.
 
