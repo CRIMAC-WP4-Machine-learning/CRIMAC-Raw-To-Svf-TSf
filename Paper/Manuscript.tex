@@ -191,7 +191,7 @@ A basic quantitative echosounder system consists of a transducer, a transceiver,
 
 The controlling computer program generates a short-duration digital transmit signal (a ping), $\ytx(\samplesymt)$, where $\samplesymt$ is a sample index in the discrete time domain. Typical broadband pulses are linear upsweep pulses windowed by an envelope function. The generated signal $\ytxe(\timesym)$ is converted to an analogue electric signal and amplified by the transceiver to obtain an analogue signal $\ytxe(\timesym)$. The analogue and amplified signals are passed on to the transducer to generate the transmitted acoustic signal $\ytxa(\timesym)$ in the water, where $\timesym$ is the time for the (analog) signal. For a split-aperture echosounder system, there are typically three or four channels to allow estimation of the angle of arriving echoes, and the signal is typically transmitted with equal power across the channels.
 
-In the example a linear sweep enveloped by a Hann function is implemented (Fig.~\ref{fi:ytx}), where the parameters are the initial frequency, the final frequency, the pulse duration, the sampling rate, and the proportion of the signal that is tapered in each end, respectively. A tapering of 0 and .5 indicates no tapering and tapering across the whole signal, respectively.
+In the example a linear sweep enveloped by a Hanning window is implemented (Fig.~\ref{fi:ytx}), where the parameters are the initial frequency, the final frequency, the pulse duration, the sampling rate, and the proportion of the signal that is tapered in each end, respectively. A tapering of 0 and .5 indicates no tapering and tapering across the whole signal, respectively.
 \begin{figure}
 \includegraphics[width=16cm]{Fig_ytx}
 \caption{\label{fi:ytx} Linear chirp pulses from 34 kHz to 45 kHz with a slope of 0.057 (blue) and 0.5 (orange), as implemented in the EK80.}
@@ -220,7 +220,7 @@ The characteristics of the bandpass filter and decimation factors are chosen wit
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_fir}
-\caption{\label{fi:fir} The frequency (power) response of the filters in our test set.}
+\caption{\label{fi:fir} The frequency (power) response of the filters in our test set. The blue and orange curve represents the filter response of the first and second filter. The horizontal green line indicates the frequency range of the send pulse.}
 \end{figure}
 
 The original sample data $\yrxorg(\samplesymt,\channelsym)$ are not available in the EK80 data files. Instead, the filtered and decimated complex samples from each transducer channel $\yrx(\samplesymt,\channelsym)$ are stored in the data files. The data are recorded in computer data files for display and analysis by processing software. Additional information, such as that from position and motion sensors and system configuration data is also included in the files.
@@ -340,7 +340,7 @@ To illustrate each step of the process in obtaining $TS(m)$ we use a single ping
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_TS_echogram}
-\caption{\label{Fig_TS_echogram} Sv as a function of frequency ($m$) and range ($n$) for a echogram raw data file. The red vertical line indicates ping to be processed in this section for TS(m). Single target calibration sphere is seen at approximately 6 m range and the seafloor at approximately 12 m.}
+\caption{\label{Fig_TS_echogram} Sv as a function of ping number and range ($n$) for a calibration sphere. The sphere is located at approximately 6 m range and the seafloor at approximately 12 m. The red vertical line indicates the ping that is used for illustraing the $\ts(\freqsym)$ processing.}
 \end{figure}
 
 Echoes from single targets are often characterised by their $\ts$, which is related to the differential backscattering cross section, $\bs$, via
@@ -371,7 +371,7 @@ The point scattering strength, $\mysp(\samplesymt)$, is estimated by applying Eq
 %
 noting that $\mysp(\samplesymt)$ is an average over frequency of all echoes from single or multiple targets received at sample $\samplesymt$.
 
-Based on the point scattering strength samples and the phase angle samples, single targets can be detected, and range and bearing to the single targets can be estimated. This is typically achieved through a single echo detection algorithm (SED). Here we will assume that the samples from the pulse compressed data $\ypc(\samplesymt)$ originating from single target already have been identified, noting that the number of samples after the detected target may be higher than those those before the peak to include scattering processes that occur in actual targets (as opposed to ideal point targets). The alongship angle $\along_n$, athwartship angle $\athw_n$ and range $r_n$ at the \emph{peak} power $\prxe(\samplesymt)$ within the detected target are used as estimates for $\along_t$, $\athw_t$ and $r_t$, respectively (Fig. \ref{fi:TS}). A simple pseudo SED algorithm is implemented in the code for illustrative purposes.
+Based on the point scattering strength samples and the phase angle samples, single targets can be detected, and range and bearing to the single targets can be estimated. This is typically achieved through a single echo detection algorithm (SED). Here we will assume that the samples from the pulse compressed data $\ypc(\samplesymt)$ originating from single target already have been identified, noting that the number of samples after the detected target may be higher than those those before the peak to include scattering processes that occur in actual targets (as opposed to ideal point targets). The alongship angle $\along_n$, athwartship angle $\athw_n$ and range $r_n$ at the \emph{peak} power $\prxe(\samplesymt)$ within the detected target are used as estimates for $\along_t$, $\athw_t$ and $r_t$, respectively (Fig. \ref{fi:SED}). A simple pseudo SED algorithm is implemented in the code for illustrative purposes.
 
 From the autocorrelation function of the matched filter signal, $\ymfauto(\samplesymt)$, the equivalent number of samples around the peak are extracted to create the reduced autocorrelation signal of the matched filter signal, $\ymfautored(\samplesymt)$. Depending on the target scattering characteristics and the distance to any adjacent single targets, the number of samples around the peak echo level in $\ypctarget(\samplesymt)$ that contain the majority of the echo energy can be more or less than the total number of samples around the peak of $\ymfauto(\samplesymt)$. If the number of samples around the target is more than the total number of samples around the peak of $\ymfauto(\samplesymt)$ all samples around the peak of $\ymfauto(\samplesymt)$ are used. If the number of samples around the target is less than the total number of samples around the peak of $\ymfauto(\samplesymt)$, this lower number is used to create a reduced autocorrelation signal, $\ymfautored(\samplesymt)$.
 %
@@ -448,7 +448,7 @@ where $\prxevf(\freqsym)$ is the received electric power in a matched load for t
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_Sv_echogram}
-\caption{\label{Fig_Sv_echogram} Sv as a function of frequency ($\samplesymf$) and range ($\samplesymt$) for a echogram raw data file. The red vertical line indicates the ping processed in this section.}
+\caption{\label{Fig_Sv_echogram} Sv as a function of ping number and range range ($\samplesymt$) for a echogram raw data file. A fish school is seen between 15 and 35 m range, and the sea flor is seen at approximately 50 m. The red vertical line indicates the ping that is used for illustraing the $\sv(\freqsym)$ processing.}
 \end{figure}
 
 Volume backscattering samples compressed over the operational frequency band are estimated by applying Eq. \ref{eq:sv_f} to the received digitized power samples using the on-axis gain value with $f$ set to the centre frequency of the broadband pulse, $\fc$:
@@ -468,9 +468,9 @@ Compensation of spherical spreading loss requires compensation of received power
 \ypcspread(\samplesymt) = \ypc(\samplesymt)\range_c(\samplesymt).
 \end{equation}
 %
-where $\ypcspread(\samplesymt)$ is the pulse compressed signal compensated for spherical spreading. A discrete Fourier transform is performed on the range compensated pulse compressed sample data using a normalized sliding Hann window, $\hannw(\genidxsym)$. The duration, $\tslide$, of the sliding window is chosen as a compromise between along-beam range resolution and frequency resolution. We suggest that it be at least twice the pulse duration and for computational efficiency reasons should result in a number of samples, $\nw$, which is a power of 2.
+where $\ypcspread(\samplesymt)$ is the pulse compressed signal compensated for spherical spreading. A discrete Fourier transform is performed on the range compensated pulse compressed sample data using a normalized sliding Hanning window, $\hannw(\genidxsym)$. The duration, $\tslide$, of the sliding window is chosen as a compromise between along-beam range resolution and frequency resolution. We suggest that it be at least twice the pulse duration and for computational efficiency reasons should result in a number of samples, $\nw$, which is a power of 2.
 
-The normalised Hann window, $\hannwnorm$, is given by: 
+The normalised Hanning window, $\hannwnorm$, is given by: 
 %
 \begin{equation}
 \label{eq:hannw}
