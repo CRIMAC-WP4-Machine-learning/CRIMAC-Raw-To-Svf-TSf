@@ -194,7 +194,7 @@ The controlling computer program generates a short-duration digital transmit sig
 In the example a linear sweep enveloped by a Hanning window is implemented (Fig.~\ref{fi:ytx}), where the parameters are the initial frequency, the final frequency, the pulse duration, the sampling rate, and the proportion of the signal that is tapered in each end, respectively. A slope of 0 and .5 indicates no tapering and tapering across the whole signal, respectively.
 \begin{figure}
 \includegraphics[width=16cm]{Fig_ytx}
-\caption{\label{fi:ytx} Linear chirp pulses from 34 kHz to 45 kHz with a slope of 0.057 (blue) and 0.5 (orange), as implemented in the EK80.}
+\caption{\label{fi:ytx} Envelope of linear chirp pulses from 92 kHz to 158 kHz with a slope of 0.057 (blue) and 0.5 (orange).}
 \end{figure}
 
 \subsection{Signal reception}
@@ -331,7 +331,7 @@ where $\anglefalong$ and $\anglefathw$ are constants that convert from phase ang
 %
 \begin{figure}
 \includegraphics[width=16cm]{Fig_theta_phi}
-\caption{\label{fi:theta_phi}Physical angles $\along$ and $\athw$.}
+\caption{\label{fi:theta_phi}The physical angles $\along$ and $\athw$ for the target strength example data (see below). The single target can be seen around sample number 1000 where the angles are less variable.}
 \end{figure}
 \clearpage
 \section{Target strength}
@@ -340,7 +340,7 @@ To illustrate each step of the process in obtaining $TS(m)$ we use a single ping
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_TS_echogram}
-\caption{\label{Fig_TS_echogram} Sv as a function of ping number and range ($n$) for a calibration sphere. The sphere is located at approximately 6 m range. The red vertical line indicates the ping that is used for illustraing the $\ts(\freqsym)$ processing.}
+\caption{\label{Fig_TS_echogram} Sv as a function of ping number and range for a calibration sphere. The sphere is located at approximately 6 m range. The red vertical line indicates the ping that is used for illustrating the $\ts(\freqsym)$ processing.}
 \end{figure}
 
 Echoes from single targets are often characterised by their $\ts$, which is related to the differential backscattering cross section, $\bs$, via
@@ -448,7 +448,7 @@ where $\prxevf(\freqsym)$ is the received electric power in a matched load for t
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_Sv_echogram}
-\caption{\label{Fig_Sv_echogram} Sv as a function of ping number and range range ($\samplesymt$) for a echogram raw data file. The upper yellow area shows the transmit pulse, a fish school is seen as a registration between 15 and 35 m range, and the sea flor is seen at approximately 50 m. The red vertical line indicates the ping that is used for illustraing the $\sv(\freqsym)$ processing.}
+\caption{\label{Fig_Sv_echogram} Sv as a function of ping number and range range ($\samplesymt$) for the raw data file used in the Sv(f) example. The upper yellow area shows the transmit pulse, a fish school is seen as a registration between 15 and 35 m range, and the sea floor is seen at approximately 50 m. The red vertical line indicates the ping that is used for illustrating the $\sv(\freqsym)$ processing.}
 \end{figure}
 
 Volume backscattering samples compressed over the operational frequency band are estimated by applying Eq. \ref{eq:sv_f} to the received digitized power samples using the on-axis gain value with $f$ set to the centre frequency of the broadband pulse, $\fc$:

@@ -1,0 +1,51 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: Manuscript.aux
+Reallocating 'name_of_file' (item size: 1) to 16 items.
+Reallocating 'name_of_file' (item size: 1) to 19 items.
+Reallocating 'name_of_file' (item size: 1) to 14 items.
+The style file: jasaauthyear2.bst
+Reallocating 'wiz_functions' (item size: 4) to 6000 items.
+Database file #1: ManuscriptNotes.bib
+Database file #2: Reference_database.bib
+You've used 52 entries,
+            3721 wiz_defined-function locations,
+            1565 strings with 24327 characters,
+and the built_in function-call counts, 38146 in all, are:
+= -- 2830
+> -- 1954
+< -- 21
++ -- 726
+- -- 660
+* -- 5142
+:= -- 5598
+add.period$ -- 103
+call.type$ -- 52
+change.case$ -- 485
+chr.to.int$ -- 52
+cite$ -- 52
+duplicate$ -- 2318
+empty$ -- 2658
+format.name$ -- 828
+if$ -- 7081
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 481
+newline$ -- 168
+num.names$ -- 208
+pop$ -- 548
+preamble$ -- 1
+purify$ -- 428
+quote$ -- 0
+skip$ -- 707
+stack$ -- 0
+substring$ -- 1593
+swap$ -- 2133
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 459
+warning$ -- 0
+while$ -- 225
+width$ -- 0
+write$ -- 632

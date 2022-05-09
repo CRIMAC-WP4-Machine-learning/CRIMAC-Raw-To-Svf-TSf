@@ -158,8 +158,8 @@ theta_n, phi_n = Calculation.calcAngles(
     gamma_phi_f_c)
 
 # Plots for paper
-if do_plot:
-    plotThetaPhi(theta_n, phi_n)
+#if do_plot:
+#    plotThetaPhi(theta_n, phi_n)
 
 
  #

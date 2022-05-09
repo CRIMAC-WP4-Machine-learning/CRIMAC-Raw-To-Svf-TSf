@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from Core.Calculation import Calculation
-
+from scipy.signal import hilbert
 
 def plotytx(f_0, f_1, tau, f_s, y_tx_n, slope):
 
@@ -10,12 +10,12 @@ def plotytx(f_0, f_1, tau, f_s, y_tx_n, slope):
         f_0, f_1, tau, f_s, .5)
 
     plt.figure()
-    plt.plot(t * 1000, y_tx_n, t * 1000, y_tx_n05slope)
+    plt.plot(t * 1000, np.abs(hilbert(y_tx_n)), t * 1000, np.abs(hilbert(y_tx_n05slope)))
     #plt.title(
     #    'Ideal windowed transmit pulse.{:.0f}kHz - {:.0f}kHz, slope {:.3f}'
     #        .format(f_0 / 1000, f_1 / 1000, slope))
-    plt.xlabel('Time [ms]')
-    plt.ylabel('Normalised amplitude')
+    plt.xlabel('Time (ms)')
+    plt.ylabel('Envelope ()')
     plt.savefig('./Paper/Fig_ytx.png',dpi=300)
 
 
@@ -41,9 +41,9 @@ def plotfir(filter_v, f_s_dec_v, f_0, f_1):
     plt.plot(F0/1000, G0,
              F1l/1000, G1l,
              [f_0/1000, f_1/1000], [-140, -140])
-    plt.xlabel('Frequency [kHz]')
-    plt.ylabel('Gain [dB]')
-    plt.xlim([50000/1000, 210000/1000])
+    plt.xlabel('Frequency (kHz)')
+    plt.ylabel('Gain (dB)')
+    plt.xlim([0000/1000, 310000/1000])
     plt.savefig('./Paper/Fig_fir.png',dpi=300)
 
 
@@ -51,8 +51,8 @@ def plotymfn(y_mf_n):
     plt.figure()
     plt.plot(np.abs(y_mf_n))
     #plt.title('The absolute value of the filtered and decimated output signal')
-    plt.xlabel('Samples')
-    plt.ylabel('Normalised amplitude')
+    plt.xlabel('n ()')
+    plt.ylabel('$y_{mf}$ ()')
     plt.savefig('./Paper/Fig_y_mf_n.png',dpi=300)
 
 
@@ -60,37 +60,37 @@ def plotACF(y_mf_auto_n):
     plt.figure()
     plt.plot(np.abs(y_mf_auto_n))
     #plt.title('The autocorrelation function of the matched filter.')
-    plt.xlabel('Samples')
-    plt.ylabel('Autocorrelation function')
+    plt.xlabel('n ()')
+    plt.ylabel('$p_{tx,auto}$ ()')
     plt.savefig('./Paper/Fig_ACF.png',dpi=300)
 
 
 def plotThetaPhi(theta_n, phi_n):
     # Plot angles
-    plt.figure()
-    plt.plot(theta_n)
-    plt.plot(phi_n)
-    #plt.title('The physical angles.')
-    plt.xlabel(' ')
-    plt.ylabel('Angles [rad]')
-    plt.xlabel('')
+    fig, axs = plt.subplots(2, sharex=True)
+    #fig.suptitle('Single target')
+    axs[0].plot(theta_n)
+    axs[0].set_ylabel(r'${\theta} (^{\circ})$')
+    axs[1].plot(phi_n, color='#ff7f0e')
+    axs[1].set_ylabel('$\phi (^{\circ})$')
+    axs[1].set_xlabel('n ()')
     plt.savefig('./Paper/Fig_theta_phi.png',dpi=300)
 
 
 def plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red_n):
-    fig, axs = plt.subplots(3, sharex=True)
+    fig, axs = plt.subplots(2, sharex=True)
     #fig.suptitle('Single target')
     axs[0].plot(dum_r, dum_p)
-    axs[0].set_ylabel('Power []')
-    line1, = axs[1].plot(dum_r, dum_theta, label='$\\theta$')
-    axs[1].plot([r_t, r_t], [-2, 2])
-    line2, = axs[1].plot(dum_r, dum_phi, label='$\phi$')
-    axs[1].plot(r_t, phi_t)
-    axs[1].legend(handles=[line1, line2])
-    axs[1].set_ylabel('Angles [$\deg$]')
-    axs[2].plot(dum_r, np.abs(y_mf_auto_red_n))
-    axs[2].set_ylabel('$y_{mf,auto,red}(n)$')
-    axs[2].set_xlabel('Range [m]')
+    axs[0].set_ylabel('$p_{rx,e}$')
+    # line1, = axs[1].plot(dum_r, dum_theta, label='$\\theta$')
+    # axs[1].plot([r_t, r_t], [-2, 2])
+    # line2, = axs[1].plot(dum_r, dum_phi, label='$\phi$')
+    # axs[1].plot(r_t, phi_t)
+    # axs[1].legend(handles=[line1, line2])
+    # axs[1].set_ylabel('Angles [$\deg$]')
+    axs[1].plot(dum_r, np.abs(y_mf_auto_red_n))
+    axs[1].set_ylabel('$y_{mf,auto,red}$')
+    axs[1].set_xlabel('Range (m)')
     plt.savefig('./Paper/Fig_singleTarget.png',dpi=300)
 
 
@@ -103,19 +103,19 @@ def plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m):
         return {'x':scalex*np.diff(xlims)+xlims[0],
                 'y':scaley*np.diff(ylims)+ylims[0]}
     
-    fig, axs = plt.subplots(5, sharex=True)
+    fig, axs = plt.subplots(5, sharex=True, figsize=(6.4,7))
     axs[0].plot(f_m/1000, np.abs(Y_pc_t_m))
 
-    axs[0].set_ylabel(r'|$Y_{pc,t}(m)$|', fontsize=8)
+    axs[0].set_ylabel(r'|$Y_{pc,t}$| ()', fontsize=8)
     axs[1].plot(f_m/1000, np.abs(Y_mf_auto_red_m))
-    axs[1].set_ylabel(r'$|Y_{mf,auto,red}(m)$|', fontsize=8)
+    axs[1].set_ylabel(r'$|Y_{mf,auto,red}$| ()', fontsize=8)
     axs[2].plot(f_m/1000, np.abs(Y_tilde_pc_t_m))
-    axs[2].set_ylabel(r'|$\tilde{Y}_{pc,t}(m)$|', fontsize=8)
+    axs[2].set_ylabel(r'|$\tilde{Y}_{pc,t}$| ()', fontsize=8)
     axs[3].plot(f_m/1000,g_theta_phi_m)  # weird gain might be tracked down to  xml['angle_offset_alongship'] and xml['angle_offset_alongship']
-    axs[3].set_ylabel('gain')
+    axs[3].set_ylabel('Gain (dB)')
     axs[4].plot(f_m/1000, TS_m)
-    axs[4].set_xlabel('f [kHz]')
-    axs[4].set_ylabel('TS(f)')
+    axs[4].set_xlabel('f (kHz)')
+    axs[4].set_ylabel('TS(f) (dB re $1m^2$)')
 
     scalex = [0.02,0.02,0.02,0.02,0.02]
     scaley = [0.75,0.75,0.75,0.75,0.75]
@@ -138,10 +138,10 @@ def plotSvf(f_m,Sv_m_n,svf_range):
     plt.imshow(Sv_m_n, extent=[_f[0], _f[-1], svf_range[-1], svf_range[0]], origin='upper',
                interpolation=None)
     cb = plt.colorbar()
-    cb.set_label('Sv (re 1 m$^1$) [dB]')
+    cb.set_label('Sv (dB re 1 m$^1$)')
     #plt.title('Echogram [Sv]')
-    plt.xlabel('Frequency [kHz]')
-    plt.ylabel('Range [m]')
+    plt.xlabel('Frequency (kHz)')
+    plt.ylabel('Range (m)')
     plt.axis('auto')
     plt.savefig('./Paper/Fig_Sv_m_n.png',dpi=300)
 
@@ -169,8 +169,8 @@ def plotSvf(f_m,Sv_m_n,svf_range):
     plt.figure()
     plt.plot(f_m / 1000, Sv)  # values are for some reason to low, add ~17dB
     #plt.title('Sv(f) averaged over school depths')
-    plt.xlabel('Frequency [kHz]')
-    plt.ylabel('Range [m]')
+    plt.xlabel('Frequency (kHz)')
+    plt.ylabel('Sv (dB re 1 m$^1$)')
     plt.grid()
     plt.savefig('./Paper/Fig_Sv_avg.png',dpi=300)
     # Store Sv(f) and f for further analysis
