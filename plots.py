@@ -42,7 +42,7 @@ def plotfir(filter_v, f_s_dec_v, f_0, f_1):
              F1l/1000, G1l,
              [f_0/1000, f_1/1000], [-140, -140])
     plt.xlabel('Frequency (kHz)')
-    plt.ylabel('Gain (dB)')
+    plt.ylabel('Filter gain (dB)')
     plt.xlim([0000/1000, 310000/1000])
     plt.savefig('./Paper/Fig_fir.png',dpi=300)
 
@@ -103,7 +103,7 @@ def plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m):
         return {'x':scalex*np.diff(xlims)+xlims[0],
                 'y':scaley*np.diff(ylims)+ylims[0]}
     
-    fig, axs = plt.subplots(5, sharex=True, figsize=(6.4,7))
+    fig, axs = plt.subplots(5, sharex=True, figsize=(6.4,9))
     axs[0].plot(f_m/1000, np.abs(Y_pc_t_m))
 
     axs[0].set_ylabel(r'|$Y_{pc,t}$| ()', fontsize=8)
@@ -112,10 +112,10 @@ def plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m):
     axs[2].plot(f_m/1000, np.abs(Y_tilde_pc_t_m))
     axs[2].set_ylabel(r'|$\tilde{Y}_{pc,t}$| ()', fontsize=8)
     axs[3].plot(f_m/1000,g_theta_phi_m)  # weird gain might be tracked down to  xml['angle_offset_alongship'] and xml['angle_offset_alongship']
-    axs[3].set_ylabel('Gain (dB)')
+    axs[3].set_ylabel('Transducer gain (dB)')
     axs[4].plot(f_m/1000, TS_m)
     axs[4].set_xlabel('f (kHz)')
-    axs[4].set_ylabel('TS(f) (dB re $1m^2$)')
+    axs[4].set_ylabel('TS (dB re $1m^2$)')
 
     scalex = [0.02,0.02,0.02,0.02,0.02]
     scaley = [0.75,0.75,0.75,0.75,0.75]

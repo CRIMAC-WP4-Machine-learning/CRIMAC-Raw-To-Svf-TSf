@@ -2,6 +2,9 @@
 
 \usepackage{color,soul}
 
+\usepackage{lineno}
+\linenumbers
+
 \pdfoutput=1
 \hyphenation{echo-sounders}
 \renewcommand{\figurename}{Figure}
@@ -121,7 +124,6 @@
 \title[]{Quantitative processing of broadband data as implemented in a scientific splitbeam echosounder}
 
 \author{Lars Nonboe Andersen}
-\email{lars.nonboe.andersen@km.kongsberg.com}
 \affiliation{Kongsberg Maritime AS, Strandpromenaden 50, 3191, Horten, Norway}
 
 \author{Dezhang Chu}
@@ -142,10 +144,16 @@
 \affiliation{Codelab, Bergen, Norway}
 
 \author{Geir Pedersen}
+\email{geir.pedersen@hi.no}
 \affiliation{Marine Ecosystem Acoustics, Institute of Marine Research, Bergen, 5001, Norway}
 
 \begin{abstract}
-The use of quantitative broadband echosounders for biological studies and surveys offers considerable advantages over narrowband echosounders. These include improved spectral-based target identification and significantly increased ability to resolve individual targets. Biological studies and surveys typically require accurate measures of backscatter strength and we present here a systematic and comprehensive explanation of how to derive quantitative estimates of target strength and volume backscattering, as a function of frequency from broadband echosounder signals.
+1. The use of quantitative broadband echosounders for biological studies and surveys offers considerable advantages over narrowband echosounders. These include improved spectral-based target identification and significantly increased ability to resolve individual targets. An understanding of current processing steps is required to fully utilize and further develop broadband acoustic methods in marine ecology.\linebreak 
+2. We describe the steps involved in processing broadband acoustic data from raw data to frequency dependent target strength (TS(f)) and volume backscattering strength (Sv(f)) using data from the EK80 broadband scientific echosounder as examples. Although the overall processing steps are described and build on established methods from literature, multiple choices need to be made during implementation. \linebreak
+3. To highlight and discuss some of these choices and facilitating a common understanding within the community, we have also developed a code which will be made publicly available and open source. The code follows the steps using raw data from two single pings, showing the step-by-step processing from raw data to TS(f) and Sv(f). \linebreak
+4. This code can serve as a reference for developing own code or implementation in existing processing pipelines, as an educational tool and as a starting point for further development of broadband acoustic methods in fisheries acoustics.\linebreak
+
+Keywords:  \linebreak
 
 \end{abstract}
 
@@ -175,7 +183,7 @@ The objective of this paper and associated code is to present a systematic and c
 \section{Signal flow and initial processing}
 
 \subsection{Accompanying code}
-The code accompanying this paper is written in the Python programming language and is available in the supplementary materials. All processing steps with respective figures in the paper can be reproduced by running the main scripts (\code{TSf.py} and \code{Svf.py}). Without loss of generality, we use the \ek{} echosounder as an example since it is currently the most commonly used broadband system in the marine ecosystem acoustics field. 
+The code accompanying this paper is written in the Python programming language and is available in the supplementary materials. All single ping processing steps with respective figures in the paper can be reproduced by running the main scripts (\code{TSf.py} and \code{Svf.py}). Reproduction of figures 9 and 12 requires the original echosounder raw data and are not included. Without loss of generality, we use the \ek{} echosounder as an example since it is currently the most commonly used broadband system in the marine ecosystem acoustics field. 
 
 Our presentation uses nomenclature and approaches that are commonly used for narrowband echosounder systems, which were derived from radar processing \citep{cook1967}. In particular, the expressions for target strength ($\ts$) and volume backscattering strength ($\sv$) \citep{MacLennan2002consistent} are presented in a similar manner for broadband signals as for narrowband signals.
 
@@ -220,7 +228,7 @@ The characteristics of the bandpass filter and decimation factors are chosen wit
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_fir}
-\caption{\label{fi:fir} The frequency (power) response of the filters in our test set. The blue and orange curve represents the filter response of the first and second filter. The horizontal green line indicates the frequency range of the send pulse.}
+\caption{\label{fi:fir} The frequency response (filter gain) of the filters in our test set. The blue and orange curve represents the filter response of the first and second filter. The horizontal green line indicates the frequency range of the transmit signal.}
 \end{figure}
 
 The original sample data $\yrxorg(\samplesymt,\channelsym)$ are not available in the EK80 data files. Instead, the filtered and decimated complex samples from each transducer channel $\yrx(\samplesymt,\channelsym)$ are stored in the data files. The data are recorded in computer data files for display and analysis by processing software. Additional information, such as that from position and motion sensors and system configuration data is also included in the files.
@@ -330,17 +338,18 @@ where $y_\along(\samplesymt)$ is the electrical angle along the minor axis of th
 where $\anglefalong$ and $\anglefathw$ are constants that convert from phase angles to physical echo arrival angles (Fig.~\ref{fi:theta_phi}) and are derived from the transducer geometry and, $\fc$, the centre frequency of the chirp pulse \citep{ehrenberg1979}. The inverse sine is indicated by $\arcsin$,the four quadrant inverse tangent which returns values in the interval $[-\pi, \pi]$ inclusive is indicated by $\atan$, the real part of a complex number by $\Re$ and the imaginary part by $\Im$. As a mnemonic, the horizontal line in the symbol used for the forward/aft direction, $\along$, represents the pivot axis for the alongship angles and the near-vertical line in the $\athw$ symbol indicates the pivot axis for port/starboard angles.
 %
 \begin{figure}
+
 \includegraphics[width=16cm]{Fig_theta_phi}
 \caption{\label{fi:theta_phi}The physical angles $\along$ and $\athw$ for the target strength example data (see below). The single target can be seen around sample number 1000 where the angles are less variable.}
 \end{figure}
 \clearpage
 \section{Target strength}
 
-To illustrate each step of the process in obtaining $TS(m)$ we use a single ping from a data file where a 35 mm diameter tungsten carbide calibration sphere (WC35) was suspended approximately 6 m below a 120 kHz transducer (Fig.~\ref{Fig_TS_echogram}). 
+To illustrate calculation of target strength ($TS$) as a function of frequency, $TS(f)$, we use data collected on a 35 mm diameter tungsten carbide calibration sphere (WC35) suspended approximately 6 m below a 120 kHz transducer (Fig.~\ref{Fig_TS_echogram}). 
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_TS_echogram}
-\caption{\label{Fig_TS_echogram} Sv as a function of ping number and range for a calibration sphere. The sphere is located at approximately 6 m range. The red vertical line indicates the ping that is used for illustrating the $\ts(\freqsym)$ processing.}
+\caption{\label{Fig_TS_echogram} $\mysp$ as a function of ping number and range for a calibration sphere. The sphere is located at approximately 6 m range. The red vertical line indicates the ping that is used for illustrating the $\ts(\freqsym)$ processing.}
 \end{figure}
 
 Echoes from single targets are often characterised by their $\ts$, which is related to the differential backscattering cross section, $\bs$, via
@@ -352,7 +361,7 @@ Echoes from single targets are often characterised by their $\ts$, which is rela
 %
 where $\log_{10}$ is the logarithm with base 10 and $\rangeref$ is 1 m.
 
-The power-budget equation (i.e., sonar equation) for a single target \citep[Formulation D, ][]{lunde2016} at frequency $\freqsym$ is:
+Generalizing the power-budget equation (i.e., sonar equation), given in e.g. \citep{lunde2016}, for broadband signals yields in logarithmic form $TS$ at frequency $\freqsym$:
 %
 \begin{equation}
 \label{eq:TS}
@@ -371,9 +380,9 @@ The point scattering strength, $\mysp(\samplesymt)$, is estimated by applying Eq
 %
 noting that $\mysp(\samplesymt)$ is an average over frequency of all echoes from single or multiple targets received at sample $\samplesymt$.
 
-Based on the point scattering strength samples and the phase angle samples, single targets can be detected, and range and bearing to the single targets can be estimated. This is typically achieved through a single echo detection algorithm (SED). Here we will assume that the samples from the pulse compressed data $\ypc(\samplesymt)$ originating from single target already have been identified, noting that the number of samples after the detected target may be higher than those those before the peak to include scattering processes that occur in actual targets (as opposed to ideal point targets). The alongship angle $\along_n$, athwartship angle $\athw_n$ and range $r_n$ at the \emph{peak} power $\prxe(\samplesymt)$ within the detected target are used as estimates for $\along_t$, $\athw_t$ and $r_t$, respectively (Fig. \ref{fi:SED}). A simple pseudo SED algorithm is implemented in the code for illustrative purposes.
+Based on the point scattering strength samples and the phase angle samples, single targets can be detected, and range and bearing to the single targets can be estimated. This is typically achieved through a single echo detection algorithm (SED). Here we will assume that the samples from the pulse compressed data $\ypc(\samplesymt)$ originating from single target already have been identified, noting that the number of samples after the detected target may be higher than those those before the peak to include scattering processes that occur in actual targets (as opposed to ideal point targets). The alongship angle $\along_n$, athwartship angle $\athw_n$ and sample number $n$ at the \emph{peak} power $\prxe(\samplesymt)$ within the detected target are used as estimates for $\along_t$, $\athw_t$ and $r_t$, respectively (Fig. \ref{fi:theta_phi}). A simple pseudo SED algorithm is implemented in the code for illustrative purposes.
 
-From the autocorrelation function of the matched filter signal, $\ymfauto(\samplesymt)$, the equivalent number of samples around the peak are extracted to create the reduced autocorrelation signal of the matched filter signal, $\ymfautored(\samplesymt)$. Depending on the target scattering characteristics and the distance to any adjacent single targets, the number of samples around the peak echo level in $\ypctarget(\samplesymt)$ that contain the majority of the echo energy can be more or less than the total number of samples around the peak of $\ymfauto(\samplesymt)$. If the number of samples around the target is more than the total number of samples around the peak of $\ymfauto(\samplesymt)$ all samples around the peak of $\ymfauto(\samplesymt)$ are used. If the number of samples around the target is less than the total number of samples around the peak of $\ymfauto(\samplesymt)$, this lower number is used to create a reduced autocorrelation signal, $\ymfautored(\samplesymt)$.
+From the autocorrelation function of the matched filter signal, $\ymfauto(\samplesymt)$, the equivalent number of samples around the peak are extracted to create the reduced autocorrelation signal of the matched filter signal, $\ymfautored(\samplesymt)$ (Fig.~\ref{fi:SED}). Depending on the target scattering characteristics and the distance to any adjacent single targets, the number of samples around the peak echo level in $\ypctarget(\samplesymt)$ that contain the majority of the echo energy can be more or less than the total number of samples around the peak of $\ymfauto(\samplesymt)$. If the number of samples around the target is more than the total number of samples around the peak of $\ymfauto(\samplesymt)$ all samples around the peak of $\ymfauto(\samplesymt)$ are used. If the number of samples around the target is less than the total number of samples around the peak of $\ymfauto(\samplesymt)$, this lower number is used to create a reduced autocorrelation signal, $\ymfautored(\samplesymt)$.
 %
 \begin{figure}
 \includegraphics[width=16cm]{Fig_singleTarget}
@@ -416,7 +425,7 @@ where the sample index $\samplesymf$ corresponding to frequency $\freqsym$ can b
 %
 \begin{figure}
 \includegraphics[width=16cm]{Fig_TS}
-\caption{\label{fi:TS}The discrete Fourier transform of the target signal $\ypctargetf(\samplesymf)$ (a) and the reduced auto correlation signal $\ymfautoredf(\samplesymf)$ (b), the normalized discrete Fourier transform of the target signal $\ypctargetnormf(\samplesymf)$ (c), gain (d) and the estimated TS(f) (e).}
+\caption{\label{fi:TS}The discrete Fourier transform of the target signal $\ypctargetf(\samplesymf)$ (a) and the reduced auto correlation signal $\ymfautoredf(\samplesymf)$ (b), the normalized discrete Fourier transform of the target signal $\ypctargetnormf(\samplesymf)$ (c), transducer gain $(10\log_{10}\gain^2(\along_t,\athw_t,\freqsym))$ (d), and the estimated TS(f) (e).}
 \end{figure}
 %
 A frequency modulated pulse scattered by a metallic sphere will exhibit frequencies at which very little energy is returned due to destructive interference \citep{stanton2008}. This is visible in the $\ts$ (Fig. \ref{fi:TS}) and agrees well with theoretical estimates of the backscatter from spheres \citep{maclennan1981}.
