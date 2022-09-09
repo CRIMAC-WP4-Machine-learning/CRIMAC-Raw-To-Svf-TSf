@@ -285,7 +285,7 @@ class Calculation(EK80DataContainer):
     def calcg0(self, f):
         if self.isCalibrated:
             # Calibrated case
-            return np.interp(f, self.frequencies, self.gain)
+            return np.interp(f, self.frqp.frequencies, self.frqp.gain)
         else:
             # Uncalibrated case
             return self.G_fnom + 20 * np.log10(f / self.fnom)
