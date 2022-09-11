@@ -18,7 +18,7 @@ class Calculation(EK80DataContainer):
         w = Calculation.hann(L)
         N = len(y)
         w1 = w[0:int(len(w) / 2)]
-        w2 = w[int(len(w) / 2):-1]
+        w2 = w[int(len(w) / 2):]
         i0 = 0
         i1 = len(w1)
         i2 = N - len(w2)
