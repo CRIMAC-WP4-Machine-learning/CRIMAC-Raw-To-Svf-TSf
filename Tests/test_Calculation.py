@@ -89,6 +89,97 @@ class TestCalculation(unittest.TestCase):
 
 
 
+    def test_freqtransf(self):
+        testData = scipy.io.loadmat('freqtransf.mat')
+
+        FFTvec = Calculation.freqtransf(testData['FFTvecin'].squeeze(), testData['fsdec'].squeeze(),
+                                        testData['fvec'].squeeze())
+
+        np.testing.assert_allclose(FFTvec, testData['FFTvec'].squeeze(), rtol=0.01, atol=0.1)
+
+    def test_freqtransf2(self):
+
+        FFTvecin = np.array([1+1j, 2+2j, 3+3j, 4+4j, 5+5j, 6+6j, 7+7j, 8+8j, 9+9j, 10+10j])
+        fsdec = 200
+        fvec = np.array([100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200])
+
+        FFTvec = Calculation.freqtransf(FFTvecin, fsdec, fvec)
+        FFTvec_true = np.array([
+            6. +6.j,  6. +6.j,  7. +7.j,  7. +7.j,  8. +8.j,  8. +8.j,9. +9.j,  9. +9.j, 10.+10.j, 10.+10.j,  1. +1.j
+        ])
+        np.testing.assert_allclose(FFTvec, FFTvec_true, rtol=0.01, atol=0.1)
+
+
+    def test_calcDecmiatedSamplingRate(self):
+        f_s = 1500000.0
+        filter_v = [
+            {'D': 12},
+            {'D': 1}
+        ]
+
+        f_s_dec_v = Calculation.calcDecmiatedSamplingRate(filter_v, f_s)
+
+        f_s_dec_v_true = np.array([1500000.0, 125000.0, 125000.0])
+
+        np.testing.assert_allclose(np.array(f_s_dec_v), f_s_dec_v_true, rtol=0.01, atol=0.1)
+
+
+    def test_calcNormalizedTransmitSignal(self):
+        y_tx_n = np.array([-10, -5, 0, 5, 10, 5, 0, -5, -10, -5])
+
+        normsign = Calculation.calcNormalizedTransmitSignal(y_tx_n)
+
+        normsign_true = np.array([-1, -0.5, 0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5])
+
+        np.testing.assert_allclose(normsign, normsign_true, rtol=0.01, atol=0.1)
+
+
+    def test_alignAuto_auto_gt_yc(self):
+
+        auto = np.array([-0.7-0.7j, -0.6-0.6j, -0.7-0.7j, -0.8-0.8j, -0.9-0.9j, 1+1j, 0.9+0.9j, 0.8+0.8j, 0.7+0.7j, 0.6+0.6j, 0.5+0.5j])
+        yc = np.array([-0.8-0.8j, -0.9-0.9j, 1+1j, 0.9+0.9j, 0.8+0.8j, 0.7+0.7j])
+
+        _auto = Calculation.alignAuto(auto, yc)
+
+        np.testing.assert_equal(_auto, np.array([
+            -0.8-0.8j, -0.9-0.9j,  1. +1.j ,  0.9+0.9j,  0.8+0.8j,  0.7+0.7j
+        ]))
+
+
+    def test_PSIfc(self):
+        f_0, f_1, n_f_points = 90000.0, 170000.0, 10
+
+        f_m = np.linspace(f_0, f_1, n_f_points)
+        psifc = self.calc.calcpsi(0.008511380382023767, 38000.0, f_m)
+
+        ans = [0.00151734, 0.00125682, 0.00105806, 0.00090297, 0.00077964, 0.00067996, 0.00059824, 0.00053041,
+               0.0004735, 0.00042527]
+
+        np.testing.assert_almost_equal(psifc, ans, 5)
+
+    def test_calcg0_calibrated(self):
+        f = 130000.0
+
+        freq_calibrated = np.array([
+            127477., 127958., 128438., 128919., 129399., 129880., 130360., 130841., 131321., 131802.
+        ])
+
+        gain_calibrated = np.array([
+            27.66, 27.79, 27.86, 27.86, 28., 28.01, 28.12, 28.17, 28.24, 28.35
+        ])
+
+        g0 = Calculation.calcg0_calibrated(f, freq_calibrated, gain_calibrated)
+        g0_true = 636.429057426272
+        np.testing.assert_almost_equal(g0, g0_true, 5)
+
+    def test_calcg0_notcalibrated(self):
+        f, f_n, G_f_n = 130000.0, 120000.0,27.0
+        g0 = Calculation.calcg0_notcalibrated(f, f_n, G_f_n)
+        g0_true = 588.198906132007
+        np.testing.assert_almost_equal(g0, g0_true, 5)
+
+
+
     """
     def test_calculateTVGdB(self):
 
@@ -117,37 +208,6 @@ class TestCalculation(unittest.TestCase):
 
         # Test
         np.testing.assert_allclose(power, gt_power, rtol=0, atol=1e-9)
-
-    def test_alignAuto_auto_gt_yc(self):
-
-        auto = np.array([-0.7-0.7j, -0.6-0.6j, -0.7-0.7j, -0.8-0.8j, -0.9-0.9j, 1+1j, 0.9+0.9j, 0.8+0.8j, 0.7+0.7j, 0.6+0.6j, 0.5+0.5j])
-        yc = np.array([-0.8-0.8j, -0.9-0.9j, 1+1j, 0.9+0.9j, 0.8+0.8j, 0.7+0.7j])
-
-        _auto = Calculation.alignAuto(auto, yc)
-
-        np.testing.assert_equal(_auto, np.array([
-            -0.8-0.8j, -0.9-0.9j,  1. +1.j ,  0.9+0.9j,  0.8+0.8j,  0.7+0.7j
-        ]))
-
-    def test_freqtransf(self):
-        testData = scipy.io.loadmat('freqtransf.mat')
-
-        FFTvec = Calculation.freqtransf(testData['FFTvecin'].squeeze(), testData['fsdec'].squeeze(),
-                                        testData['fvec'].squeeze())
-
-        np.testing.assert_allclose(FFTvec, testData['FFTvec'].squeeze(), rtol=0.01, atol=0.1)
-
-    def test_freqtransf2(self):
-
-        FFTvecin = np.array([1+1j, 2+2j, 3+3j, 4+4j, 5+5j, 6+6j, 7+7j, 8+8j, 9+9j, 10+10j])
-        fsdec = 200
-        fvec = np.array([100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200])
-
-        FFTvec = Calculation.freqtransf(FFTvecin, fsdec, fvec)
-        FFTvec_true = np.array([
-            6. +6.j,  6. +6.j,  7. +7.j,  7. +7.j,  8. +8.j,  8. +8.j,9. +9.j,  9. +9.j, 10.+10.j, 10.+10.j,  1. +1.j
-        ])
-        np.testing.assert_allclose(FFTvec, FFTvec_true, rtol=0.01, atol=0.1)
 
 
     def test_pulseCompression(self):
@@ -221,17 +281,6 @@ class TestCalculation(unittest.TestCase):
         Gf = self.calc.calcg0(39500)
 
         np.testing.assert_almost_equal(Gf, 26.11500, 5)
-
-    def test_PSIfc(self):
-        f_0, f_1, n_f_points = 90000.0, 170000.0, 10
-
-        f_m = np.linspace(f_0, f_1, n_f_points)
-        psifc = self.calc.calcpsi(0.008511380382023767, 38000.0, f_m)
-
-        ans = [0.00151734, 0.00125682, 0.00105806, 0.00090297, 0.00077964, 0.00067996, 0.00059824, 0.00053041,
-               0.0004735, 0.00042527]
-
-        np.testing.assert_almost_equal(psifc, ans, 5)
 
     """
     def test_logSvCf(self):
