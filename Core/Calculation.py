@@ -44,20 +44,10 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcDecmiatedSamplingRate(filter_v, f_s):
-        """
-        f_s_dec = [f_s]
-        v = 0
-        if filter_v is not None:
-            for filter_v in filter_v:
-                tmp = f_s_dec[v] / filter_v["D"]
-                f_s_dec.append(tmp)
-                v += 1
-        return f_s_dec
-        """
         f_s_dec = [f_s]
         if filter_v is not None:
-            for v, f in enumerate(filter_v):
-                f_s_dec.append(f_s_dec[v] / f["D"])
+            for v, _filter_v in enumerate(filter_v):
+                f_s_dec.append(f_s_dec[v] / _filter_v["D"])
         return f_s_dec
 
 
