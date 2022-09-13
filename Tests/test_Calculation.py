@@ -179,6 +179,20 @@ class TestCalculation(unittest.TestCase):
         np.testing.assert_almost_equal(g0, g0_true, 5)
 
 
+    def test_calcPower(self):
+        # Calculation trough implemented methods
+        z_td_e, z_rx_e, N_u = 75, 5400, 4
+        y_pc_n = np.array(
+            [-9.99537661e-05 + 2.97907232e-05j, -2.63518109e-05 - 9.63090422e-05j, 6.27873532e-05 - 3.33523700e-07j,
+             -2.04267017e-05 + 3.20007899e-05j, -2.94661296e-05 - 1.66837242e-05j])
+        power = self.calc.calcPower(y_pc_n, z_td_e, z_rx_e, N_u)
+
+        # Ground truth
+        gt_power = np.array([8.3808e-11, 7.6809e-11, 3.0373e-11, 1.1104e-11, 8.8336e-12])
+
+        # Test
+        np.testing.assert_allclose(power, gt_power, rtol=0, atol=1e-9)
+
 
     """
     def test_calculateTVGdB(self):
@@ -194,20 +208,6 @@ class TestCalculation(unittest.TestCase):
         # Test
         np.testing.assert_allclose(tvg, gt_tvg, rtol=0, atol=1e-6)
     """
-
-    def test_calcPower(self):
-        # Calculation trough implemented methods
-        z_td_e, z_rx_e, N_u = 75, 5400, 4
-        y_pc_n = np.array(
-            [-9.99537661e-05 + 2.97907232e-05j, -2.63518109e-05 - 9.63090422e-05j, 6.27873532e-05 - 3.33523700e-07j,
-             -2.04267017e-05 + 3.20007899e-05j, -2.94661296e-05 - 1.66837242e-05j])
-        power = self.calc.calcPower(y_pc_n, z_td_e, z_rx_e, N_u)
-
-        # Ground truth
-        gt_power = np.array([8.3808e-11, 7.6809e-11, 3.0373e-11, 1.1104e-11, 8.8336e-12])
-
-        # Test
-        np.testing.assert_allclose(power, gt_power, rtol=0, atol=1e-9)
 
 
     def test_pulseCompression(self):
