@@ -158,24 +158,41 @@ class TestCalculation(unittest.TestCase):
         np.testing.assert_almost_equal(psifc, ans, 5)
 
     def test_calcg0_calibrated(self):
-        f = 130000.0
-
-        freq_calibrated = np.array([
-            127477., 127958., 128438., 128919., 129399., 129880., 130360., 130841., 131321., 131802.
+        f = np.array([
+            90000. ,  98008.00800801, 106016.01601602, 114024.02402402,
+            122032.03203203, 130040.04004004, 138048.04804805, 146056.05605606,
+            154064.06406406, 162072.07207207
         ])
 
-        gain_calibrated = np.array([
-            27.66, 27.79, 27.86, 27.86, 28., 28.01, 28.12, 28.17, 28.24, 28.35
+        frqp_freq = np.array([
+            90000., 106817., 123634., 140450., 157267.
         ])
 
-        g0 = Calculation.calcg0_calibrated(f, freq_calibrated, gain_calibrated)
-        g0_true = 636.429057426272
+        frqp_gain = np.array([
+            21.29, 26.74, 27.13, 29.23, 30.37
+        ])
+
+        g0 = Calculation.calcg0_calibrated(f, frqp_freq, frqp_gain)
+        g0_true = np.array([
+            134.58603541, 244.63634673, 444.67423357, 490.58433764,
+            512.0176183, 620.86804878, 781.63530615, 914.11879741,
+            1035.82827691, 1088.93009333
+        ])
         np.testing.assert_almost_equal(g0, g0_true, 5)
 
     def test_calcg0_notcalibrated(self):
-        f, f_n, G_f_n = 130000.0, 120000.0,27.0
+        f = np.array([
+            90000., 98008.00800801, 106016.01601602, 114024.02402402,
+            122032.03203203, 130040.04004004, 138048.04804805, 146056.05605606,
+            154064.06406406, 162072.07207207
+        ])
+        f_n, G_f_n = 120000.0,27.0
         g0 = Calculation.calcg0_notcalibrated(f, f_n, G_f_n)
-        g0_true = 588.198906132007
+        g0_true = np.array([
+            281.91781892, 334.31867168, 391.18344545, 452.51214023,
+            518.30475602, 588.56129282, 663.28175063, 742.46612945,
+            826.11442929, 914.22665013
+        ])
         np.testing.assert_almost_equal(g0, g0_true, 5)
 
 
