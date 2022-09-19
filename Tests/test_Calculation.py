@@ -320,6 +320,16 @@ class TestCalculation(unittest.TestCase):
 
     """
     """
+    P_rx_e_t_m_n[0]=P_rx_e_t_m_n[0][0][::100]
+    P_rx_e_t_m_n[1]=P_rx_e_t_m_n[1][0][::100]
+    P_rx_e_t_m_n[2]=P_rx_e_t_m_n[2][0][::100]
+    P_rx_e_t_m_n[3]=P_rx_e_t_m_n[4][0][::100]
+    P_rx_e_t_m_n=P_rx_e_t_m_n[0:3]
+    alpha_m=alpha_m[::100]
+    lambda_m=lambda_m[::100]
+    psi_m=psi_m[::100]
+    g_0_m=g_0_m[::100]
+    svf_range=svf_range[0:3]
     def test_Svf(self):
         ycq = self.calc.calcPulseCompressedSignals(self.calc.y_rx_org)
         yc = self.calc.calcAverageSignal(ycq)
@@ -331,6 +341,18 @@ class TestCalculation(unittest.TestCase):
                                    atol=0.001)
     """
 
+    """
+    f=f[::100]
+    self.frqp.frequencies=self.frqp.frequencies[::35]
+    self.frqp.angle_offset_alongship=self.frqp.angle_offset_alongship[::35]
+    self.frqp.angle_offset_athwartship=self.frqp.angle_offset_athwartship[::35]
+    self.frqp.beam_width_alongship=self.frqp.beam_width_alongship[::35]
+    self.frqp.beam_width_athwartship=self.frqp.beam_width_athwartship[::35]
+    self.frqp.gain=self.frqp.gain[::35]
+    
+    self.isCalibrated = False
+    
+    """
 
 if __name__ == '__main__':
     unittest.main()
