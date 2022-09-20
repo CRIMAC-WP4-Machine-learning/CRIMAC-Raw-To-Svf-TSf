@@ -320,6 +320,16 @@ class TestCalculation(unittest.TestCase):
 
     """
     """
+    def test_calcDFTforSv(self);    
+        y_pc_s_n=y_pc_s_n[::1000]
+        w_tilde_i= w_tilde_i[::130]
+        y_mf_auto_n=y_mf_auto_n[::200]
+        f_m=f_m[::100]
+        r_c_n=r_c_n[::1000]
+        N_w = 8
+    """
+
+    """
     P_rx_e_t_m_n[0]=P_rx_e_t_m_n[0][0][::100]
     P_rx_e_t_m_n[1]=P_rx_e_t_m_n[1][0][::100]
     P_rx_e_t_m_n[2]=P_rx_e_t_m_n[2][0][::100]
