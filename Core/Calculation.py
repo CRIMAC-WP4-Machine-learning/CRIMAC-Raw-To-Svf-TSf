@@ -366,7 +366,7 @@ class Calculation(EK80DataContainer):
 
         bin_start_sample = min_sample
         bin_stop_sample = bin_start_sample + N_w
-        n_bins = 0
+
         while (bin_stop_sample < max_sample):
 
             # Windowed data
@@ -392,7 +392,7 @@ class Calculation(EK80DataContainer):
             # Next range bin
             bin_start_sample += step
             bin_stop_sample = bin_start_sample + N_w
-            n_bins += 1
+
 
         svf_range = np.array(svf_range)
 
