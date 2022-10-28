@@ -343,6 +343,41 @@ class TestCalculation(unittest.TestCase):
         # Test
         np.testing.assert_allclose(power, gt_power, rtol=0, atol=1e-9)
 
+    def test_calcSv(self):
+        p_rx_e_n = np.array([3.02100061e+01, 3.10046036e+00, 2.02596796e+00, 2.10450794e-01,
+        4.62668222e-01, 3.87325468e-01, 3.76095997e-03, 1.28006039e-01,
+        1.18464386e-01, 3.82320985e-04])
+
+        r_c_n=np.array([1.00000000e-20, 7.90402492e-03, 1.58080498e-02, 2.37120747e-02,
+        3.16160997e-02, 3.95201246e-02, 4.74241495e-02, 5.53281744e-02,
+        6.32321993e-02, 7.11362242e-02])
+
+        lambda_f_c = 0.011856
+        p_tx_e = 100
+        alpha_f_c = 0.03448625768285417
+        c = 1482.0
+        tau_eff = 1.5690021364495307e-05
+        psi_f_c = 0.007844088160073103
+        g_0_f_c = 621.6154220851992
+
+        Sv = Calculation.calcSv(p_rx_e_n, r_c_n, lambda_f_c,
+               p_tx_e, alpha_f_c, c, tau_eff,
+               psi_f_c, g_0_f_c)
+
+        Sv_true = np.array([-360.1633361 ,  -12.09307123,   -7.91986225,  -14.23231197,
+         -8.31180104,   -7.14499179,  -25.68859515,   -9.0297967 ,
+         -8.20583912,  -32.09384023])
+
+        np.testing.assert_almost_equal(Sv, Sv_true, 5)
+
+
+
+
+
+
+
+
+
 
     """
     def test_calculateTVGdB(self):
