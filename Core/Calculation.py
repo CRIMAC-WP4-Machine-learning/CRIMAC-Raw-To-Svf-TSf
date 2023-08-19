@@ -18,7 +18,7 @@ class Calculation(EK80DataContainer):
         w = Calculation.hann(L)
         N = len(y)
         w1 = w[0:int(len(w) / 2)]
-        w2 = w[int(len(w) / 2):-1]
+        w2 = w[int(len(w) / 2):]
         i0 = 0
         i1 = len(w1)
         i2 = N - len(w2)
@@ -45,13 +45,12 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcDecmiatedSamplingRate(filter_v, f_s):
         f_s_dec = [f_s]
-        v = 0
         if filter_v is not None:
-            for filter_v in filter_v:
-                tmp = f_s_dec[v] / filter_v["D"]
-                f_s_dec.append(tmp)
-                v += 1
+            for v, _filter_v in enumerate(filter_v):
+                f_s_dec.append(f_s_dec[v] / _filter_v["D"])
         return f_s_dec
+
+
     
     #
     # Chapter IID: Pulse compression
@@ -285,10 +284,21 @@ class Calculation(EK80DataContainer):
     def calcg0(self, f):
         if self.isCalibrated:
             # Calibrated case
-            return np.interp(f, self.frequencies, self.gain)
+            return np.interp(f, self.frqp.frequencies, self.frqp.gain)
         else:
             # Uncalibrated case
             return self.G_fnom + 20 * np.log10(f / self.fnom)
+
+    @staticmethod
+    def calcg0_calibrated(f, freq, gain):
+        dB_G0 = np.interp(f, freq, gain)
+        return np.power(10,dB_G0/10)
+
+    @staticmethod
+    def calcg0_notcalibrated(f, f_n, G_f_n):
+        dB_G0 = G_f_n + 20 * np.log10(f / f_n)
+        return np.power(10,dB_G0/10)
+
 
     @staticmethod
     def calcTSf(P_rx_e_t_m, r_t, alpha_m, p_tx_e,
@@ -356,7 +366,7 @@ class Calculation(EK80DataContainer):
 
         bin_start_sample = min_sample
         bin_stop_sample = bin_start_sample + N_w
-        n_bins = 0
+
         while (bin_stop_sample < max_sample):
 
             # Windowed data
@@ -382,7 +392,7 @@ class Calculation(EK80DataContainer):
             # Next range bin
             bin_start_sample += step
             bin_stop_sample = bin_start_sample + N_w
-            n_bins += 1
+
 
         svf_range = np.array(svf_range)
 
