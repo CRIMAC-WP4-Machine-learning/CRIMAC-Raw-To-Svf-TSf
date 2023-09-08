@@ -27,8 +27,8 @@ jobs:
 
       # Run black
       - name: run black
-        run: black Core/ --check --diff
+        run: black . --check --diff
 
-      - name : run black
-        run: black Tests/ --check --diff
+      #- name : run black
+      #  run: black Tests/ --check --diff
        
