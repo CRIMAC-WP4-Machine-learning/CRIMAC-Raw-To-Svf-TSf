@@ -154,7 +154,7 @@ y_pc_halves_n = Calculation.calcTransducerHalves(y_pc_nu)
 #
 
 # Total received power for all channels (all transducer sectors)
-p_rx_e_n = Calculation.calcPower(y_pc_n, z_td_e, z_rx_e, N_u)
+p_rx_e_n = Calculation.calcPower(y_pc_n, z_td_e, z_rx_e)
 
 # Physical angles
 theta_n, phi_n = Calculation.calcAngles(y_pc_halves_n, gamma_theta_f_c, gamma_phi_f_c)

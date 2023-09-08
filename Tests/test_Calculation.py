@@ -803,7 +803,7 @@ class TestCalculation(unittest.TestCase):
                 -2.94661296e-05 - 1.66837242e-05j,
             ]
         )
-        power = self.calc.calcPower(y_pc_n, z_td_e, z_rx_e, N_u)
+        power = self.calc.calcPower(y_pc_n, z_td_e, z_rx_e)
 
         # Ground truth
         gt_power = np.array(
