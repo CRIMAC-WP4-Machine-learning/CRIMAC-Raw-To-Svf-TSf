@@ -1,0 +1,32 @@
+on:
+  pull_request:
+    paths-ignore:
+      - 'Data/**'
+      - 'Paper/**'
+
+jobs:
+  # Markdown lint job. Runs markdownlint on all *.md files.
+  # If the linter says something is not linted, a comment is posted on
+  # the PR. The .github/markdownlint.yml file specifies the markdownlint
+  # config.
+  
+  black-formatting:
+    runs-on: ubuntu-latest
+    name: Run black format check
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v2
+
+      # Setup python
+      - uses: actions/setup-python@v2
+
+      # Pip install black
+      - name: install black
+        run: pip install black
+
+
+      # Run black
+      - name: run black
+        run: black gptool/ --check --diff
+        
+       
