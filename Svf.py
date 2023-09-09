@@ -2,7 +2,7 @@ from Core.EK80DataContainer import EK80DataContainer
 from plots import *
 
 do_plot = True
-file = r"./data/CRIMAC_Svf.json"
+file = r"./Data/CRIMAC_Svf.json"
 
 data = EK80DataContainer(file)  # TS sphere
 
