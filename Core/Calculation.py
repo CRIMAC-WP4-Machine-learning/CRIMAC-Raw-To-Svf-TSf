@@ -102,8 +102,7 @@ class Calculation(EK80DataContainer):
         pulseCompressedQuadrants = []
         start_idx = len(y_mf_n_conj_rev) - 1
         for u in quadrant_signals:
-            # Please check that the order is ok and that
-            # the use of y_mf_n_conj_rev is ok. I did this after a beer.
+            # Pulse compression per quadrant
             y_pc_nu = np.convolve(y_mf_n_conj_rev, u, mode="full") / y_mf_twoNormSquared
             # Correct sample indexes for mached filter
             y_pc_nu = y_pc_nu[start_idx::]
@@ -241,11 +240,7 @@ class Calculation(EK80DataContainer):
         # The number of DFT points inpower of 2
         N_DFT = int(2 ** np.ceil(np.log2(n_f_points)))
 
-        # Corresponding frequency vector
-        # Y_pc_t_m = self.freqtransf(_Y_pc_t_m, self.f_s_dec, f_m)
-        # def freqtransf(FFTvecin, fsdec, fvec=None):
         idxtmp = np.floor(f_m / f_s_dec * N_DFT).astype("int")
-
         idx = np.mod(idxtmp, N_DFT)
 
         # DFT for the target signal
@@ -334,7 +329,7 @@ class Calculation(EK80DataContainer):
         lowest k where 2^k >= 2 * No of samples in pulse
         """
         L = (c * 2 * tau) / dr  # Number of samples in 2 x pulse duration
-
+        
         N_w = int(2 ** np.ceil(np.log2(L)))
         # or : N_w = np.ceil(2 ** np.log2(L)) - Length of Hanning window
         t_w_n = np.arange(0, N_w) / f_s_dec
@@ -368,7 +363,6 @@ class Calculation(EK80DataContainer):
             # Windowed data
             yspread_bin = w_tilde_i * y_pc_s_n[bin_start_sample:bin_stop_sample]
 
-            # TODO: Consider calculating range values simply as (bin_stop_sample + bin_start_sample) / 2
             # Range for bin
             bin_center_sample = int((bin_stop_sample + bin_start_sample) / 2)
             bin_center_range = r_c_n[bin_center_sample]
@@ -445,7 +439,7 @@ class Calculation(EK80DataContainer):
             )
 
             # Add to array
-            Sv_m_n[n,] = Sv_m
+            Sv_m_n[n, ] = Sv_m
             n += 1
 
         return Sv_m_n
