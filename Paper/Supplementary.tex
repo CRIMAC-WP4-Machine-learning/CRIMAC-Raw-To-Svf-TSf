@@ -32,7 +32,7 @@ $\fstop$ & & Hz & Stop frequency of linear upsweep chirp pulse.\\
 
 $\gain(\along,\athw,\freqsym)$ & & 1 & Transducer gain as a function of echo arrival angle in the beam and frequency.\\
 
-$\gain(\along,\athw,\samplesymf)$ & & 1 & Transducer gain as a function of echo arrival angle in the beam and frequency index.\\
+% $\gain(\along,\athw,\samplesymf)$ & & 1 & Transducer gain as a function of echo arrival angle in the beam and frequency index.\\
 
 $\gainzero(\freqsym)$ & & 1 & Transducer gain along the main acoustic axis, i.e. $\gain(\along, \athw,\freqsym)$ where $\along = \athw = 0$.\\
 
@@ -111,7 +111,7 @@ $\ypctarget(\samplesymt)$ & & V & Pulse compressed signal from a single target.\
 $\yrx(\samplesymt,\channelsym)$ & & V & Received digitised, bandpass filtered, decimated complex signal after the final filter stage, $\yrx(\samplesymt,\channelsym) = \yrx(\samplesymt,\channelsym,\nstages)$.\\
 $\yrx(\samplesymt,\channelsym,\stagesym)$ & & V & Received digitised, bandpass filtered, decimated complex signal.\\
 $\yrxa(\timesym)$ & & Pa & Analogue acoustic signal received by the transducer.\\
-$\yrxa(\timesym,\channelsym)$ & & Pa & Analogue acoustic signal received by each transducer sector $\channelsym$.\\
+% $\yrxa(\timesym,\channelsym)$ & & Pa & Analogue acoustic signal received by each transducer sector $\channelsym$.\\
 $\yrxe(\timesym,\channelsym)$ & & V & Analogue electric signal received by each transceiver channel $\channelsym$.\\
 
 $\yrxorg(\samplesymt,\channelsym)$ & & V & Received digitised signal before the bandpass filtering and decimation stages, $\yrxorg(\samplesymt,\channelsym) = \yrx(\samplesymt,\channelsym,0)$.\\
@@ -131,18 +131,18 @@ $\zrxe$ & & $\Omega$ & Receiver electric impedance.\\
 $\ztde$ & & $\Omega$ & Transducer sector electric impedance.\\
 
 $\absorp(\freqsym)$  & & dB $\textrm{m}^{-1}$ & Absorption coefficient at frequency $f$.\\
-$\absorp(\samplesymf)$ & & dB $\textrm{m}^{-1}$ & Absorption coefficient at frequency index $m$\\
+% $\absorp(\samplesymf)$ & & dB $\textrm{m}^{-1}$ & Absorption coefficient at frequency index $m$\\
 $\anglefalong$ & & 1 & Conversion factor between phase difference in signals from the fore and aft transducer halves and the physical arrival angle of an echo.\\
 $\anglefathw$ & & 1 & Conversion factor between phase difference in signals from the port and starboard transducer halves and the physical arrival angle of an echo.\\
 $\along$ & & rad & Angle coordinates along the minor axis of the transducer (alongship when ship-mounted).\\
-$\along(\samplesymt)$ & & rad & Angle of arrival of target echo along the minor axis of the transducer (alongship when ship-mounted).\\
+% $\along(\samplesymt)$ & & rad & Angle of arrival of target echo along the minor axis of the transducer (alongship when ship-mounted).\\
 $\wlen$ & & m &  Acoustic wavelength.\\
 $\wlen_\samplesymf$ & & m & Acoustic wavelength at frequency index $m$\\
 $\sigmabs$ & & $\textrm{m}^2$ & Backscattering cross-section.\\
 $\tnom$ & & s & Nominal transmit pulse duration.\\
 $\teff$ & & s & Effective transmit pulse duration.\\
 $\athw$ & & rad & Angle coordinates along the major axis of the transducer (athwartship when ship-mounted).\\
-$\athw(\samplesymt)$ & & rad & Angle of arrival of target echo along the major axis of the transducer (athwartship when ship-mounted).\\
+% $\athw(\samplesymt)$ & & rad & Angle of arrival of target echo along the major axis of the transducer (athwartship when ship-mounted).\\
 $\eqang(\freqsym)$ & & sr & Two-way equivalent beam angle at frequency $\freqsym$.\\
 \end{longtable}
 
