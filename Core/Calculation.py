@@ -11,6 +11,23 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def generateIdealWindowedTransmitSignal(f0, f1, tau, fs, slope):
+        """
+        Generate the ideal windowed transmit signal.
+        
+        Parameters:
+            f0 -- the start frequency [Hz]
+            f1 -- the end frequency [Hz]
+            tau -- the transmit signal duration [s]
+            fs -- the signal sample rate [Hz]
+            slope -- the proportion of the pulse that is windowed [1].
+                     This includes the start and end parts of the windowing.
+                     
+        Returns:
+            y -- the ideal windowed transmit signal amplitude [1]
+            t -- the time of each value in y [s]
+        
+        """
+        
         nsamples = int(np.floor(tau * fs))
         t = np.linspace(0, nsamples - 1, num=nsamples) * 1 / fs
         y = Calculation.chirp(t, f0, tau, f1)
@@ -29,12 +46,35 @@ class Calculation(EK80DataContainer):
     
     @staticmethod
     def chirp(t, f0, t1, f1):
+        """
+        Generate a chirp pulse.
+        
+        Parameters:
+            t -- times at which to calculate the chirp signal [s]
+            f0 -- start frequency of the pulse [Hz]
+            t1 -- duration of the pulse [s]
+            f1 -- end frequency of the pulse [Hz]
+            
+        Returns:
+            The chirp pulse amplitude at times t [1]
+        """
+        
         a = np.pi * (f1 - f0) / t1
         b = 2 * np.pi * f0
         return np.cos(a * t * t + b * t)
 
     @staticmethod
     def hann(L):
+        """
+        Generate Hann window weights.
+        
+        Parameters:
+            L -- the number of samples to use [1]
+            
+        Returns:
+            The Hann window weights [1]
+        """
+        
         n = np.arange(0, L, 1)
         return 0.5 * (1.0 - np.cos(2.0 * np.pi * n / (L - 1)))
 
@@ -44,6 +84,17 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcDecmiatedSamplingRate(filter_v, f_s):
+        """
+        Calculate the decimated sample rate.
+        
+        Parameters:
+            filter_v -- XXXXXXXXXXXXXXXX
+            f_s -- the undecimated sample rate [Hz]
+            
+        Returns:
+            XXXXXXXXXXXXXXXXX
+        """
+        
         f_s_dec = [f_s]
         if filter_v is not None:
             for v, _filter_v in enumerate(filter_v):
