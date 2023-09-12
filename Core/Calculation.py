@@ -10,6 +10,23 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def generateIdealWindowedTransmitSignal(f0, f1, tau, fs, slope):
+        """
+        Generate the ideal windowed transmit signal.
+        
+        Parameters:
+            f0 -- the start frequency [Hz]
+            f1 -- the end frequency [Hz]
+            tau -- the transmit signal duration [s]
+            fs -- the signal sample rate [Hz]
+            slope -- the proportion of the pulse that is windowed [1].
+                     This includes the start and end parts of the windowing.
+                     
+        Returns:
+            y -- the ideal windowed transmit signal amplitude [1]
+            t -- the time of each value in y [s]
+        
+        """
+        
         nsamples = int(np.floor(tau * fs))
         t = np.linspace(0, nsamples - 1, num=nsamples) * 1 / fs
         y = Calculation.chirp(t, f0, tau, f1)
@@ -29,6 +46,19 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def chirp(t, f0, t1, f1):
+        """
+        Generate a chirp pulse.
+        
+        Parameters:
+            t -- times at which to calculate the chirp signal [s]
+            f0 -- start frequency of the pulse [Hz]
+            t1 -- duration of the pulse [s]
+            f1 -- end frequency of the pulse [Hz]
+            
+        Returns:
+            The chirp pulse amplitude at times t [1]
+        """
+        
         a = np.pi * (f1 - f0) / t1
         b = 2 * np.pi * f0
 
@@ -36,6 +66,16 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def hann(L):
+        """
+        Generate Hann window weights.
+        
+        Parameters:
+            L -- the number of samples to use [1]
+            
+        Returns:
+            The Hann window weights [1]
+        """
+        
         n = np.arange(0, L, 1)
 
         return 0.5 * (1.0 - np.cos(2.0 * np.pi * n / (L - 1)))
@@ -46,6 +86,17 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcDecmiatedSamplingRate(filter_v, f_s):
+        """
+        Calculate the decimated sample rate.
+        
+        Parameters:
+            filter_v -- XXXXXXXXXXXXXXXX
+            f_s -- the undecimated sample rate [Hz]
+            
+        Returns:
+            XXXXXXXXXXXXXXXXX
+        """
+        
         f_s_dec = [f_s]
         if filter_v is not None:
             for v, _filter_v in enumerate(filter_v):
@@ -59,10 +110,32 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcNormalizedTransmitSignal(y_tx_n):
+        """
+        Normalise the transmit signal by the maximum of the transmit signal.
+        
+        Parameters:
+            np.array: y_tx_n -- the transmit signal [V]
+            
+        Returns:
+            np.array: the normalised transmit signal [1]
+            
+        """
+        
         return y_tx_n / np.max(y_tx_n)
 
     @staticmethod
     def calcFilteredAndDecimatedSignal(y_tilde_tx_n, filter_v):
+        """
+        Filter and decimate a signal.
+        
+        Parameters:
+            np.array: y_tilde_tx_n -- Normalised transmit signal [1]
+            filter_v --
+            
+        Returns:
+            np.array: the filtered and decimated transmit signal [1]
+        """
+        
         # Initialize with normalized transmit pulse
         y_tilde_tx_nv = [y_tilde_tx_n]
         v = 0
@@ -390,12 +463,18 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def freqtransf(FFTvecin, fsdec, fvec=None):
         """
-        Estimates fft data for Frequencies in fvec
-        :param FFTvecin: fft data from decimated frequencies
-        :param fsdec:   desimated sampling frequency. Decimation factors in FIL0 datagrams
-        :param fvec:    Target frequencies. From calibration data. ("CAL": {"frequencies")
-                        If no calibration - generate freq vector starting from f0 to f1 with same amount of points as in calibration data
-        :return: Vector with corrected frequencies
+        Estimate FFT data for specified frequencies.
+        
+        Parameters:
+            np.array: FFTvecin -- fft data from decimated frequencies
+            real: fsdec -- Decimated sampling frequency [Hz]
+            real: fvec -- Specified frequencies.[Hz].
+                          From calibration data. ("CAL": {"frequencies")
+                          If no calibration generate freq vector starting from 
+                           f0 to f1 with same number of points as in calibration data
+                        
+        Returns:
+        np.array: Vector with corrected frequencies
         """
 
         nfft = len(FFTvecin)
@@ -421,9 +500,25 @@ class Calculation(EK80DataContainer):
         return P_rx_e_v_m_n
 
     @staticmethod
-    def calcSvf(
-        P_rx_e_t_m_n, alpha_m, p_tx_e, lambda_m, t_w, psi_m, g_0_m, c, svf_range
-    ):
+    def calcSvf(P_rx_e_t_m_n, alpha_m, p_tx_e, lambda_m, t_w,
+                psi_m, g_0_m, c, svf_range):
+        """
+        Calculate Sv as a function of frequency.
+        
+        Parameters:
+            P_rx_e_t_m_n -- DFT of the received electric power [W]
+            alpha_m -- acoustic absorption [dB/km]
+            p_tx_e -- 
+            lambda_m -- acoustic wavelength [m]
+            t_w -- sliding window duration [s]
+            psi_m -- equivalent beam angle [sr]
+            g_0_m -- transducer gain [dB]
+            c -- speed of sound [m/s]
+            svf_range -- XXXXXXXX [m]
+        Returns:
+            np.array: Sv(f) [dB re 1 m^-1]
+        """
+        
         # Initialize list of Svf by range
         Sv_m_n = np.empty([len(svf_range), len(alpha_m)], dtype=float)
 
@@ -446,4 +541,16 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcpsi(psi_f_n, f_n, f_m):
+        """
+        Calculate psi at given frequency.
+        
+        Parameters:
+            real: psi_f_n -- Psi at nominal frequency [sr]
+            real: f_n -- Nominal frequency [Hz]
+            real: f_m -- Frequency to calculate psi at [Hz]
+            
+        Returns:
+            real: Psi at frequency f_m [sr]
+        """
+        
         return psi_f_n * (f_n / f_m) ** 2

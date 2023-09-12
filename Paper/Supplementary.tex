@@ -1,0 +1,150 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{longtable}
+\usepackage[landscape]{geometry}
+
+\pdfoutput=1
+
+\input{symbol_aliases.tex}
+
+\renewcommand{\code}[1]{\texttt{\detokenize{#1}}}
+
+\begin{document}
+
+\section{List of symbols}
+
+
+(1 indicates a dimensionless quantity and -- indicates not applicable).
+
+\begin{longtable}{p{0.15\linewidth} p{0.20\linewidth} p{0.12\linewidth} p{0.5\linewidth} }
+Symbol & Variable name & Units & Description \\
+
+$\atan(y,x)$ & -- & -- & The four quadrant inverse tangent which returns values in the interval $[-\pi,\pi]$ , inclusive.\\
+$\cw$ & & $m s^{-1}$ & Sound speed in water.\\
+$\decfac(\stagesym)$ & & 1 & Integer filter decimation factor.\\
+$\dft_\ndft(x)$ & & -- & The discrete Fourier transform of length $\ndft$ of $x$.\\
+$\freqsym$ & & Hz & Frequency.\\
+$\fc$ & & Hz & Frequency at centre of linear upsweep chirp pulse. Equivalent to $\fstart + \frac{|\fstop - \fstart|}{2}$.\\
+$\fn$ & & Hz & Nominal operating frequency of a transducer.\\
+$\fs$ & & Hz & Analogue to digital sampling frequency.\\
+$\fsdec$ & & Hz & Decimated sampling frequency.\\
+$\fstart$ & & Hz & Start frequency of linear upsweep chirp pulse.\\
+$\fstop$ & & Hz & Stop frequency of linear upsweep chirp pulse.\\
+
+$\gain(\along,\athw,\freqsym)$ & & 1 & Transducer gain as a function of echo arrival angle in the beam and frequency.\\
+
+% $\gain(\along,\athw,\samplesymf)$ & & 1 & Transducer gain as a function of echo arrival angle in the beam and frequency index.\\
+
+$\gainzero(\freqsym)$ & & 1 & Transducer gain along the main acoustic axis, i.e. $\gain(\along, \athw,\freqsym)$ where $\along = \athw = 0$.\\
+
+$\hfl(\genidxsym,\stagesym)$ & & 1 & Complex valued receiving filter coefficients.\\
+$\genidxsym$ & & 1 & Generic integer index.\\
+$\Im(x)$ & & -- & The imaginary part of $x$.\\
+$j$ & & & The square root of $-1$.\\
+$\samplesymf$ & & 1 & Sample index in frequency domain.\\
+
+$\nchannels$ & & 1 & Total number of transducer sectors/transceiver channels that are used to receive and process the acoustic signal.\\
+$\nstages$ & & 1 & Total number of filter stages.\\
+$\nw$ & & 1 & Number of samples used in the sliding Hanning window.\\
+$\samplesymt$ & & 1 & Sample index in time domain.\\
+
+$\prxetf(\freqsym)$ & & W & FT of the received electric power in a matched load for the signal from a single target at frequency $\freqsym$.\\
+$\prxetf(\samplesymf)$ & & W & DFT of the received electric power in a matched load for the signal from a single target.\\
+$\prxevf(\freqsym)$ & & W & FT of the received electric power in a matched load for the signal from a volume at frequency $\freqsym$.\\
+$\prxevf(\samplesymf)$ & & W$\textrm{m}^2$ & DFT of the received electric power in a matched load for the signal from a volume.\\
+$\prxe(\samplesymt)$  & & W & Received electric power in a matched load.\\
+
+$\ptxe$ & & W & Transmitted electric power.\\
+$\ptxauto(\samplesymt)$ & & 1 & Square of the absolute value of the matched filter autocorrelation function.\\
+
+$\Re(x)$ & & -- & The real part of $x$.\\
+$\range$ & & m & Distance from transducer.\\
+$\rangeref$ & & m & Reference distance. \\
+$\range_c$ & & m & Distance from the transducer to the centre of the range volume covered by $\tslide$.\\
+$\range_c(\samplesymt)$ & & m & $range_c$ at sample number $\samplesymt$.\\
+$\range(\samplesymt)$ & & m & Distance from transducer.\\
+
+$\mysp(\samplesymt)$  & & dB re 1 $\textrm{m}^2$ & Point scattering strength.\\
+$\sv$  & & dB re 1 $\textrm{m}^{-1}$ & Volume backscattering strength.\\
+$\sv(\freqsym)$ & & dB re 1 $\textrm{m}^{-1}$ & Volume backscattering strength at frequency $\freqsym$.\\
+$\sv(\samplesymt)$ & & dB re $\textrm{m}^{-1}$ & Volume backscattering strength at sample index $\samplesymt$.\\
+
+$\ts$ & & dB re 1 $\textrm{m}^2$ & Target strength.\\
+$\ts(\freqsym)$ & & dB re 1 $\textrm{m}^2$ & Target strength at frequency $f$.\\
+$\ts(\samplesymf)$ & \code{TS_m} & dB re 1 $\textrm{m}^{2}$ & Target strength at frequency index $\samplesymf$.\\
+
+$\timesym$ & & s &  Time.\\
+$\tslide$ & & s & Duration of sliding window for calculating volume backscattering strength.\\
+
+$\channelsym$ & & 1 & Channel number/transducer sector.\\
+$u(\genidxsym)$ & & 1 & The Heaviside step function. \\
+$V$ & & $\textrm{m}^3$ & Volume occupied by scattering targets.\\
+$\stagesym$ & & 1 & Filter stage.\\
+
+$\hannw$ & & 1 & The Hanning window function.\\
+$\hannw(\genidxsym)$ & & 1 & The Hanning window function for index i, defined by $w(i) = 0.5(1+\cos (2\pi i /N_w)), -N_w/2 \leq i \leq N_w/2$.\\
+$\hannwnorm(\genidxsym)$ & & 1 & Normalised Hanning window.\\
+
+$x^*$ & & -- & The complex conjugate of $x$.\\
+$||x||$ & & -- & The $l^2$-norm of $x$, also known as the Euclidean norm.\\
+
+$\ymfautof(\samplesymf)$ & & 1 & Discrete Fourier transform (DFT) of the autocorrelation function for the matched filter.\\
+$\ymfautoredf(\samplesymf)$ &  & 1 & DFT of the reduced autocorrelation function for the matched filter.\\
+$\ypctargetf(\samplesymf)$ & & V & DFT of the pulse compressed signal from a single target.\\
+$\ypctargetnormf(\samplesymf)$ & & Vm & DFT of the pulse compressed signal from a single target 
+normalized by the DFT of the reduced autocorrelation function for the matched filter.\\
+$\ypcvolumef(\samplesymf)$ & & Vm & DFT of the pulse compressed signal from a volume. Compensated for spreading loss.\\
+$\ypcvolumenormf(\samplesymf)$ & & V & DFT of the pulse compressed signal from a single volume normalized by the DFT of the reduced autocorrelation function for the matched filter.  Compensated for spreading loss.\\
+
+$\ymf(\samplesymt)$ & & 1 & Matched filter. Signal used for pulse compression.\\
+$\ymfauto(\samplesymt)$ & & 1 & Autocorrelation function for the matched filter.\\
+$\ymfautored(\samplesymt)$ & \code{y_mf_auto_red_n} & 1 & Reduced autocorrelation function for the matched filter.\\
+
+$\ypc(\samplesymt)$ & & V & Pulse compressed signal averaged over all transducer sectors.\\
+$\ypc(\samplesymt, \channelsym) $ & & V & Pulse compressed signal from channel $\channelsym$.\\
+$y_{\textrm{pc,aft}}(\samplesymt)$ & & V & Pulse compressed signal from the aft transducer half.\\
+$y_{\textrm{pc,fore}}(\samplesymt)$ & & V & Pulse compressed signal from the forward transducer half.\\
+$y_{\textrm{pc,port}}(\samplesymt)$ & & V & Pulse compressed signal from the port transducer half.\\
+$\ypcspread(\samplesymt)$ & & Vm & Pulse compressed signal compensated for spherical spreading.\\
+$y_{\textrm{pc,star}}(\samplesymt)$ & & V & Pulse compressed signal from the starboard transducer half.\\
+$\ypctarget(\samplesymt)$ & & V & Pulse compressed signal from a single target.\\
+
+$\yrx(\samplesymt,\channelsym)$ & & V & Received digitised, bandpass filtered, decimated complex signal after the final filter stage, $\yrx(\samplesymt,\channelsym) = \yrx(\samplesymt,\channelsym,\nstages)$.\\
+$\yrx(\samplesymt,\channelsym,\stagesym)$ & & V & Received digitised, bandpass filtered, decimated complex signal.\\
+$\yrxa(\timesym)$ & & Pa & Analogue acoustic signal received by the transducer.\\
+% $\yrxa(\timesym,\channelsym)$ & & Pa & Analogue acoustic signal received by each transducer sector $\channelsym$.\\
+$\yrxe(\timesym,\channelsym)$ & & V & Analogue electric signal received by each transceiver channel $\channelsym$.\\
+
+$\yrxorg(\samplesymt,\channelsym)$ & & V & Received digitised signal before the bandpass filtering and decimation stages, $\yrxorg(\samplesymt,\channelsym) = \yrx(\samplesymt,\channelsym,0)$.\\
+
+$\ytx(\samplesymt)$ & & V & Ideal transmitted signal generated from transmit signal properties.\\
+$\ytxnorm(\samplesymt)$ & & 1 & Ideal normalized transmitted signal generated from transmit signal properties.\\
+$\ytxnorm(\samplesymt,\stagesym)$ & & 1 & Ideal normalized transmitted signal generated from transmit signal properties after application of filter stage $\stagesym$.\\
+
+$\ytxa(\timesym)$ & & Pa & Analogue acoustic transmit signal.\\
+
+$\ytxe(\timesym)$ & & V & Analogue electric transmit signal.\\
+
+$y_\along(\samplesymt)$ & & rad & Electrical angle along the minor axis of the transducer (alongship when ship-mounted).\\
+$y_\athw(\samplesymt)$ & & rad & Electrical angle along the major axis of the transducer (athwartship when ship-mounted).\\
+
+$\zrxe$ & & $\Omega$ & Receiver electric impedance.\\
+$\ztde$ & & $\Omega$ & Transducer sector electric impedance.\\
+
+$\absorp(\freqsym)$  & & dB $\textrm{m}^{-1}$ & Absorption coefficient at frequency $f$.\\
+% $\absorp(\samplesymf)$ & & dB $\textrm{m}^{-1}$ & Absorption coefficient at frequency index $m$\\
+$\anglefalong$ & & 1 & Conversion factor between phase difference in signals from the fore and aft transducer halves and the physical arrival angle of an echo.\\
+$\anglefathw$ & & 1 & Conversion factor between phase difference in signals from the port and starboard transducer halves and the physical arrival angle of an echo.\\
+$\along$ & & rad & Angle coordinates along the minor axis of the transducer (alongship when ship-mounted).\\
+% $\along(\samplesymt)$ & & rad & Angle of arrival of target echo along the minor axis of the transducer (alongship when ship-mounted).\\
+$\wlen$ & & m &  Acoustic wavelength.\\
+$\wlen_\samplesymf$ & & m & Acoustic wavelength at frequency index $m$\\
+$\sigmabs$ & & $\textrm{m}^2$ & Backscattering cross-section.\\
+$\tnom$ & & s & Nominal transmit pulse duration.\\
+$\teff$ & & s & Effective transmit pulse duration.\\
+$\athw$ & & rad & Angle coordinates along the major axis of the transducer (athwartship when ship-mounted).\\
+% $\athw(\samplesymt)$ & & rad & Angle of arrival of target echo along the major axis of the transducer (athwartship when ship-mounted).\\
+$\eqang(\freqsym)$ & & sr & Two-way equivalent beam angle at frequency $\freqsym$.\\
+\end{longtable}
+
+\end{document}
+
