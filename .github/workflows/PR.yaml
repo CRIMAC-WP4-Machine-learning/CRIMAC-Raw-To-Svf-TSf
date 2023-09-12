@@ -1,0 +1,46 @@
+on:
+  pull_request:
+    paths-ignore:
+      - 'Data/**'
+      - 'Paper/**'
+
+jobs:
+  # Markdown lint job. Runs markdownlint on all *.md files.
+  # If the linter says something is not linted, a comment is posted on
+  # the PR. The .github/markdownlint.yml file specifies the markdownlint
+  # config.
+  
+  black-formatting:
+    runs-on: ubuntu-latest
+    name: Run black format check
+    #strategy:
+    #  matrix:
+    #    python-version: [ "3.10" ]
+    steps:
+      # Checkout code
+      #- uses: actions/checkout@v3
+
+      # Setup python
+      #- uses: actions/setup-python@v3
+     # - uses: actions/checkout@v3
+     # - name: Set up Python ${{ matrix.python-version }}
+     #   uses: actions/setup-python@v4
+     #   with:
+     #     python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+      #    pip install -r ./requirements.txt
+
+      # Pip install black
+      - name: install black
+        run: pip install black
+
+      # Run black
+      - name: run black
+        run: black . --check --diff
+
+      #- name: Test with unittest
+      #  run: |
+      #    python -m unittest discover -s ./Tests  -p 'test_*.py'

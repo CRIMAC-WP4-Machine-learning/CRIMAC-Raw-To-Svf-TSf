@@ -1,9 +1,8 @@
-
 from Core.EK80DataContainer import EK80DataContainer
 from plots import *
 
 do_plot = True
-file = r'./data/CRIMAC_Svf.json'
+file = r"./Data/CRIMAC_Svf.json"
 
 data = EK80DataContainer(file)  # TS sphere
 
@@ -18,13 +17,29 @@ z_rx_e = data.trcv.getParameters()
 
 f_0, f_1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
 
-f_n, G_fnom, psi_f_n, angle_offset_alongship_fnom, \
-angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
-angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
-beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
+(
+    f_n,
+    G_fnom,
+    psi_f_n,
+    angle_offset_alongship_fnom,
+    angle_offset_athwartship_fnom,
+    angle_sensitivity_alongship_fnom,
+    angle_sensitivity_athwartship_fnom,
+    beam_width_alongship_fnom,
+    beam_width_alongship_fnom,
+    corrSa,
+) = data.trdu.getParameters()
 
-c, alpha, temperature, salinity, \
-acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
+(
+    c,
+    alpha,
+    temperature,
+    salinity,
+    acidity,
+    latitude,
+    depth,
+    dropKeelOffset,
+) = data.envr.getParameters()
 
 filter_v, N_v = data.filt.getParameters()
 
@@ -34,11 +49,7 @@ offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 f_m = np.linspace(f_0, f_1, n_f_points)
 
 # Range vector
-r_n, dr = data.calcRange(
-    sampleInterval,
-    sampleCount,
-    c,
-    offset)
+r_n, dr = data.calcRange(sampleInterval, sampleCount, c, offset)
 
 # Absorption coefficient at center frequency and f_m
 alpha_f_c = data.calc_alpha(f_c)
@@ -65,8 +76,7 @@ psi_m = Calculation.calcpsi(psi_f_n, f_n, f_m)
 #
 
 # Ideal windowed transmit signal
-y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
-    f_0, f_1, tau, f_s, slope)
+y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(f_0, f_1, tau, f_s, slope)
 
 # Plots for paper
 if do_plot:
@@ -111,8 +121,7 @@ if do_plot:
 y_tilde_tx_n = Calculation.calcNormalizedTransmitSignal(y_tx_n)
 
 # Passing the normalized ideal transmit signal through the filter bank
-y_tilde_tx_nv = Calculation.calcFilteredAndDecimatedSignal(
-    y_tilde_tx_n, filter_v)
+y_tilde_tx_nv = Calculation.calcFilteredAndDecimatedSignal(y_tilde_tx_n, filter_v)
 
 # Use the normalized, filtered, and decimated transmit signal from the last
 # filter stage as matched filter
@@ -145,24 +154,17 @@ y_pc_halves_n = Calculation.calcTransducerHalves(y_pc_nu)
 #
 
 # Total received power for all channels (all transducer sectors)
-p_rx_e_n = Calculation.calcPower(
-    y_pc_n,
-    z_td_e,
-    z_rx_e,
-    N_u)
+p_rx_e_n = Calculation.calcPower(y_pc_n, z_td_e, z_rx_e)
 
 # Physical angles
-theta_n, phi_n = Calculation.calcAngles(
-    y_pc_halves_n,
-    gamma_theta_f_c,
-    gamma_phi_f_c)
+theta_n, phi_n = Calculation.calcAngles(y_pc_halves_n, gamma_theta_f_c, gamma_phi_f_c)
 
 # Plots for paper
-#if do_plot:
+# if do_plot:
 #    plotThetaPhi(theta_n, phi_n)
 
 
- #
+#
 # Chapter IV: VOLUME BACKSCATTERING STRENGTH
 #
 
@@ -171,35 +173,32 @@ step = 1  # Step in samples for sliding window
 
 # Volume backscattering strength compressed frequency band
 
-Sv_n = Calculation.calcSv(p_rx_e_n, r_n, lambda_f_c,
-                          p_tx_e, alpha_f_c, c, tau_eff,
-                          psi_f_c, g_0_f_c)
+Sv_n = Calculation.calcSv(
+    p_rx_e_n, r_n, lambda_f_c, p_tx_e, alpha_f_c, c, tau_eff, psi_f_c, g_0_f_c
+)
 
 # Pulse compressed signal adjusted for spherical loss
 y_pc_s_n = Calculation.calcPulseCompSphericalSpread(y_pc_n, r_n)
 
 # Hanning window
-w_tilde_i, N_w, t_w, t_w_n = Calculation.defHanningWindow(c, tau, dr,
-                                                          f_s_dec)
+w_tilde_i, N_w, t_w, t_w_n = Calculation.defHanningWindow(c, tau, dr, f_s_dec)
 
 # TODO: Currently step=1. Consider changing overlap.
 # Normalized DFT of sliding window data
-Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range \
-    = Calculation.calcDFTforSv(
-    y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec,
-    r_n, step)
+Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range = Calculation.calcDFTforSv(
+    y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec, r_n, step
+)
 
 # Received power spectrum for sliding window
-P_rx_e_t_m_n = Calculation.calcPowerFreqSv(
-    Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
+P_rx_e_t_m_n = Calculation.calcPowerFreqSv(Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
 
 # Volume backscattering strength spectrum for each range step
-Sv_m_n = Calculation.calcSvf(P_rx_e_t_m_n,
-                             alpha_m, p_tx_e, lambda_m, t_w,
-                             psi_m, g_0_m, c, svf_range)
+Sv_m_n = Calculation.calcSvf(
+    P_rx_e_t_m_n, alpha_m, p_tx_e, lambda_m, t_w, psi_m, g_0_m, c, svf_range
+)
 
 # Plots for paper
-plotSvf(f_m,Sv_m_n,svf_range)
+plotSvf(f_m, Sv_m_n, svf_range)
 
 if do_plot:
     plt.show()

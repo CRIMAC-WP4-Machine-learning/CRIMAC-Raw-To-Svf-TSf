@@ -6,7 +6,6 @@ from plots import *
 
 
 def preCalculations(data):
-
     global z_td_e, z_rx_e, N_u
     global f_0, f_1, tau, f_s, slope, p_tx_e
     global filter_v, f_s_dec_v
@@ -26,13 +25,29 @@ def preCalculations(data):
 
     f_0, f_1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
 
-    f_n, G_fnom, psi_f_n, angle_offset_alongship_fnom, \
-    angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
-    angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
-    beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
+    (
+        f_n,
+        G_fnom,
+        psi_f_n,
+        angle_offset_alongship_fnom,
+        angle_offset_athwartship_fnom,
+        angle_sensitivity_alongship_fnom,
+        angle_sensitivity_athwartship_fnom,
+        beam_width_alongship_fnom,
+        beam_width_alongship_fnom,
+        corrSa,
+    ) = data.trdu.getParameters()
 
-    c, alpha, temperature, salinity, \
-    acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
+    (
+        c,
+        alpha,
+        temperature,
+        salinity,
+        acidity,
+        latitude,
+        depth,
+        dropKeelOffset,
+    ) = data.envr.getParameters()
 
     filter_v, N_v = data.filt.getParameters()
 
@@ -42,11 +57,7 @@ def preCalculations(data):
     f_m = np.linspace(f_0, f_1, n_f_points)
 
     # Range vector
-    r_n, dr = data.calcRange(
-        sampleInterval,
-        sampleCount,
-        c,
-        offset)
+    r_n, dr = data.calcRange(sampleInterval, sampleCount, c, offset)
 
     # Absorption coefficient at center frequency and f_m
     alpha_f_c = data.calc_alpha(f_c)
@@ -80,7 +91,8 @@ def calcBasics(do_plot):
 
     # Ideal windowed transmit signal
     y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
-        f_0, f_1, tau, f_s, slope)
+        f_0, f_1, tau, f_s, slope
+    )
 
     # Plots for paper
     if do_plot:
@@ -125,8 +137,7 @@ def calcBasics(do_plot):
     y_tilde_tx_n = Calculation.calcNormalizedTransmitSignal(y_tx_n)
 
     # Passing the normalized ideal transmit signal through the filter bank
-    y_tilde_tx_nv = Calculation.calcFilteredAndDecimatedSignal(
-        y_tilde_tx_n, filter_v)
+    y_tilde_tx_nv = Calculation.calcFilteredAndDecimatedSignal(y_tilde_tx_n, filter_v)
 
     # Use the normalized, filtered, and decimated transmit signal from the last
     # filter stage as matched filter
@@ -159,17 +170,12 @@ def calcBasics(do_plot):
     #
 
     # Total received power for all channels (all transducer sectors)
-    p_rx_e_n = Calculation.calcPower(
-        y_pc_n,
-        z_td_e,
-        z_rx_e,
-        N_u)
+    p_rx_e_n = Calculation.calcPower(y_pc_n, z_td_e, z_rx_e)
 
     # Physical angles
     theta_n, phi_n = Calculation.calcAngles(
-        y_pc_halves_n,
-        gamma_theta_f_c,
-        gamma_phi_f_c)
+        y_pc_halves_n, gamma_theta_f_c, gamma_phi_f_c
+    )
 
     # Plots for paper
     if do_plot:
@@ -177,7 +183,6 @@ def calcBasics(do_plot):
 
 
 def calcTS():
-
     global f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m
     global r_t, theta_t, phi_t, y_pc_t_n, dum_p, dum_theta, dum_phi, dum_r
     global y_mf_auto_red_n
@@ -194,20 +199,22 @@ def calcTS():
 
     # Point scattering strength (Sp)
     Sp_n = Calculation.calcSp(
-        p_rx_e_n,
-        r_n,
-        alpha_f_c,
-        p_tx_e,
-        lambda_f_c,
-        g_0_f_c,
-        r0,
-        r1)
+        p_rx_e_n, r_n, alpha_f_c, p_tx_e, lambda_f_c, g_0_f_c, r0, r1
+    )
 
     # Data from a single target (_t denotes data from single target)
-    r_t, theta_t, phi_t, y_pc_t_n, dum_p, dum_theta, dum_phi, dum_r = \
-        Calculation.singleTarget(
-            y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
-            r0, r1, before, after)
+    (
+        r_t,
+        theta_t,
+        phi_t,
+        y_pc_t_n,
+        dum_p,
+        dum_theta,
+        dum_phi,
+        dum_r,
+    ) = Calculation.singleTarget(
+        y_pc_n, p_rx_e_n, theta_n, phi_n, r_n, r0, r1, before, after
+    )
 
     # Reduced auto correlation signal
     y_mf_auto_red_n = Calculation.alignAuto(y_mf_auto_n, y_pc_t_n)
@@ -217,16 +224,12 @@ def calcTS():
 
     # DFT of target signal, DFT of reduced auto correlation signal, and
     # normalized DFT of target signal
-    Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m = \
-        Calculation.calcDFTforTS(y_pc_t_n, y_mf_auto_red_n,
-                                 n_f_points, f_m, f_s_dec)
+    Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m = Calculation.calcDFTforTS(
+        y_pc_t_n, y_mf_auto_red_n, n_f_points, f_m, f_s_dec
+    )
 
     # Received power spectrum for a single target
-    P_rx_e_t_m = Calculation.calcPowerFreqTS(
-        N_u,
-        Y_tilde_pc_t_m,
-        z_td_e,
-        z_rx_e)
+    P_rx_e_t_m = Calculation.calcPowerFreqTS(N_u, Y_tilde_pc_t_m, z_td_e, z_rx_e)
 
     # Transducer gain incorporating both on-axis gain and
     # beam pattern based oon target bearing
@@ -234,15 +237,14 @@ def calcTS():
 
     # Target strength spectrum
     TS_m = Calculation.calcTSf(
-        P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m,
-        g_theta_phi_m)
+        P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m, g_theta_phi_m
+    )
 
     # Plots for paper
     plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m)
 
 
 def calcSv():
-
     global p_rx_e_n, f_m, svf_range, Sv_m_n
 
     #
@@ -254,49 +256,55 @@ def calcSv():
 
     # Volume backscattering strength compressed frequency band
 
-    Sv_n = Calculation.calcSv(p_rx_e_n, r_n, lambda_f_c,
-                              p_tx_e, alpha_f_c, c, tau_eff,
-                              psi_f_c, g_0_f_c)
+    Sv_n = Calculation.calcSv(
+        p_rx_e_n, r_n, lambda_f_c, p_tx_e, alpha_f_c, c, tau_eff, psi_f_c, g_0_f_c
+    )
 
     # Pulse compressed signal adjusted for spherical loss
     y_pc_s_n = Calculation.calcPulseCompSphericalSpread(y_pc_n, r_n)
 
     # Hanning window
-    w_tilde_i, N_w, t_w, t_w_n = Calculation.defHanningWindow(c, tau, dr,
-                                                              f_s_dec)
+    w_tilde_i, N_w, t_w, t_w_n = Calculation.defHanningWindow(c, tau, dr, f_s_dec)
 
     # TODO: Currently step=1. Consider changing overlap.
     # Normalized DFT of sliding window data
-    Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range \
-        = Calculation.calcDFTforSv(
-        y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec,
-        r_n, step)
+    Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range = Calculation.calcDFTforSv(
+        y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec, r_n, step
+    )
 
     # Received power spectrum for sliding window
-    P_rx_e_t_m_n = Calculation.calcPowerFreqSv(
-        Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
+    P_rx_e_t_m_n = Calculation.calcPowerFreqSv(Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
 
     # Volume backscattering strength spectrum for each range step
-    Sv_m_n = Calculation.calcSvf(P_rx_e_t_m_n,
-                                 alpha_m, p_tx_e, lambda_m, t_w,
-                                 psi_m, g_0_m, c, svf_range)
+    Sv_m_n = Calculation.calcSvf(
+        P_rx_e_t_m_n, alpha_m, p_tx_e, lambda_m, t_w, psi_m, g_0_m, c, svf_range
+    )
 
     # Plots for paper
-    plotSvf(f_m,Sv_m_n,svf_range)
+    plotSvf(f_m, Sv_m_n, svf_range)
 
 
 # Example Usage :
 #   main.py --tfile ./data/CRIMAC_SphereBeam.json --sfile ./data/CRIMAC_Svf.json
 #   main.py --tfile ./data/CRIMAC_SphereBeam.json --sfile ./data/CRIMAC_Svf.json --plots false
 #   main.py --tfile ./data/CRIMAC_SphereBeam.json --sfile none
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     # Handle command line parameters
     #
-    ap = argparse.ArgumentParser(description='Sv and TS calculations')
-    ap.add_argument("--sfile", default='./data/CRIMAC_Svf.json', help="File containing raw data for Sv calculation")
-    ap.add_argument("--tfile", default='./data/CRIMAC_SphereBeam.json', help="File containing raw data for TS calculation")
-    ap.add_argument("--plots", choices=['true', 'false'], default='true', help="Show plots or not")
+    ap = argparse.ArgumentParser(description="Sv and TS calculations")
+    ap.add_argument(
+        "--sfile",
+        default="./data/CRIMAC_Svf.json",
+        help="File containing raw data for Sv calculation",
+    )
+    ap.add_argument(
+        "--tfile",
+        default="./data/CRIMAC_SphereBeam.json",
+        help="File containing raw data for TS calculation",
+    )
+    ap.add_argument(
+        "--plots", choices=["true", "false"], default="true", help="Show plots or not"
+    )
 
     args = ap.parse_args()
 
@@ -304,7 +312,7 @@ if __name__ == '__main__':
     has_TS_file = False
     has_Sv_file = False
 
-    if args.plots == 'true':
+    if args.plots == "true":
         show_plots = True
 
     if os.path.exists(args.tfile):
@@ -329,4 +337,3 @@ if __name__ == '__main__':
 
     if (has_TS_file or has_Sv_file) and show_plots:
         plt.show()
-

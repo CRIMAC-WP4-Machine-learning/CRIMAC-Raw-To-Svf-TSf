@@ -1,12 +1,10 @@
-
 from Core.EK80DataContainer import EK80DataContainer
 from plots import *
 
 do_plot = True
-file = r'./data/CRIMAC_SphereBeam.json'
+file = r"./Data/CRIMAC_SphereBeam.json"
 
 data = EK80DataContainer(file)  # TS sphere
-
 
 # Obtain data from raw file
 # Estimate variable values at center frequency and other frequencies
@@ -19,13 +17,29 @@ z_rx_e = data.trcv.getParameters()
 
 f_0, f_1, f_c, tau, slope, sampleInterval, p_tx_e = data.parm.getParameters()
 
-f_n, G_fnom, psi_f_n, angle_offset_alongship_fnom, \
-angle_offset_athwartship_fnom, angle_sensitivity_alongship_fnom, \
-angle_sensitivity_athwartship_fnom, beam_width_alongship_fnom, \
-beam_width_alongship_fnom, corrSa = data.trdu.getParameters()
+(
+    f_n,
+    G_fnom,
+    psi_f_n,
+    angle_offset_alongship_fnom,
+    angle_offset_athwartship_fnom,
+    angle_sensitivity_alongship_fnom,
+    angle_sensitivity_athwartship_fnom,
+    beam_width_alongship_fnom,
+    beam_width_alongship_fnom,
+    corrSa,
+) = data.trdu.getParameters()
 
-c, alpha, temperature, salinity, \
-acidity, latitude, depth, dropKeelOffset = data.envr.getParameters()
+(
+    c,
+    alpha,
+    temperature,
+    salinity,
+    acidity,
+    latitude,
+    depth,
+    dropKeelOffset,
+) = data.envr.getParameters()
 
 filter_v, N_v = data.filt.getParameters()
 
@@ -35,11 +49,7 @@ offset, sampleCount, y_rx_nu, N_u, y_rx_nu = data.raw3.getParameters()
 f_m = np.linspace(f_0, f_1, n_f_points)
 
 # Range vector
-r_n, dr = data.calcRange(
-    sampleInterval,
-    sampleCount,
-    c,
-    offset)
+r_n, dr = data.calcRange(sampleInterval, sampleCount, c, offset)
 
 # Absorption coefficient at center frequency and f_m
 alpha_f_c = data.calc_alpha(f_c)
@@ -66,8 +76,7 @@ psi_m = Calculation.calcpsi(psi_f_n, f_n, f_m)
 #
 
 # Ideal windowed transmit signal
-y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(
-    f_0, f_1, tau, f_s, slope)
+y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(f_0, f_1, tau, f_s, slope)
 
 # Plots for paper
 if do_plot:
@@ -112,8 +121,7 @@ if do_plot:
 y_tilde_tx_n = Calculation.calcNormalizedTransmitSignal(y_tx_n)
 
 # Passing the normalized ideal transmit signal through the filter bank
-y_tilde_tx_nv = Calculation.calcFilteredAndDecimatedSignal(
-    y_tilde_tx_n, filter_v)
+y_tilde_tx_nv = Calculation.calcFilteredAndDecimatedSignal(y_tilde_tx_n, filter_v)
 
 # Use the normalized, filtered, and decimated transmit signal from the last
 # filter stage as matched filter
@@ -146,17 +154,10 @@ y_pc_halves_n = Calculation.calcTransducerHalves(y_pc_nu)
 #
 
 # Total received power for all channels (all transducer sectors)
-p_rx_e_n = Calculation.calcPower(
-    y_pc_n,
-    z_td_e,
-    z_rx_e,
-    N_u)
+p_rx_e_n = Calculation.calcPower(y_pc_n, z_td_e, z_rx_e)
 
 # Physical angles
-theta_n, phi_n = Calculation.calcAngles(
-    y_pc_halves_n,
-    gamma_theta_f_c,
-    gamma_phi_f_c)
+theta_n, phi_n = Calculation.calcAngles(y_pc_halves_n, gamma_theta_f_c, gamma_phi_f_c)
 
 # Plots for paper
 if do_plot:
@@ -173,21 +174,21 @@ before = 0.5
 after = 1
 
 # Point scattering strength (Sp)
-Sp_n = Calculation.calcSp(
-    p_rx_e_n,
-    r_n,
-    alpha_f_c,
-    p_tx_e,
-    lambda_f_c,
-    g_0_f_c,
-    r0,
-    r1)
+Sp_n = Calculation.calcSp(p_rx_e_n, r_n, alpha_f_c, p_tx_e, lambda_f_c, g_0_f_c, r0, r1)
 
 # Data from a single target (_t denotes data from single target)
-r_t, theta_t, phi_t, y_pc_t_n, dum_p, dum_theta, dum_phi, dum_r = \
-    Calculation.singleTarget(
-        y_pc_n, p_rx_e_n, theta_n, phi_n, r_n,
-        r0, r1, before, after)
+(
+    r_t,
+    theta_t,
+    phi_t,
+    y_pc_t_n,
+    dum_p,
+    dum_theta,
+    dum_phi,
+    dum_r,
+) = Calculation.singleTarget(
+    y_pc_n, p_rx_e_n, theta_n, phi_n, r_n, r0, r1, before, after
+)
 
 # Reduced auto correlation signal
 y_mf_auto_red_n = Calculation.alignAuto(y_mf_auto_n, y_pc_t_n)
@@ -198,25 +199,19 @@ if do_plot:
 
 # DFT of target signal, DFT of reduced auto correlation signal, and
 # normalized DFT of target signal
-Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m = \
-    Calculation.calcDFTforTS(y_pc_t_n, y_mf_auto_red_n,
-                             n_f_points, f_m, f_s_dec)
+Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m = Calculation.calcDFTforTS(
+    y_pc_t_n, y_mf_auto_red_n, n_f_points, f_m, f_s_dec
+)
 
 # Received power spectrum for a single target
-P_rx_e_t_m = Calculation.calcPowerFreqTS(
-    N_u,
-    Y_tilde_pc_t_m,
-    z_td_e,
-    z_rx_e)
+P_rx_e_t_m = Calculation.calcPowerFreqTS(N_u, Y_tilde_pc_t_m, z_td_e, z_rx_e)
 
 # Transducer gain incorporating both on-axis gain and
 # beam pattern based oon target bearing
 g_theta_phi_m = data.calc_g(theta_t, phi_t, f_m)
 
 # Target strength spectrum
-TS_m = Calculation.calcTSf(
-    P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m,
-    g_theta_phi_m)
+TS_m = Calculation.calcTSf(P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m, g_theta_phi_m)
 
 # Plots for paper
 
