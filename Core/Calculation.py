@@ -109,10 +109,32 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcNormalizedTransmitSignal(y_tx_n):
+        """
+        Normalise the transmit signal by the maximum of the transmit signal.
+        
+        Parameters:
+            np.array: y_tx_n -- the transmit signal [V]
+            
+        Returns:
+            np.array: the normalised transmit signal [1]
+            
+        """
+        
         return y_tx_n / np.max(y_tx_n)
     
     @staticmethod
     def calcFilteredAndDecimatedSignal(y_tilde_tx_n, filter_v):
+        """
+        Filter and decimate a signal.
+        
+        Parameters:
+            np.array: y_tilde_tx_n -- Normalised transmit signal [1]
+            filter_v --
+            
+        Returns:
+            np.array: the filtered and decimated transmit signal [1]
+        """
+        
         # Initialize with normalized transmit pulse
         y_tilde_tx_nv = [y_tilde_tx_n]
         v = 0
@@ -452,12 +474,18 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def freqtransf(FFTvecin, fsdec, fvec=None):
         """
-        Estimates fft data for Frequencies in fvec
-        :param FFTvecin: fft data from decimated frequencies
-        :param fsdec:   desimated sampling frequency. Decimation factors in FIL0 datagrams
-        :param fvec:    Target frequencies. From calibration data. ("CAL": {"frequencies")
-                        If no calibration - generate freq vector starting from f0 to f1 with same amount of points as in calibration data
-        :return: Vector with corrected frequencies
+        Estimate FFT data for specified frequencies.
+        
+        Parameters:
+            np.array: FFTvecin -- fft data from decimated frequencies
+            real: fsdec -- Decimated sampling frequency [Hz]
+            real: fvec -- Specified frequencies.[Hz].
+                          From calibration data. ("CAL": {"frequencies")
+                          If no calibration generate freq vector starting from 
+                           f0 to f1 with same number of points as in calibration data
+                        
+        Returns:
+        np.array: Vector with corrected frequencies
         """
 
         nfft = len(FFTvecin)
@@ -486,6 +514,22 @@ class Calculation(EK80DataContainer):
 
     def calcSvf(P_rx_e_t_m_n, alpha_m, p_tx_e, lambda_m, t_w,
                 psi_m, g_0_m, c, svf_range):
+        """
+        Calculate Sv as a function of frequency.
+        
+        Parameters:
+            P_rx_e_t_m_n -- DFT of the received electric power [W]
+            alpha_m -- acoustic absorption [dB/km]
+            p_tx_e -- 
+            lambda_m -- acoustic wavelength [m]
+            t_w -- sliding window duration [s]
+            psi_m -- equivalent beam angle [sr]
+            g_0_m -- transducer gain [dB]
+            c -- speed of sound [m/s]
+            svf_range -- XXXXXXXX [m]
+        Returns:
+            np.array: Sv(f) [dB re 1 m^-1]
+        """
         
         # Initialize list of Svf by range
         Sv_m_n = np.empty([len(svf_range), len(alpha_m)], dtype=float)
@@ -505,5 +549,17 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcpsi(psi_f_n, f_n, f_m):
+        """
+        Calculate psi at given frequency.
+        
+        Parameters:
+            real: psi_f_n -- Psi at nominal frequency [sr]
+            real: f_n -- Nominal frequency [Hz]
+            real: f_m -- Frequency to calculate psi at [Hz]
+            
+        Returns:
+            real: Psi at frequency f_m [sr]
+        """
+        
         return psi_f_n * (f_n / f_m) ** 2
 
