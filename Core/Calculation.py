@@ -13,17 +13,25 @@ class Calculation(EK80DataContainer):
         """
         Generate the ideal windowed transmit signal.
         
-        Parameters:
-            f0 -- the start frequency [Hz]
-            f1 -- the end frequency [Hz]
-            tau -- the transmit signal duration [s]
-            fs -- the signal sample rate [Hz]
-            slope -- the proportion of the pulse that is windowed [1].
-                     This includes the start and end parts of the windowing.
+        Parameters
+        ----------
+            f0 : float
+                The start frequency [Hz]
+            f1 : float
+                The end frequency [Hz]
+            tau : float
+                The transmit signal duration [s]
+            fs : float
+                The signal sample rate [Hz]
+            slope : float
+                The proportion of the pulse that is windowed [1]. This includes the start and end parts of the windowing.
                      
-        Returns:
-            y -- the ideal windowed transmit signal amplitude [1]
-            t -- the time of each value in y [s]
+        Returns
+        -------
+            y : np.array
+                The ideal windowed transmit signal amplitude [1]
+            t : np.arrayfloat
+                The time of each value in y [s]
         
         """
         
@@ -49,14 +57,21 @@ class Calculation(EK80DataContainer):
         """
         Generate a chirp pulse.
         
-        Parameters:
-            t -- times at which to calculate the chirp signal [s]
-            f0 -- start frequency of the pulse [Hz]
-            t1 -- duration of the pulse [s]
-            f1 -- end frequency of the pulse [Hz]
+        Parameters
+        ----------
+            t : float
+                Times at which to calculate the chirp signal [s]
+            f0 : float
+                Start frequency of the pulse [Hz]
+            t1 : float
+                Duration of the pulse [s]
+            f1 : float
+                End frequency of the pulse [Hz]
             
-        Returns:
-            The chirp pulse amplitude at times t [1]
+        Returns
+        -------
+            chirp : np.array
+                The chirp pulse amplitude at times t [1]
         """
         
         a = np.pi * (f1 - f0) / t1
@@ -69,11 +84,15 @@ class Calculation(EK80DataContainer):
         """
         Generate Hann window weights.
         
-        Parameters:
-            L -- the number of samples to use [1]
+        Parameters
+        ----------
+            L : int
+                The number of samples to use [1]
             
-        Returns:
-            The Hann window weights [1]
+        Returns
+        -------
+            hann : np.array
+                The Hann window weights [1]
         """
         
         n = np.arange(0, L, 1)
@@ -89,12 +108,17 @@ class Calculation(EK80DataContainer):
         """
         Calculate the decimated sample rate.
         
-        Parameters:
-            filter_v -- XXXXXXXXXXXXXXXX
-            f_s -- the undecimated sample rate [Hz]
+        Parameters
+        ----------
+            filter_v : XXX
+                XXXXXXXXXXXXXXXX
+            f_s : float
+                The undecimated sample rate [Hz]
             
-        Returns:
-            XXXXXXXXXXXXXXXXX
+        Returns
+        -------
+            XXX : float
+                XXXXXXXXXXXXXXXXX
         """
         
         f_s_dec = [f_s]
@@ -113,11 +137,15 @@ class Calculation(EK80DataContainer):
         """
         Normalise the transmit signal by the maximum of the transmit signal.
         
-        Parameters:
-            np.array: y_tx_n -- the transmit signal [V]
+        Parameters
+        ----------
+            y_tx_n : np.array
+                The transmit signal [V]
             
-        Returns:
-            np.array: the normalised transmit signal [1]
+        Returns
+        -------
+            XXXX : np.array
+                The normalised transmit signal [1]
             
         """
         
@@ -128,12 +156,17 @@ class Calculation(EK80DataContainer):
         """
         Filter and decimate a signal.
         
-        Parameters:
-            np.array: y_tilde_tx_n -- Normalised transmit signal [1]
-            filter_v --
+        Parameters
+        ----------
+            y_tilde_tx_n : np.array
+                Normalised transmit signal [1]
+            filter_v : XXX
+                XXXXXX
             
-        Returns:
-            np.array: the filtered and decimated transmit signal [1]
+        Returns
+        -------
+            XXXX : np.array
+                The filtered and decimated transmit signal [1]
         """
         
         # Initialize with normalized transmit pulse
@@ -152,6 +185,23 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcAutoCorrelation(y_mf_n, f_s_dec):
+        """
+        Calculate the autocorrelation of the matched filter signal.
+        
+        Parameters
+        ----------
+            y_mf_n : np.array
+                Input signal [1]
+            f_s_dec : float
+                Decimated sampling frequency [Hz]
+        Returns
+        -------
+            y_mf_auto_n : np.array
+                Autocorrelation of the input filter [1]
+            t_eff : float
+                Effective transmit pulse duration [s]
+        """
+        
         y_mf_n_conj_rev = np.conj(y_mf_n)[::-1]
         y_mf_twoNormSquared = np.linalg.norm(y_mf_n, 2) ** 2
         y_mf_n_conj_rev = y_mf_n_conj_rev
@@ -168,6 +218,22 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcPulseCompressedSignals(quadrant_signals, y_mf_n):
+        """
+        Pulse compress input signals.
+        
+        Parameters
+        ----------
+            quadrant_signals: real
+                The XXX
+            y_mf_n: np.array:
+                The XXX
+            
+        Returns
+        -------
+            :np.array
+                The XXX
+        """
+        
         # Do pulse compression on all quadrants
         y_mf_n_conj_rev = np.conj(y_mf_n)[::-1]
         y_mf_twoNormSquared = np.linalg.norm(y_mf_n, 2) ** 2
