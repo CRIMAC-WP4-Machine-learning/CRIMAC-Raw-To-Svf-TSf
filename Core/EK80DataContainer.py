@@ -1,27 +1,82 @@
 import numpy as np
 import json
-
+"""
+A set of classes that store data from an EK80 .raw file. Classes are:
+    Constants
+    Transceiver
+    Parameter
+    Transducer
+    Environment
+    FrequencyPar
+    Filters
+    Raw3
+    EK80DataContainer
+"""
 
 class Constants:
+    """
+    XXX.
+    
+    Attributes
+    ----------
+    
+    """
     def __init__(self, z_td_e, f_s, n_f_points):
         self.z_td_e = z_td_e
         self.f_s = f_s
         self.n_f_points = n_f_points
 
     def getParameters(self):
+        """
+        XXX.
+        
+        Returns
+        -------
+                       
+        """
+
         return self.z_td_e, self.f_s, self.n_f_points
 
 
 class Transceiver:
+    """
+    XXX.
+    
+    Attributes
+    ----------
+    
+    """
     def __init__(self, xml):
         self.z_rx_e = xml["z_rx_e"]
 
     def getParameters(self):
+        """
+        XXX.
+        
+        Returns
+        -------
+        
+        """
+
         return self.z_rx_e
 
 
 class Parameter:
+    """
+    XXX.
+    
+    Attributes
+    ----------
+    
+    """
     def __init__(self, xml):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        """
         self.f0 = xml["FrequencyStart"]
         self.f1 = xml["FrequencyEnd"]
         self.f_c = (self.f0 + self.f1) / 2.0
@@ -31,6 +86,14 @@ class Parameter:
         self.p_tx_e = xml["TransmitPower"]
 
     def getParameters(self):
+        """
+        XXX.
+        
+        Returns
+        -------
+        
+        """
+
         return (
             self.f0,
             self.f1,
@@ -43,7 +106,23 @@ class Parameter:
 
 
 class Transducer:
+    """
+    XXX.
+    
+    Attributes
+    ----------
+    
+    """
     def __init__(self, xml):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        
+        """
+
         self.f_n = xml["Frequency"]  # nominal design frequency for the transducer
         self.G_f_n = xml["GainNom"]
         Psi_f_n = xml["EquivalentBeamAngle"]
@@ -57,6 +136,15 @@ class Transducer:
         self.corrSa = xml["SaCorrection"]
 
     def getParameters(self):
+        """
+        XXX.
+
+        
+        Returns
+        -------
+        
+        """
+
         return (
             self.f_n,
             self.G_f_n,
@@ -72,7 +160,23 @@ class Transducer:
 
 
 class Environment:
+    """
+    XXX.
+    
+    Attributes
+    ----------
+    
+    """
     def __init__(self, xml):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+
+        
+        """
+
         self.c = xml["SoundSpeed"]
         self.alpha = xml["Alpha"]
         self.temperature = xml["Temperature"]
@@ -83,6 +187,14 @@ class Environment:
         self.dropKeelOffset = xml["DropKeelOffset"]
 
     def getParameters(self):
+        """
+        XXX.
+
+        Returns
+        -------
+        
+        """
+
         return (
             self.c,
             self.alpha,
@@ -96,7 +208,22 @@ class Environment:
 
 
 class FrequencyPar:
+    """
+    XXX.
+    
+    Attributes
+    ----------
+    
+    """
     def __init__(self, xml=None):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        """
+
         # Test if broadband calibration values exists, if not use nominal values and extrapolate
         if xml["frequencies"]:
             print("Broadband calibration values exists")
@@ -131,6 +258,12 @@ class FrequencyPar:
             self.frequencies = np.linspace(self.f0, self.f1, self.n_f_points)
 
     def sortPairs(self):
+        """
+        XXX.
+        
+        
+        """
+
         I = np.argsort(self.frequencies)
         self.frequencies = np.array(self.frequencies)[I]
         self.gain = np.array(self.gain)[I]
@@ -140,6 +273,14 @@ class FrequencyPar:
         self.beam_width_alongship = np.array(self.beam_width_alongship)[I]
 
     def getParameters(self):
+        """
+        XXX.
+        
+        Returns
+        -------
+        
+        """
+
         return (
             self.frequencies,
             self.gain,
@@ -151,7 +292,22 @@ class FrequencyPar:
 
 
 class Filters:
+    """
+    XXX.
+    
+    Attributes
+    ----------
+    
+    """
     def __init__(self, xml=None):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        """
+
         self.filter_v = None
 
         if "FIL1" in xml and "NaN" not in xml["FIL1"]:
@@ -165,11 +321,34 @@ class Filters:
             self.N_v = len(self.filter_v)
 
     def getParameters(self):
+        """
+        XXX.
+        
+        Returns
+        -------
+        
+        """
+
         return self.filter_v, self.N_v
 
 
 class Raw3:
+    """
+    XXX.
+    
+    Attributes
+    ----------
+    
+    """
     def __init__(self, xml=None):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        """
+
         self.offset = xml["offset"]
         self.sampleCount = xml["sampleCount"]
         self.y_rx_nu = None
@@ -183,11 +362,34 @@ class Raw3:
             self.y_rx_nu = np.array(self.y_rx_nu)
 
     def getParameters(self):
+        """
+        XXX.
+        
+        Returns
+        -------
+        
+        """
+
         return self.offset, self.sampleCount, self.y_rx_nu, self.N_u, self.y_rx_nu
 
 
 class EK80DataContainer:
+    """
+    XXX.
+    
+    Attributes
+    ----------
+    
+    """
     def __init__(self, jsonfname=None):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        """
+
         # Constants
         self.cont = Constants(z_td_e=75, f_s=1.5e6, n_f_points=1000)
 
@@ -208,6 +410,17 @@ class EK80DataContainer:
 
     @staticmethod
     def calcRange(sampleInterval, sampleCount, c, offset):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+
         dr = sampleInterval * c * 0.5
         r = np.array([(offset + i) * dr for i in range(0, sampleCount)])
 
@@ -218,6 +431,17 @@ class EK80DataContainer:
 
     @staticmethod
     def calcAbsorption(t, s, d, ph, c, f):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+
         f = f / 1000
 
         a1 = (8.86 / c) * 10 ** (0.78 * ph - 5)
@@ -243,6 +467,17 @@ class EK80DataContainer:
         return a / 1000
 
     def calc_alpha(self, f):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+
         return self.calcAbsorption(
             self.envr.temperature,
             self.envr.salinity,
@@ -253,15 +488,59 @@ class EK80DataContainer:
         )
 
     def calc_lambda(self, f):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+
         return self.envr.c / f
 
     def calc_gamma_alongship(self, f):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+
         return self.trdu.angle_sensitivity_alongship_f_n * (f / self.trdu.f_n)
 
     def calc_gamma_athwartship(self, f):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+
         return self.trdu.angle_sensitivity_athwartship_f_n * (f / self.trdu.f_n)
 
     def calc_angle_offsets(self, f):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+
         if self.isCalibrated:
             # Calibrated case
             angle_offset_alongship = np.interp(
@@ -284,6 +563,17 @@ class EK80DataContainer:
         return angle_offset_alongship, angle_offset_athwartship
 
     def calc_beam_widths(self, f):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+
         if self.isCalibrated:
             # Calibrated case
             beam_width_alongship = np.interp(
@@ -305,6 +595,17 @@ class EK80DataContainer:
         return beam_width_alongship, beam_width_athwartship
 
     def calcg0(self, f):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+
         if self.isCalibrated:
             # Calibrated case
             dB_G0 = np.interp(f, self.frqp.frequencies, self.frqp.gain)
@@ -315,6 +616,17 @@ class EK80DataContainer:
         return np.power(10, dB_G0 / 10)
 
     def calc_b_theta_phi(self, theta, phi, f):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+
         angle_offset_alongship, angle_offset_athwartship_m = self.calc_angle_offsets(f)
         beam_width_alongship, beam_width_athwartship_m = self.calc_beam_widths(f)
 
@@ -348,6 +660,17 @@ class EK80DataContainer:
         return np.power(10, B_theta_phi_m / 10)
 
     def calc_g(self, theta, phi, f):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+
         b_theta_phi_m = self.calc_b_theta_phi(theta, phi, f)
         g0_m = self.calcg0(f)
         return g0_m / b_theta_phi_m
