@@ -324,17 +324,26 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcAngles(y_pc_halves, gamma_theta, gamma_phi):
         """
-        XXX.
+        Calculate splitbeam angles from 4 quadrant receiver/transducer data.
         
         Parameters
         ----------
+        y_pc_halves : np.array
+            Pulse compressed signal from transducer halves [V]
+        gamma_theta : float
+             Major axis conversion factor from electrical splitbeam angles to physical angles []
+        gamma_phi : float
+            Minor axis conversion factor from electrical splitbeam angles to physical angles []
         
         Returns
         -------
+        theta_n : np.array
+            Major axis physical splitbeam angles [°]
+        phi_n : np.array
+            Minor axis physical splitbeam angles [°]
         
         """
-        # Transducers might have different segment configuration
-        # Here we assume 4 quadrants
+
         y_pc_fore_n, y_pc_aft_n, y_pc_star_n, y_pc_port_n = y_pc_halves
 
         y_theta_n = y_pc_fore_n * np.conj(y_pc_aft_n)
@@ -507,13 +516,21 @@ class Calculation(EK80DataContainer):
 
     def calcg0(self, f):
         """
-        XXX.
+        Calculate gain at given frequencies.
+        
+        Uses calibration data if available, otherwise uses a theoretical 
+        variation of gain with frequency relationship and nominal gain at
+        a nominal frequency.
         
         Parameters
         ----------
+        f : np.array
+            Frequencies to calculate the gain at [Hz]
         
         Returns
         -------
+        np.array
+            Gain values at the given frequencues, `f` [dB]
         
         """
         if self.isCalibrated:
@@ -526,13 +543,23 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcg0_calibrated(f, freq, gain):
         """
-        XXX.
+        Interpate frequency dependent gain data onto specified frequencies.
+        
+        Uses one-dimensional piecewise linear interpolation.
         
         Parameters
         ----------
+        f : np.array
+            Frequencies to interpolate on to [Hz]
+        freq : np.array
+            Frequencies at which gain values are provided [Hz]
+        gain : np.array
+            Gain values to use in the interpolation [dB]
         
         Returns
         -------
+        np.array
+            The gain values at frequencies given in `f` [1]
         
         """
         dB_G0 = np.interp(f, freq, gain)
@@ -542,14 +569,21 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcg0_notcalibrated(f, f_n, G_f_n):
         """
-        XXX.
+        Estimate frequency dependent gain based on theoretical variation with frequency.
         
         Parameters
         ----------
+        f : np.array
+            Frequencies at which to calculate the gain [Hz]
+        f_n : float
+            Frequency that the given gain is for [Hz]
+        G_f_n : float
+            Gain at `f_n` [dB]
         
         Returns
         -------
-        
+        np.array
+            The gain values at frequencies given in `f` [1]
         """
         dB_G0 = G_f_n + 20 * np.log10(f / f_n)
 
