@@ -226,7 +226,7 @@ class FrequencyPar:
 
         # Test if broadband calibration values exists, if not use nominal values and extrapolate
         if xml["frequencies"]:
-            print("Broadband calibration values exists")
+            print("Broadband calibration values exist")
             self.frequencies = xml["frequencies"]
             self.gain = xml["gain"]
             self.angle_offset_athwartship = xml["angle_offset_athwartship"]
@@ -237,7 +237,7 @@ class FrequencyPar:
             self.isCalibrated = True
         elif not xml["frequencies"]:
             print(
-                "Broadband calibration values does not exist - use nominal and fit function"
+                "Broadband calibration values do not exist - using nominal and fit function"
             )
             self.frequencies = None
             self.gain = None
