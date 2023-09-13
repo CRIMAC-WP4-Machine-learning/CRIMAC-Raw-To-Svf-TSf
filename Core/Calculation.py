@@ -608,7 +608,7 @@ class Calculation(EK80DataContainer):
         -------
         
         """
-       y_pc_s_n = y_pc_n * r_c_n
+        y_pc_s_n = y_pc_n * r_c_n
 
         return y_pc_s_n
 
