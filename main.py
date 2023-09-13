@@ -6,6 +6,14 @@ from plots import *
 
 
 def preCalculations(data):
+    """
+    XXX.
+    
+    Parameters
+    ----------
+    
+    """
+
     global z_td_e, z_rx_e, N_u
     global f_0, f_1, tau, f_s, slope, p_tx_e
     global filter_v, f_s_dec_v
@@ -81,6 +89,14 @@ def preCalculations(data):
 
 
 def calcBasics(do_plot):
+    """
+    XXX.
+    
+    Parameters
+    ----------
+    
+    """
+
     global f_s_dec_v, f_s_dec
     global y_tx_n, y_mf_n, y_mf_auto_n, tau_eff
     global y_pc_n, p_rx_e_n, theta_n, phi_n
@@ -183,6 +199,14 @@ def calcBasics(do_plot):
 
 
 def calcTS():
+    """
+    XXX.
+    
+    Parameters
+    ----------
+    
+    """
+
     global f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m
     global r_t, theta_t, phi_t, y_pc_t_n, dum_p, dum_theta, dum_phi, dum_r
     global y_mf_auto_red_n
@@ -245,6 +269,14 @@ def calcTS():
 
 
 def calcSv():
+    """
+    XXX.
+    
+    Parameters
+    ----------
+    
+    """
+
     global p_rx_e_n, f_m, svf_range, Sv_m_n
 
     #

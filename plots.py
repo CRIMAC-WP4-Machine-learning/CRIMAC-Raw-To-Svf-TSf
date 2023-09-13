@@ -5,6 +5,13 @@ from scipy.signal import hilbert
 
 
 def plotytx(f_0, f_1, tau, f_s, y_tx_n, slope):
+    """
+    XXX.
+    
+    Parameters
+    ----------
+    
+    """
     # Example of ideal windowed transmit signal with slope 0.5
     y_tx_n05slope, t = Calculation.generateIdealWindowedTransmitSignal(
         f_0, f_1, tau, f_s, 0.5
@@ -23,6 +30,14 @@ def plotytx(f_0, f_1, tau, f_s, y_tx_n, slope):
 
 
 def plotfir(filter_v, f_s_dec_v, f_0, f_1):
+    """
+    XXX.
+    
+    Parameters
+    ----------
+    
+    """
+
     # The frequency response function of the filter is given by its
     # discrete time fourier transform:
     H0 = np.fft.fft(filter_v[0]["h_fl_i"])
@@ -51,6 +66,14 @@ def plotfir(filter_v, f_s_dec_v, f_0, f_1):
 
 
 def plotymfn(y_mf_n):
+    """
+    XXX.
+    
+    Parameters
+    ----------
+    
+    """
+
     plt.figure()
     plt.plot(np.abs(y_mf_n))
     # plt.title('The absolute value of the filtered and decimated output signal')
@@ -60,6 +83,14 @@ def plotymfn(y_mf_n):
 
 
 def plotACF(y_mf_auto_n):
+    """
+    XXX.
+    
+    Parameters
+    ----------
+    
+    """
+
     plt.figure()
     plt.plot(np.abs(y_mf_auto_n))
     # plt.title('The autocorrelation function of the matched filter.')
@@ -69,6 +100,14 @@ def plotACF(y_mf_auto_n):
 
 
 def plotThetaPhi(theta_n, phi_n):
+    """
+    XXX.
+    
+    Parameters
+    ----------
+    
+    """
+
     # Plot angles
     fig, axs = plt.subplots(2, sharex=True)
     # fig.suptitle('Single target')
@@ -81,6 +120,14 @@ def plotThetaPhi(theta_n, phi_n):
 
 
 def plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red_n):
+    """
+    XXX.
+    
+    Parameters
+    ----------
+    
+    """
+
     fig, axs = plt.subplots(2, sharex=True)
     # fig.suptitle('Single target')
     axs[0].plot(dum_r, dum_p)
@@ -98,6 +145,14 @@ def plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red
 
 
 def plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m):
+    """
+    XXX.
+    
+    Parameters
+    ----------
+    
+    """
+
     def text_coords(axs=None, scalex=0.9, scaley=0.9):
         xlims = axs.get_xlim()
         ylims = axs.get_ylim()
@@ -138,6 +193,14 @@ def plotTS(f_m, Y_pc_t_m, Y_mf_auto_red_m, Y_tilde_pc_t_m, g_theta_phi_m, TS_m):
 
 
 def plotSvf(f_m, Sv_m_n, svf_range):
+    """
+    XXX.
+    
+    Parameters
+    ----------
+    
+    """
+
     plt.figure()
     _f = f_m / 1000
     plt.imshow(
