@@ -291,14 +291,22 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcPower(y_pc, z_td_e, z_rx_e):
         """
-        XXX.
+        Calculate the received power into a matched load.
         
         Parameters
         ----------
+        y_pc : np.array
+            Pulse compressed signal [V]
+        z_td_e : float
+            Transducer electrical impedance [Ω]
+        z_rx_e :
+            Receiver electrical impedance [Ω]
         
         Returns
         -------
-        
+        np.array
+            Received electrical power [W]
+            
         """
         K1 = 4 / ((2 * np.sqrt(2)) ** 2)
         K2 = (np.abs(z_rx_e + z_td_e) / z_rx_e) ** 2
