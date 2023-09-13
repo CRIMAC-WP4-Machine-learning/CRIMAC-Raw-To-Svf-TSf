@@ -289,9 +289,11 @@ class Calculation(EK80DataContainer):
     #
 
     @staticmethod
-    def calcPower(y_pc, z_td_e, z_rx_e):
+    def calcPower(y_pc, z_td_e, z_rx_e, nu):
         """
         Calculate the received power into a matched load.
+        
+        Output received power values of 0.0 are set to 1e-20.
         
         Parameters
         ----------
@@ -301,6 +303,8 @@ class Calculation(EK80DataContainer):
             Transducer electrical impedance [Ω]
         z_rx_e :
             Receiver electrical impedance [Ω]
+        nu : int
+            Number of receiver channels [1]
         
         Returns
         -------
@@ -308,7 +312,7 @@ class Calculation(EK80DataContainer):
             Received electrical power [W]
             
         """
-        K1 = 4 / ((2 * np.sqrt(2)) ** 2)
+        K1 = nu / ((2 * np.sqrt(2)) ** 2)
         K2 = (np.abs(z_rx_e + z_td_e) / z_rx_e) ** 2
         K3 = 1.0 / np.abs(z_td_e)
         C1Prx = K1 * K2 * K3

@@ -186,7 +186,7 @@ def calcBasics(do_plot):
     #
 
     # Total received power for all channels (all transducer sectors)
-    p_rx_e_n = Calculation.calcPower(y_pc_n, z_td_e, z_rx_e)
+    p_rx_e_n = Calculation.calcPower(y_pc_n, z_td_e, z_rx_e, y_pc_nu.shape[0])
 
     # Physical angles
     theta_n, phi_n = Calculation.calcAngles(
