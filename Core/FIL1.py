@@ -4,13 +4,13 @@ class FIL1:
     
     Attributes
     ----------
-        noOfCoefficients : int
-            Number of filter coefficients [1]
-        decimationFactor : int
-            Filter decimation factor [1]
-        coefficients : np.array
-            Filter coefficients [1]
-                    
+    noOfCoefficients : int
+        Number of filter coefficients [1]
+    decimationFactor : int
+        Filter decimation factor [1]
+    coefficients : np.array
+        Filter coefficients [1]
+                
     """
     def __init__(self, noOfCoefficients, decimationFactor, coefficients):
         """

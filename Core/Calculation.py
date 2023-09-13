@@ -15,24 +15,24 @@ class Calculation(EK80DataContainer):
         
         Parameters
         ----------
-            f0 : float
-                The start frequency [Hz]
-            f1 : float
-                The end frequency [Hz]
-            tau : float
-                The transmit signal duration [s]
-            fs : float
-                The signal sample rate [Hz]
-            slope : float
-                The proportion of the pulse that is windowed [1]. This includes the start and end parts of the windowing.
-                     
+        f0 : float
+            The start frequency [Hz]
+        f1 : float
+            The end frequency [Hz]
+        tau : float
+            The transmit signal duration [s]
+        fs : float
+            The signal sample rate [Hz]
+        slope : float
+            The proportion of the pulse that is windowed [1]. This includes the start and end parts of the windowing.
+                 
         Returns
         -------
-            y : np.array
-                The ideal windowed transmit signal amplitude [1]
-            t : np.arrayfloat
-                The time of each value in y [s]
-        
+        y : np.array
+            The ideal windowed transmit signal amplitude [1]
+        t : np.arrayfloat
+            The time of each value in y [s]
+    
         """
         
         nsamples = int(np.floor(tau * fs))
@@ -59,19 +59,19 @@ class Calculation(EK80DataContainer):
         
         Parameters
         ----------
-            t : float
-                Times at which to calculate the chirp signal [s]
-            f0 : float
-                Start frequency of the pulse [Hz]
-            t1 : float
-                Duration of the pulse [s]
-            f1 : float
-                End frequency of the pulse [Hz]
+        t : float
+            Times at which to calculate the chirp signal [s]
+        f0 : float
+            Start frequency of the pulse [Hz]
+        t1 : float
+            Duration of the pulse [s]
+        f1 : float
+            End frequency of the pulse [Hz]
             
         Returns
         -------
-            chirp : np.array
-                The chirp pulse amplitude at times t [1]
+        np.array
+            The chirp pulse amplitude at times t [1]
         """
         
         a = np.pi * (f1 - f0) / t1
@@ -86,13 +86,13 @@ class Calculation(EK80DataContainer):
         
         Parameters
         ----------
-            L : int
-                The number of samples to use [1]
-            
+        L : int
+            The number of samples to use [1]
+        
         Returns
         -------
-            hann : np.array
-                The Hann window weights [1]
+        np.array
+            The Hann window weights [1]
         """
         
         n = np.arange(0, L, 1)
@@ -110,15 +110,15 @@ class Calculation(EK80DataContainer):
         
         Parameters
         ----------
-            filter_v : XXX
-                XXXXXXXXXXXXXXXX
-            f_s : float
-                The undecimated sample rate [Hz]
+        filter_v : XXX
+            XXX
+        f_s : float
+            The undecimated sample rate [Hz]
             
         Returns
         -------
-            XXX : float
-                XXXXXXXXXXXXXXXXX
+        float
+            XXX
         """
         
         f_s_dec = [f_s]
@@ -139,13 +139,13 @@ class Calculation(EK80DataContainer):
         
         Parameters
         ----------
-            y_tx_n : np.array
-                The transmit signal [V]
-            
+        y_tx_n : np.array
+            The transmit signal [V]
+        
         Returns
         -------
-            XXXX : np.array
-                The normalised transmit signal [1]
+        np.array
+            The normalised transmit signal [1]
             
         """
         
@@ -158,16 +158,16 @@ class Calculation(EK80DataContainer):
         
         Parameters
         ----------
-            y_tilde_tx_n : np.array
-                Normalised transmit signal [1]
-            filter_v : XXX
-                XXXXXX
+        y_tilde_tx_n : np.array
+            Normalised transmit signal [1]
+        filter_v : XXX
+            XXX
             
         Returns
         -------
-            XXXX : np.array
-                The filtered and decimated transmit signal [1]
-        """
+        np.array
+            The filtered and decimated transmit signal [1]
+    """
         
         # Initialize with normalized transmit pulse
         y_tilde_tx_nv = [y_tilde_tx_n]
@@ -190,16 +190,17 @@ class Calculation(EK80DataContainer):
         
         Parameters
         ----------
-            y_mf_n : np.array
-                Input signal [1]
-            f_s_dec : float
-                Decimated sampling frequency [Hz]
+        y_mf_n : np.array
+            Input signal [1]
+        f_s_dec : float
+            Decimated sampling frequency [Hz]
+            
         Returns
         -------
-            y_mf_auto_n : np.array
-                Autocorrelation of the input filter [1]
-            t_eff : float
-                Effective transmit pulse duration [s]
+        y_mf_auto_n : np.array
+            Autocorrelation of the input filter [1]
+        t_eff : float
+            Effective transmit pulse duration [s]
         """
         
         y_mf_n_conj_rev = np.conj(y_mf_n)[::-1]
@@ -223,15 +224,15 @@ class Calculation(EK80DataContainer):
         
         Parameters
         ----------
-            quadrant_signals: real
-                The XXX
-            y_mf_n: np.array:
-                The XXX
+        quadrant_signals: real
+            The XXX
+        y_mf_n: np.array:
+            The XXX
             
         Returns
         -------
-            :np.array
-                The XXX
+        np.array
+           The XXX
         """
         
         # Do pulse compression on all quadrants
@@ -700,18 +701,25 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def freqtransf(FFTvecin, fsdec, fvec=None):
         """
-        Estimate FFT data for specified frequencies.
+        Shift FFT frequencies for specified frequencies.
         
-        Parameters:
-            np.array: FFTvecin -- fft data from decimated frequencies
-            real: fsdec -- Decimated sampling frequency [Hz]
-            real: fvec -- Specified frequencies.[Hz].
-                          From calibration data. ("CAL": {"frequencies")
-                          If no calibration generate freq vector starting from 
-                           f0 to f1 with same number of points as in calibration data
-                        
-        Returns:
-        np.array: Vector with corrected frequencies
+        Parameters
+        ----------
+        FFTvecin : np.array
+            FFT data from decimated frequencies
+        fsdec : float
+            Decimated sampling frequency [Hz]
+        fvec : np.array
+            Specified frequencies [Hz]
+            
+            From calibration data. ("CAL": {"frequencies")
+                      If no calibration generate freq vector starting from 
+                       f0 to f1 with same number of points as in calibration data
+                    
+        Returns
+        -------
+        float
+            Vector with corrected frequencies [Hz]
         """
 
         nfft = len(FFTvecin)
@@ -752,18 +760,31 @@ class Calculation(EK80DataContainer):
         """
         Calculate Sv as a function of frequency.
         
-        Parameters:
-            P_rx_e_t_m_n -- DFT of the received electric power [W]
-            alpha_m -- acoustic absorption [dB/km]
-            p_tx_e -- 
-            lambda_m -- acoustic wavelength [m]
-            t_w -- sliding window duration [s]
-            psi_m -- equivalent beam angle [sr]
-            g_0_m -- transducer gain [dB]
-            c -- speed of sound [m/s]
-            svf_range -- XXXXXXXX [m]
-        Returns:
-            np.array: Sv(f) [dB re 1 m^-1]
+        Parameters
+        ----------
+        P_rx_e_t_m_n : np.array
+            DFT of the received electric power [W]
+        alpha_m : float
+            Acoustic absorption [dB/km]
+        p_tx_e : float
+            Transmitted electric power [W]
+        lambda_m : float
+            Acoustic wavelength [m]
+        t_w : float
+            Sliding window duration [s]
+        psi_m : float
+            Equivalent beam angle [sr]
+        g_0_m : float
+            Transducer gain [dB]
+        c : float
+            Speed of sound [m/s]
+        svf_range : np.array
+            XXX [m]
+            
+        Returns
+        -------
+        np.array
+            Sv(f) [dB re 1 m^-1]
         """
         
         # Initialize list of Svf by range
@@ -791,13 +812,19 @@ class Calculation(EK80DataContainer):
         """
         Calculate psi at given frequency.
         
-        Parameters:
-            real: psi_f_n -- Psi at nominal frequency [sr]
-            real: f_n -- Nominal frequency [Hz]
-            real: f_m -- Frequency to calculate psi at [Hz]
+        Parameters
+        ----------
+        psi_f_n : float
+            Psi at nominal frequency [sr]
+        f_n : float
+            Nominal frequency [Hz]
+        f_m : float
+            Frequency to calculate psi at [Hz]
             
-        Returns:
-            real: Psi at frequency f_m [sr]
+        Returns
+        -------
+        float 
+            Psi at frequency `f_m` [sr]
         """
         
         return psi_f_n * (f_n / f_m) ** 2
