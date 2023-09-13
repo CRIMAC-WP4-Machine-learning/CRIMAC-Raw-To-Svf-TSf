@@ -251,10 +251,31 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcAverageSignal(y_pc_nu):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+        
         return np.sum(y_pc_nu, axis=0) / y_pc_nu.shape[0]
 
     @staticmethod
     def calcTransducerHalves(y_pc_nu):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         y_pc_fore_n = 0.5 * (y_pc_nu[2, :] + y_pc_nu[3, :])
         y_pc_aft_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[1, :])
         y_pc_star_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[3, :])
@@ -268,6 +289,16 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcPower(y_pc, z_td_e, z_rx_e):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         K1 = 4 / ((2 * np.sqrt(2)) ** 2)
         K2 = (np.abs(z_rx_e + z_td_e) / z_rx_e) ** 2
         K3 = 1.0 / np.abs(z_td_e)
@@ -279,6 +310,16 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcAngles(y_pc_halves, gamma_theta, gamma_phi):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         # Transducers might have different segment configuration
         # Here we assume 4 quadrants
         y_pc_fore_n, y_pc_aft_n, y_pc_star_n, y_pc_port_n = y_pc_halves
@@ -305,6 +346,16 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcSp(p_rx_e_n, r_n, alpha_f_c, p_tx_e, lambda_f_c, g_0_f_c, r0=None, r1=None):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         # Pick a range of the data
         if r0 is not None and r1 is not None:
             Idx = np.where((r_n >= r0) & (r_n <= r1))
@@ -326,6 +377,16 @@ class Calculation(EK80DataContainer):
     def singleTarget(
         y_pc_n, p_rx_e_n, theta_n, phi_n, r_n, r0, r1, before=0.5, after=0.5
     ):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         # This is a pseudo single target detector (SED) using the max peak
         # power within the range interval [r0 r1] as the single target
         # detection criteria
@@ -360,6 +421,16 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def alignAuto(y_mf_auto_n, y_pc_t_n):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         # The equivalent samples around the peak in the decimated tx signal
         idx_peak_auto = np.argmax(np.abs(y_mf_auto_n))
         idx_peak_y_pc_t_n = np.argmax(np.abs(y_pc_t_n))
@@ -376,6 +447,16 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcDFTforTS(y_pc_t_n, y_mf_auto_red_n, n_f_points, f_m, f_s_dec):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         # The number of DFT points inpower of 2
         N_DFT = int(2 ** np.ceil(np.log2(n_f_points)))
 
@@ -397,11 +478,31 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcPowerFreqTS(N_u, Y_tilde_pc_t_m, z_td_e, z_rx_e):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         imp = (np.abs(z_rx_e + z_td_e) / np.abs(z_rx_e)) ** 2 / np.abs(z_td_e)
         P_rx_e_t_m = N_u * (np.abs(Y_tilde_pc_t_m) / (2 * np.sqrt(2))) ** 2 * imp
         return P_rx_e_t_m
 
     def calcg0(self, f):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         if self.isCalibrated:
             # Calibrated case
             return np.interp(f, self.frqp.frequencies, self.frqp.gain)
@@ -411,18 +512,48 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcg0_calibrated(f, freq, gain):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         dB_G0 = np.interp(f, freq, gain)
 
         return np.power(10, dB_G0 / 10)
 
     @staticmethod
     def calcg0_notcalibrated(f, f_n, G_f_n):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         dB_G0 = G_f_n + 20 * np.log10(f / f_n)
 
         return np.power(10, dB_G0 / 10)
 
     @staticmethod
     def calcTSf(P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m, g_theta_t_phi_t_f_t):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         TS_m = (
             10 * np.log10(P_rx_e_t_m)
             + 40 * np.log10(r_t)
@@ -443,6 +574,16 @@ class Calculation(EK80DataContainer):
     def calcSv(
         p_rx_e_n, r_c_n, lambda_f_c, p_tx_e, alpha_f_c, c, tau_eff, psi_f_c, g_0_f_c
     ):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         G = (p_tx_e * lambda_f_c**2 * c * tau_eff * psi_f_c * g_0_f_c**2) / (
             32 * np.pi**2
         )
@@ -457,12 +598,32 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcPulseCompSphericalSpread(y_pc_n, r_c_n):
-        y_pc_s_n = y_pc_n * r_c_n
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
+       y_pc_s_n = y_pc_n * r_c_n
 
         return y_pc_s_n
 
     @staticmethod
     def defHanningWindow(c, tau, dr, f_s_dec):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         """
         Length of Hanning window currently chosen as 2^k samples for
         lowest k where 2^k >= 2 * No of samples in pulse
@@ -483,6 +644,16 @@ class Calculation(EK80DataContainer):
     def calcDFTforSv(
         y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec, r_c_n, step
     ):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         # Prepare for append
         Y_pc_v_m_n = []
         Y_tilde_pc_v_m_n = []
@@ -551,6 +722,16 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcPowerFreqSv(Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e):
+        """
+        XXX.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        
+        """
         # Initialize list of power values by range
         P_rx_e_v_m_n = []
 
