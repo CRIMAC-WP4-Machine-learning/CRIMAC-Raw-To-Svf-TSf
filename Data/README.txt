@@ -23,5 +23,6 @@ Channel: 2
 Frequency: 90 kHz - 170 kHz
 Filter slope:		0.0106148
 Pulse duration [ms]:	2.048
+$F_s$: 125 kHz
 Transducer: Simrad ES120-7CD (120 kHz)
 Tranciever: Simrad EK80 WBT
