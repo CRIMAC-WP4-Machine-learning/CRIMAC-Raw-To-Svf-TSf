@@ -1,6 +1,6 @@
 **********CRIMAC_Svf.json*******************
-https://zenodo.org/record/8318274
-IMR-D20210507-T074652-Svf.raw
+Original EK80 raw file: IMR-D20210507-T074652-Svf.raw
+File location: https://zenodo.org/record/8318274
 Targets: School (non-swimbladder fish)
 PingNo.: 514
 Range\depth to targets: 15-34 m
@@ -12,8 +12,8 @@ Transducer: Simrad ES120-7C (120 kHz)
 Tranciever: Simrad EK80 WBT
 
 ***********CRIMAC_SphereBeam.json***********
-https://zenodo.org/record/8318274
-IMR-D20211215-T143432-TSf.raw
+Original EK80 raw file: IMR-D20211215-T143432-TSf.raw
+File location: https://zenodo.org/record/8318274
 Target: Single sphere - WC35
 PingNo.: 510
 Range\depth to target: 5.8 m
