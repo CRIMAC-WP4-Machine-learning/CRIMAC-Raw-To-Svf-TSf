@@ -111,8 +111,8 @@ def calcBasics(do_plot):
     )
 
     # Plots for paper
-    if do_plot:
-        plotytx(f_0, f_1, tau, f_s, y_tx_n, slope)
+    # if do_plot:
+    #     plotytx(f_0, f_1, tau, f_s, y_tx_n, slope)
 
     #
     # Chapter IIC: Signal reception
@@ -195,7 +195,7 @@ def calcBasics(do_plot):
 
     # Plots for paper
     if do_plot:
-        plotThetaPhi(theta_n, phi_n)
+        plotThetaPhi(theta_n, phi_n, dr)
 
 
 def calcTS():
@@ -244,7 +244,7 @@ def calcTS():
     y_mf_auto_red_n = Calculation.alignAuto(y_mf_auto_n, y_pc_t_n)
 
     # Plots for paper
-    plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red_n)
+    plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red_n, y_pc_t_n)
 
     # DFT of target signal, DFT of reduced auto correlation signal, and
     # normalized DFT of target signal
