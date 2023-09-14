@@ -79,8 +79,8 @@ psi_m = Calculation.calcpsi(psi_f_n, f_n, f_m)
 y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(f_0, f_1, tau, f_s, slope)
 
 # Plots for paper
-if do_plot:
-    plotytx(f_0, f_1, tau, f_s, y_tx_n, slope)
+# if do_plot:
+#     plotytx(f_0, f_1, tau, f_s, y_tx_n, slope)
 
 #
 # Chapter IIC: Signal reception
@@ -154,14 +154,14 @@ y_pc_halves_n = Calculation.calcTransducerHalves(y_pc_nu)
 #
 
 # Total received power for all channels (all transducer sectors)
-p_rx_e_n = Calculation.calcPower(y_pc_n, z_td_e, z_rx_e)
+p_rx_e_n = Calculation.calcPower(y_pc_n, z_td_e, z_rx_e, N_u)
 
 # Physical angles
 theta_n, phi_n = Calculation.calcAngles(y_pc_halves_n, gamma_theta_f_c, gamma_phi_f_c)
 
 # Plots for paper
 if do_plot:
-    plotThetaPhi(theta_n, phi_n)
+    plotThetaPhi(theta_n, phi_n, dr)
 
 #
 # Chapter III: TARGET STRENGTH
@@ -195,7 +195,7 @@ y_mf_auto_red_n = Calculation.alignAuto(y_mf_auto_n, y_pc_t_n)
 
 # Plots for paper
 if do_plot:
-    plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red_n)
+    plotSingleTarget(dum_r, dum_p, dum_theta, r_t, dum_phi, phi_t, y_mf_auto_red_n,y_pc_t_n)
 
 # DFT of target signal, DFT of reduced auto correlation signal, and
 # normalized DFT of target signal

@@ -79,8 +79,8 @@ psi_m = Calculation.calcpsi(psi_f_n, f_n, f_m)
 y_tx_n, t = Calculation.generateIdealWindowedTransmitSignal(f_0, f_1, tau, f_s, slope)
 
 # Plots for paper
-if do_plot:
-    plotytx(f_0, f_1, tau, f_s, y_tx_n, slope)
+# if do_plot:
+#     plotytx(f_0, f_1, tau, f_s, y_tx_n, slope)
 
 #
 # Chapter IIC: Signal reception
@@ -154,7 +154,7 @@ y_pc_halves_n = Calculation.calcTransducerHalves(y_pc_nu)
 #
 
 # Total received power for all channels (all transducer sectors)
-p_rx_e_n = Calculation.calcPower(y_pc_n, z_td_e, z_rx_e)
+p_rx_e_n = Calculation.calcPower(y_pc_n, z_td_e, z_rx_e,N_u)
 
 # Physical angles
 theta_n, phi_n = Calculation.calcAngles(y_pc_halves_n, gamma_theta_f_c, gamma_phi_f_c)
