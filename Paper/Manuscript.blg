@@ -8,44 +8,49 @@ The style file: jasaauthyear2.bst
 Reallocating 'wiz_functions' (item size: 4) to 6000 items.
 Database file #1: ManuscriptNotes.bib
 Database file #2: Reference_database.bib
-You've used 52 entries,
+Warning--string name "august" is undefined
+--line 304 of file Reference_database.bib
+Warning--string name "april" is undefined
+--line 315 of file Reference_database.bib
+You've used 50 entries,
             3721 wiz_defined-function locations,
-            1565 strings with 24327 characters,
-and the built_in function-call counts, 38146 in all, are:
-= -- 2830
-> -- 1954
-< -- 21
-+ -- 726
-- -- 660
-* -- 5142
-:= -- 5598
-add.period$ -- 103
-call.type$ -- 52
-change.case$ -- 485
-chr.to.int$ -- 52
-cite$ -- 52
-duplicate$ -- 2318
-empty$ -- 2658
-format.name$ -- 828
-if$ -- 7081
+            1547 strings with 23055 characters,
+and the built_in function-call counts, 35867 in all, are:
+= -- 2575
+> -- 1878
+< -- 24
++ -- 698
+- -- 636
+* -- 4827
+:= -- 5276
+add.period$ -- 99
+call.type$ -- 50
+change.case$ -- 468
+chr.to.int$ -- 50
+cite$ -- 50
+duplicate$ -- 2209
+empty$ -- 2511
+format.name$ -- 796
+if$ -- 6639
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 481
-newline$ -- 168
-num.names$ -- 208
-pop$ -- 548
+missing$ -- 468
+newline$ -- 162
+num.names$ -- 200
+pop$ -- 560
 preamble$ -- 1
-purify$ -- 428
+purify$ -- 412
 quote$ -- 0
-skip$ -- 707
+skip$ -- 680
 stack$ -- 0
-substring$ -- 1593
-swap$ -- 2133
+substring$ -- 1343
+swap$ -- 2028
 text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 459
+type$ -- 426
 warning$ -- 0
-while$ -- 225
+while$ -- 202
 width$ -- 0
-write$ -- 632
+write$ -- 596
+(There were 2 warnings)
