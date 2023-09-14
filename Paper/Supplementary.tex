@@ -36,7 +36,7 @@ $\gain(\along,\athw,\freqsym)$ & & 1 & Transducer gain as a function of echo arr
 
 $\gainzero(\freqsym)$ & & 1 & Transducer gain along the main acoustic axis, i.e. $\gain(\along, \athw,\freqsym)$ where $\along = \athw = 0$.\\
 
-$\hfl(\genidxsym,\stagesym)$ & & 1 & Complex valued receiving filter coefficients.\\
+$\hbp(\genidxsym,\stagesym)$ & & 1 & Complex valued receiving filter coefficients.\\
 $\genidxsym$ & & 1 & Generic integer index.\\
 $\Im(x)$ & & -- & The imaginary part of $x$.\\
 $j$ & & & The square root of $-1$.\\
@@ -66,7 +66,7 @@ $\range(\samplesymt)$ & & m & Distance from transducer.\\
 $\mysp(\samplesymt)$  & & dB re 1 $\textrm{m}^2$ & Point scattering strength.\\
 $\sv$  & & dB re 1 $\textrm{m}^{-1}$ & Volume backscattering strength.\\
 $\sv(\freqsym)$ & & dB re 1 $\textrm{m}^{-1}$ & Volume backscattering strength at frequency $\freqsym$.\\
-$\sv(\samplesymt)$ & & dB re $\textrm{m}^{-1}$ & Volume backscattering strength at sample index $\samplesymt$.\\
+$\sv(\samplesymt)$ & & dB re 1 $\textrm{m}^{-1}$ & Volume backscattering strength at sample index $\samplesymt$.\\
 
 $\ts$ & & dB re 1 $\textrm{m}^2$ & Target strength.\\
 $\ts(\freqsym)$ & & dB re 1 $\textrm{m}^2$ & Target strength at frequency $f$.\\
@@ -80,12 +80,12 @@ $u(\genidxsym)$ & & 1 & The Heaviside step function. \\
 $V$ & & $\textrm{m}^3$ & Volume occupied by scattering targets.\\
 $\stagesym$ & & 1 & Filter stage.\\
 
-$\hannw$ & & 1 & The Hanning window function.\\
-$\hannw(\genidxsym)$ & & 1 & The Hanning window function for index i, defined by $w(i) = 0.5(1+\cos (2\pi i /N_w)), -N_w/2 \leq i \leq N_w/2$.\\
-$\hannwnorm(\genidxsym)$ & & 1 & Normalised Hanning window.\\
+$\hannw$ & & 1 & The Hann window function.\\
+$\hannw(\genidxsym)$ & & 1 & The Hann window function for index i, defined by $w(i) = 0.5(1+\cos (2\pi i /N_w)), -N_w/2 \leq i \leq N_w/2$.\\
+$\hannwnorm(\genidxsym)$ & & 1 & Normalised Hann window.\\
 
 $x^*$ & & -- & The complex conjugate of $x$.\\
-$||x||$ & & -- & The $l^2$-norm of $x$, also known as the Euclidean norm.\\
+$||x||_2$ & & -- & The $l^2$-norm of $x$, also known as the Euclidean norm.\\
 
 $\ymfautof(\samplesymf)$ & & 1 & Discrete Fourier transform (DFT) of the autocorrelation function for the matched filter.\\
 $\ymfautoredf(\samplesymf)$ &  & 1 & DFT of the reduced autocorrelation function for the matched filter.\\
