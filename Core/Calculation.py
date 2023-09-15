@@ -314,7 +314,7 @@ class Calculation(EK80DataContainer):
             Pulse compressed signal [V]
         z_td_e : float
             Transducer electrical impedance [Ω]
-        z_rx_e :
+        z_rx_e : float
             Receiver electrical impedance [Ω]
         nu : int
             Number of receiver channels [1]
@@ -507,13 +507,19 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def alignAuto(y_mf_auto_n, y_pc_t_n):
         """
-        XXX.
+        Calculate the reduced autocorrelation of a matched filter.
         
         Parameters
         ----------
-        
+        y_mf_auto_n : np.array
+            Autocorrelation of the matched filter [1]
+        y_pc_t_n : np.array
+            Pulse compressed signal from a single target [V]
+            
         Returns
         -------
+        np.array
+            Reduced autocorrelation of the matched filter [1]
         
         """
         # The equivalent samples around the peak in the decimated tx signal
@@ -533,13 +539,31 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcDFTforTS(y_pc_t_n, y_mf_auto_red_n, n_f_points, f_m, f_s_dec):
         """
-        XXX.
+        Calculate the discrete Fourier transforms (DFT).
+        
+        Provides the DFT of the target signal, DFT of the reduced auto 
+        correlation signal, and the normalized DFT of the target signal.
         
         Parameters
         ----------
+        y_pc_t_n : 
+        y_mf_auto_red_n :
+        n_f_points :
+            Maximum number of points to use in the DFT (actual number will be
+            the largest power of two that is less than n_f_points) [1]
+        f_m : np.array
+            Frequency vcetor [Hz]
+        f_s_dec : float
+            Decimated sampling rate [Hz]
         
         Returns
         -------
+        Y_pc_t_m :
+            DFT of the pulse compressed signal from a single target [V]
+        Y_mf_auto_red_m :
+            DFT of the reduced autocorrelation function for the matched filter [1]
+        Y_tilde_pc_t_m :
+            DFT of `Y_pc_t_m` normalised by `Y_mf_auto_red_m` [1]
         
         """
         # The number of DFT points inpower of 2
@@ -564,14 +588,27 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcPowerFreqTS(N_u, Y_tilde_pc_t_m, z_td_e, z_rx_e):
         """
-        XXX.
+        Calculate the received power spectrum for a single target
         
         Parameters
         ----------
+        N_u : int
+            Number of transducer sectors/receiver channels
+        Y_tilde_pc_t_m :
+            DFT of the pulse compressed signal from a single target normalised 
+            by the DFT of the reduced autocorrelation function of the matched
+            filter [1]
+        z_td_e :
+            Transducer sector electric impedance [Ω]
+        z_rx_e :
+            Receiver electric impedance [Ω]
         
         Returns
         -------
-        
+        np.array
+            DFT of received electric power in a matched load for the signal from 
+            a single target
+            
         """
         imp = (np.abs(z_rx_e + z_td_e) / np.abs(z_rx_e)) ** 2 / np.abs(z_td_e)
         P_rx_e_t_m = N_u * (np.abs(Y_tilde_pc_t_m) / (2 * np.sqrt(2))) ** 2 * imp
@@ -655,14 +692,29 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcTSf(P_rx_e_t_m, r_t, alpha_m, p_tx_e, lambda_m, g_theta_t_phi_t_f_t):
         """
-        XXX.
+        Calculate TS as a function of frequency for a single target.
         
         Parameters
         ----------
-        
+        P_rx_e_t_m : np.array
+            DFT of the received electric power in a matched load for the signal
+            from a single target at a range of frequencies [W]
+        r_t : float
+            Range to the target [m]
+        alpha_m : np.array
+            Acoustic absorption at a range of frequencies [dB/m]
+        p_tx_e : float
+            Transmitted electric power [W]
+        lambda_m : 
+            Acoustic wavelength at a range of frequencies [m]
+        g_theta_t_phi_t_f_t : np.array
+            Transducer gain as a function of echo arrival angle in the beam
+            and frequency [1]
+            
         Returns
         -------
-        
+        np.array
+            TS of a single target at a range of frequencyes [dB re 1m^2]
         """
         TS_m = (
             10 * np.log10(P_rx_e_t_m)
@@ -685,14 +737,34 @@ class Calculation(EK80DataContainer):
         p_rx_e_n, r_c_n, lambda_f_c, p_tx_e, alpha_f_c, c, tau_eff, psi_f_c, g_0_f_c
     ):
         """
-        XXX.
+        Calculate volume backscattering strength spectrum at a range step.
         
         Parameters
         ----------
-        
+        p_rx_e_n :
+            REceived electric power into a matched load [W}]
+        r_c_n :
+            Range to the centre of sliding window [m]
+        lambda_f_c :
+            Acoustic wavelength at centre frequency [m]
+        p_tx_e : float
+            Transmitted electric power [W]
+        alpha_f_c : float
+            Acoustic absorption at centre frequency [dB/m]
+        c : float
+           sound speed [m/s] 
+        tau_eff : float
+            Effective transmit pulse duration [s]
+        psi_f_c : float
+            Equivalent beam angle at centre frequency [sr]
+        g_0_f_c : float
+            Transducer gain at centre frequency [1]
+            
         Returns
         -------
-        
+        np.array
+            Sv [dB re 1m^-1]
+            
         """
         G = (p_tx_e * lambda_f_c**2 * c * tau_eff * psi_f_c * g_0_f_c**2) / (
             32 * np.pi**2
@@ -709,14 +781,20 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcPulseCompSphericalSpread(y_pc_n, r_c_n):
         """
-        XXX.
+        Calculate the spherical spreading compensation.
         
         Parameters
         ----------
-        
+        y_pc_n : np.array
+            Pulse compressed signal averaged over all transducer sectors [V]
+        r_c_n : float
+            Range to the centre of of the range volume covered by the sliding 
+            window [m]
+            
         Returns
         -------
-        
+        np.array
+            Pulse compressed signal compensated for spherical spreading [Vm]
         """
         y_pc_s_n = y_pc_n * r_c_n
 
@@ -725,19 +803,35 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def defHanningWindow(c, tau, dr, f_s_dec):
         """
-        XXX.
+        Calculate the Hann window coefficients.
+        
+        Length of Hanning window currently chosen as 2^k samples for
+        lowest k where 2^k >= 2 * No of samples in pulse
         
         Parameters
         ----------
-        
+        c : float
+            Sound speed [m/s[]]
+        tau : float
+            Nominal transmit pulse duration [s]
+        dr : float
+            Distance between samples [m]
+        f_s_dec : float
+            Decimated sample rate [Hz]
+            
         Returns
         -------
+        w_tilde_i : np.array
+            Normalised Hann window coefficients [1]
+        N_w : float
+            Number of samples used in the sliding Hann window [1]
+        t_w : float
+            Duration of sliding window for calculating volumne backscattering
+            strength [s]
+        t_w_n : np.array
+            Time of each coefficient in `w_tilde_i` [s]    
+        """
         
-        """
-        """
-        Length of Hanning window currently chosen as 2^k samples for
-        lowest k where 2^k >= 2 * No of samples in pulse
-        """
         L = (c * 2 * tau) / dr  # Number of samples in 2 x pulse duration
         
         N_w = int(2 ** np.ceil(np.log2(L)))
@@ -755,14 +849,43 @@ class Calculation(EK80DataContainer):
         y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec, r_c_n, step
     ):
         """
-        XXX.
+        Calculate the normalized DFT of sliding window data.
         
         Parameters
         ----------
+        y_pc_s_n :
+            Pulse compressed signal compensated for spherical spreading  [Vm]
+        w_tilde_i : np.array
+            Normalised Hann window coefficients [1]
+        y_mf_auto_n : np.array
+            Autocorrelation function for the matched filter [1]
+        N_w : float
+            Number of samples used in the sliding Hann window [1]
+        n_f_points : int
+            Number of frequencies in `f_m` (not used in this function)
+        f_m : np.array
+            Frequencies [Hz]
+        f_s_dec : float
+            Decimated sample rate [Hz]
+        r_c_n : float
+            Range to the centre of of the range volume covered by the sliding 
+            window [m]
+        step : float
+            Range bin size [m]
         
         Returns
         -------
-        
+        Y_pc_v_m_n : np.array
+            DFT of the pulse compessed signal from a volume, compensated for
+            spreading loss [V]
+        Y_mf_auto_m : np.array
+            Autocorrection function for the matched filter [1]
+        Y_tilde_pc_v_m_n : np.array
+            DFT of the pulse compressed signal from a volume normalised by the DFT
+            of the reduced autocorrelation function for the matched filter,
+            compensated for spreading loss [1]
+        svf_range : 
+            Ranges at which the returned variables are at [m]
         """
         # Prepare for append
         Y_pc_v_m_n = []
@@ -840,15 +963,28 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcPowerFreqSv(Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e):
         """
-        XXX.
+        Calculate the received power spectrum for the sliding window.
         
         Parameters
         ----------
+        Y_tilde_pc_v_m_n : np.array
+            DFT of the pulse compressed signal from a volume normalised by the DFT
+            of the reduced autocorrelation function for the matched filter,
+            compensated for spreading loss [1]
+        N_u : int
+            Number of transducer sectors/receiver channels
+        z_td_e : float
+            Transducer sector electric impedance [Ω]
+        z_rx_e : float
+            Receiver electric impedance [Ω]
         
         Returns
         -------
-        
+        np.array
+            DFT of the received electric power in a matched load for the signal
+            from a volume [Wm^2]
         """
+        
         # Initialize list of power values by range
         P_rx_e_v_m_n = []
 
@@ -874,7 +1010,7 @@ class Calculation(EK80DataContainer):
         P_rx_e_t_m_n : np.array
             DFT of the received electric power [W]
         alpha_m : float
-            Acoustic absorption [dB/km]
+            Acoustic absorption [dB/m]
         p_tx_e : float
             Transmitted electric power [W]
         lambda_m : float
@@ -888,7 +1024,7 @@ class Calculation(EK80DataContainer):
         c : float
             Speed of sound [m/s]
         svf_range : np.array
-            XXX [m]
+            Range [m]
             
         Returns
         -------
