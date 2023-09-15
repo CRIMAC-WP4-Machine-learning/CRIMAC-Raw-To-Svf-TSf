@@ -432,14 +432,29 @@ class EK80DataContainer:
     @staticmethod
     def calcAbsorption(t, s, d, ph, c, f):
         """
-        XXX.
+        Calculate acoustic absorption.
+        
+        Uses the Francois & Garrison (1982) equations.
         
         Parameters
         ----------
-        
+        t : float
+            Temperature [°C]
+        s : float
+            Salinity [PPT]
+        d : float
+            Depth [m]
+        ph : float
+            Ph [1]
+        c : float
+            Sound speed [m/s]
+        f : np.array
+            Frequencies [kHz]
+            
         Returns
         -------
-        
+        np.array
+            Estimates of acoustic absorption [dB/m]
         """
 
         f = f / 1000
@@ -468,14 +483,19 @@ class EK80DataContainer:
 
     def calc_alpha(self, f):
         """
-        XXX.
+        Calculate acoustic absorption.
+        
+        Uses appropriate class attributes for the water properties. 
         
         Parameters
         ----------
-        
+        f : np.array
+            Frequencies to calculate absorption at [kHz]
+            
         Returns
         -------
-        
+        np.array
+            Estimates of acoustic absorption [dB/m]
         """
 
         return self.calcAbsorption(
