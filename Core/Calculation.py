@@ -106,19 +106,19 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcDecmiatedSamplingRate(filter_v, f_s):
         """
-        Calculate the decimated sample rate.
+        Calculate the decimated sampling frequency after each filter stage.
         
         Parameters
         ----------
-        filter_v : XXX
-            XXX
+        filter_v : sequence of np.arrays
+            The filters.
         f_s : float
             The undecimated sample rate [Hz]
             
         Returns
         -------
-        float
-            XXX
+        np.array
+            Decimated sampled rate after each given filter stage [Hz]
         """
         
         f_s_dec = [f_s]
@@ -154,14 +154,14 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcFilteredAndDecimatedSignal(y_tilde_tx_n, filter_v):
         """
-        Filter and decimate a signal.
+        Filter and decimate a signal using given filters.
         
         Parameters
         ----------
         y_tilde_tx_n : np.array
             Normalised transmit signal [1]
-        filter_v : XXX
-            XXX
+        filter_v : sequence of np.arrays
+            The filter coefficients for each filter to apply [1]
             
         Returns
         -------
@@ -224,15 +224,15 @@ class Calculation(EK80DataContainer):
         
         Parameters
         ----------
-        quadrant_signals: real
-            The XXX
-        y_mf_n: np.array:
-            The XXX
+        quadrant_signals : sequence of np.arrays
+            The signals to be pulse compressed [V]
+        y_mf_n : np.array
+            The matched filter to apply to the input signals [1]
             
         Returns
         -------
         np.array
-           The XXX
+           The pulse compressed signals [V]
         """
         
         # Do pulse compression on all quadrants
@@ -253,14 +253,17 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcAverageSignal(y_pc_nu):
         """
-        XXX.
+        Calculate the average pulse compressed signal over all 
+        receivers/transducer sectors.
         
         Parameters
         ----------
-        
+        y_pc_nu : np.array
+            The pulse compressed data from each receiver/transducer sector [V]
         Returns
         -------
-        
+        np.array
+            The average pulse compressed signal [V]
         """
         
         return np.sum(y_pc_nu, axis=0) / y_pc_nu.shape[0]
@@ -268,14 +271,24 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcTransducerHalves(y_pc_nu):
         """
-        XXX.
+        Calculate the half transducer pulse compressed signals from the four 
+        sectors in a 4-sector transducer.
         
         Parameters
         ----------
+        y_pc_nu : np.array
+            The pulse compressed data from each receiver/transducer sector [V]
         
         Returns
         -------
-        
+        y_pc_fore_n : np.array
+            Signal from the forward half of the transducer [V]
+        y_pc_aft_n : np.array
+            Signal from the aft half of the transducer [V]
+        y_pc_star_n : np.array
+            Signal from the starboard half of the transducer [V]
+        y_pc_port_n : np.array
+            Signal from the port half of the transducer [V]
         """
         y_pc_fore_n = 0.5 * (y_pc_nu[2, :] + y_pc_nu[3, :])
         y_pc_aft_n = 0.5 * (y_pc_nu[0, :] + y_pc_nu[1, :])
@@ -369,15 +382,31 @@ class Calculation(EK80DataContainer):
     @staticmethod
     def calcSp(p_rx_e_n, r_n, alpha_f_c, p_tx_e, lambda_f_c, g_0_f_c, r0=None, r1=None):
         """
-        XXX.
+        Calculate the point scattering strength.
         
         Parameters
         ----------
-        
+        p_rx_e_n : np.array
+            Received electric power into a matched load [W]
+        r_n : np.array
+            Range of samples in `p_rx_e_n` [m]
+        alpha_f_c : float
+            Acoustic absorption at centre frequency of transmitted chirp signal [Hz]
+        lambda_f_c : float
+            Acoustic wavelength at centre frequency of transmitted chirp signal [m]
+        g_0_f_c : 
+            Transducer gain centre frequency of transmitted chirp signal [1]
+        r0 : float, optional
+            Start range (inclusive) of data to be processed [m]
+        r1 : float, optional
+            End range of (inclusive) data to be processed [m]
+            
         Returns
         -------
-        
+        np.array
+            Point scattering strength [dB re 1m^2]
         """
+        
         # Pick a range of the data
         if r0 is not None and r1 is not None:
             Idx = np.where((r_n >= r0) & (r_n <= r1))
@@ -400,18 +429,52 @@ class Calculation(EK80DataContainer):
         y_pc_n, p_rx_e_n, theta_n, phi_n, r_n, r0, r1, before=0.5, after=0.5
     ):
         """
-        XXX.
+        Detect single targets in acoustic data.
         
+        This is a pseudo single target detector (SED) using the max peak
+        power within the range interval [r0 r1] as the single target
+        detection criteria.
+
         Parameters
         ----------
-        
+        y_pc_n : np.array
+            Average pulse compressed signal over all sectors [V]
+        p_rx_e_n : np.array
+            Received electric power into a matched load [W]
+        theta_n : np.array
+            Minor axis splitbeam angles of data in `p_rx_e_n` [°]
+        phi_n : np.array
+            Major axis splitbeam angles of data in `p_rx_e_n` [°]
+        r_n :  np.array
+            Range of samples in `p_rx_e_n` [m]
+        r0 : float
+            Start (inclusive) of range interval for SED [m]
+        r1 : float
+            End (inclusive) of range interval for SED [m]
+        before : float, optional
+            Distance before the detected target to extract [m]
+        after : float, optional
+            Distance after the detected target to extract [m]
+            
         Returns
         -------
-        
+        r_t : float
+            Range to peak of detected target [m]
+        theta_t : float
+            Minor axis splitbeam of detected target [°]
+        phi_t : float
+            Major axis splitbeam of detected target [°]
+        y_pc_t : np.array
+            Pulse compressed signal from `before` to `after' of detected target [V]
+        p_rx_t : np.array
+            Received electric power from `before` to `after' of detected target [W]
+        dum_theta : np.array
+            Minor axis splitbeam angles from `before` to `after' of detected target [°]
+        dum_phi : np.array
+            Major axis splitbeam angles from `before` to `after' of detected target [°]
+        dum_r : np.array
+            Range from `before` to `after' of detected target [m]
         """
-        # This is a pseudo single target detector (SED) using the max peak
-        # power within the range interval [r0 r1] as the single target
-        # detection criteria
 
         # Get the samples within the sub range defined by the range interval
         if r0 is not None and r1 is not None:
