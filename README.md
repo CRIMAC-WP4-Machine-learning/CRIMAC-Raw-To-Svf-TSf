@@ -21,5 +21,9 @@ Tools\SvfEchogram.py - reads raw data (EK80) and reproduces the Sv echogram in t
 
 Tools\TSfEchogram.py - reads raw data (EK80) and reproduces the Sp echogram in the accompagning paper by Andersen et al. (if given the correct raw file, see Data\).
 
+Tools\readpyecholabPing.py - reads raw data (EK80) and outputs a single ping in json format.
 
+Tools\readLSSSPing.py - reads a single ping via LSSS API.
+
+Tools\exportToMatlab.py - exports data from the code to .mat format for further analysis.
 
