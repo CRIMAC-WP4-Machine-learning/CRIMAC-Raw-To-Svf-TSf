@@ -20,48 +20,48 @@ Symbol & Variable name & Units & Description \\
 
 $\atan(y,x)$ & -- & -- & The four quadrant inverse tangent which returns values in the interval $[-\pi,\pi]$ , inclusive.\\
 $\cw$ & c & $m s^{-1}$ & Sound speed in water.\\
-$\decfac(\stagesym)$ & filter\_v[n]['D'] & 1 & Integer filter decimation factor.\\
-$\dft_\ndft(x)$ & N\_DFT & -- & The discrete Fourier transform of length $\ndft$ of $x$.\\
+$\decfac(\stagesym)$ & \code{filter_v[n]['D']} & 1 & Integer filter decimation factor.\\
+$\dft_\ndft(x)$ & & -- & The discrete Fourier transform of length $\ndft$ of $x$.\\
 $\freqsym$ & & Hz & Frequency.\\
 $\fc$ & & Hz & Frequency at centre of linear upsweep chirp pulse. Equivalent to $\fstart + \frac{|\fstop - \fstart|}{2}$.\\
-$\fn$ & f\_n & Hz & Nominal operating frequency of a transducer.\\
-$\fs$ & f\_s & Hz & Analogue to digital sampling frequency.\\
-$\fsdec$ & f\_s\_dec & Hz & Decimated sampling frequency.\\
-$\fstart$ & f\_1 & Hz & Start frequency of linear upsweep chirp pulse.\\
-$\fstop$ & f\_2 & Hz & Stop frequency of linear upsweep chirp pulse.\\
+$\fn$ & \code{f_n} & Hz & Nominal operating frequency of a transducer.\\
+$\fs$ & \code{f_s} & Hz & Analogue to digital sampling frequency.\\
+$\fsdec$ & \code{f_s_dec} & Hz & Decimated sampling frequency.\\
+$\fstart$ & \code{f_1} & Hz & Start frequency of linear upsweep chirp pulse.\\
+$\fstop$ & \code{f_2} & Hz & Stop frequency of linear upsweep chirp pulse.\\
 
-$\gain(\along,\athw,\freqsym)$ & g\_theta\_phi\_m & 1 & Transducer gain as a function of echo arrival angle in the beam and frequency.\\
+$\gain(\along,\athw,\freqsym)$ & \code{g_theta_phi_m} & 1 & Transducer gain as a function of echo arrival angle in the beam and frequency.\\
 
 % $\gain(\along,\athw,\samplesymf)$ & & 1 & Transducer gain as a function of echo arrival angle in the beam and frequency index.\\
 
-$\gainzero(\freqsym)$ & g\_0\_m & 1 & Transducer gain along the main acoustic axis, i.e. $\gain(\along, \athw,\freqsym)$ where $\along = \athw = 0$.\\
+$\gainzero(\freqsym)$ & \code{g_0_m} & 1 & Transducer gain along the main acoustic axis, i.e. $\gain(\along, \athw,\freqsym)$ where $\along = \athw = 0$.\\
 
-$\hbp(\genidxsym,\stagesym)$ & filter\_v[n]['h\_fl\_i'] & 1 & Complex valued receiving filter coefficients.\\
+$\hbp(\genidxsym,\stagesym)$ & \code{filter_v[n]['h_fl_i']} & 1 & Complex valued receiving filter coefficients.\\
 $\genidxsym$ & & 1 & Generic integer index.\\
 $\Im(x)$ & & -- & The imaginary part of $x$.\\
 $j$ & & & The square root of $-1$.\\
-$\samplesymf$ & m & 1 & Sample index in frequency domain.\\
+$\samplesymf$ & \code{m} & 1 & Sample index in frequency domain.\\
 
-$\nchannels$ & N\_u & 1 & Total number of transducer sectors/transceiver channels that are used to receive and process the acoustic signal.\\
+$\nchannels$ & \code{N_u} & 1 & Total number of transducer sectors/transceiver channels that are used to receive and process the acoustic signal.\\
 $\nstages$ & & 1 & Total number of filter stages.\\
 $\nw$ & & 1 & Number of samples used in the sliding Hanning window.\\
 $\samplesymt$ & n & 1 & Sample index in time domain.\\
 
 $\prxetf(\freqsym)$ &  & W & FT of the received electric power in a matched load for the signal from a single target at frequency $\freqsym$.\\
-$\prxetf(\samplesymf)$ & P\_rx\_e\_t\_m & W & DFT of the received electric power in a matched load for the signal from a single target.\\
+$\prxetf(\samplesymf)$ & \code{P_rx_e_t_m} & W & DFT of the received electric power in a matched load for the signal from a single target.\\
 $\prxevf(\freqsym)$ & & W & FT of the received electric power in a matched load for the signal from a volume at frequency $\freqsym$.\\
-$\prxevf(\samplesymf)$ & P\_rx\_e\_v\_m & W$\textrm{m}^2$ & DFT of the received electric power in a matched load for the signal from a volume.\\
-$\prxe(\samplesymt)$  & p\_rx\_e\_n & W & Received electric power in a matched load.\\
+$\prxevf(\samplesymf)$ & \code{P_rx_e_v_m} & W$\textrm{m}^2$ & DFT of the received electric power in a matched load for the signal from a volume.\\
+$\prxe(\samplesymt)$  & \code{p_rx_e_n} & W & Received electric power in a matched load.\\
 
-$\ptxe$ & p\_tx\_e & W & Transmitted electric power.\\
-$\ptxauto(\samplesymt)$ & p\_tx\_auto & 1 & Square of the absolute value of the matched filter autocorrelation function.\\
+$\ptxe$ & \code{p_tx_e} & W & Transmitted electric power.\\
+$\ptxauto(\samplesymt)$ & \code{p_tx_auto} & 1 & Square of the absolute value of the matched filter autocorrelation function.\\
 
 $\Re(x)$ & & -- & The real part of $x$.\\
 $\range$ & & m & Distance from transducer.\\
 $\rangeref$ & & m & Reference distance. \\
 $\range_c$ & & m & Distance from the transducer to the centre of the range volume covered by $\tslide$.\\
 $\range_c(\samplesymt)$ & & m & $range_c$ at sample number $\samplesymt$.\\
-$\range(\samplesymt)$ & r\_n & m & Distance from transducer.\\
+$\range(\samplesymt)$ & \code{r_n} & m & Distance from transducer.\\
 
 $\mysp(\samplesymt)$  & Sp\_n & dB re 1 $\textrm{m}^2$ & Point scattering strength.\\
 $\sv$  & & dB re 1 $\textrm{m}^{-1}$ & Volume backscattering strength.\\
@@ -81,19 +81,19 @@ $V$ & & $\textrm{m}^3$ & Volume occupied by scattering targets.\\
 $\stagesym$ & & 1 & Filter stage.\\
 
 $\hannw$ & & 1 & The Hann window function.\\
-$\hannw(\genidxsym)$ & & 1 & The Hann window function for index i, defined by $w(i) = 0.5(1+\cos (2\pi i /N_w)), -N_w/2 \leq i \leq N_w/2$.\\
-$\hannwnorm(\genidxsym)$ & & 1 & Normalised Hann window.\\
+$\hannw(\genidxsym)$ & w\_i & 1 & The Hann window function for index i, defined by $w(i) = 0.5(1+\cos (2\pi i /N_w)), -N_w/2 \leq i \leq N_w/2$.\\
+$\hannwnorm(\genidxsym)$ & w\_tilde\_i & 1 & Normalised Hann window.\\
 
 $x^*$ & & -- & The complex conjugate of $x$.\\
 $||x||_2$ & & -- & The $l^2$-norm of $x$, also known as the Euclidean norm.\\
 
-$\ymfautof(\samplesymf)$ & & 1 & Discrete Fourier transform (DFT) of the autocorrelation function for the matched filter.\\
-$\ymfautoredf(\samplesymf)$ &  & 1 & DFT of the reduced autocorrelation function for the matched filter.\\
-$\ypctargetf(\samplesymf)$ & & V & DFT of the pulse compressed signal from a single target.\\
-$\ypctargetnormf(\samplesymf)$ & & Vm & DFT of the pulse compressed signal from a single target 
+$\ymfautof(\samplesymf)$ & Y\_mf\_auto\_m & 1 & Discrete Fourier transform (DFT) of the autocorrelation function for the matched filter.\\
+$\ymfautoredf(\samplesymf)$ & Y\_mf\_auto\_m\_red & 1 & DFT of the reduced autocorrelation function for the matched filter.\\
+$\ypctargetf(\samplesymf)$ & Y\_pc\_t\_m & V & DFT of the pulse compressed signal from a single target.\\
+$\ypctargetnormf(\samplesymf)$ & Y\_tilde\_pc\_t\_m & Vm & DFT of the pulse compressed signal from a single target 
 normalized by the DFT of the reduced autocorrelation function for the matched filter.\\
-$\ypcvolumef(\samplesymf)$ & & Vm & DFT of the pulse compressed signal from a volume. Compensated for spreading loss.\\
-$\ypcvolumenormf(\samplesymf)$ & & V & DFT of the pulse compressed signal from a single volume normalized by the DFT of the reduced autocorrelation function for the matched filter.  Compensated for spreading loss.\\
+$\ypcvolumef(\samplesymf)$ & Y\_pc\_v\_m & Vm & DFT of the pulse compressed signal from a volume. Compensated for spreading loss.\\
+$\ypcvolumenormf(\samplesymf)$ & \code{Y\_tilde\_pc\_v\_m} & V & DFT of the pulse compressed signal from a single volume normalized by the DFT of the reduced autocorrelation function for the matched filter.  Compensated for spreading loss.\\
 
 $\ymf(\samplesymt)$ & & 1 & Matched filter. Signal used for pulse compression.\\
 $\ymfauto(\samplesymt)$ & & 1 & Autocorrelation function for the matched filter.\\
