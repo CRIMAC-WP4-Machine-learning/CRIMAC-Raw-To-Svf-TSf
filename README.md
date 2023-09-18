@@ -9,7 +9,7 @@ The majority of the calculations are performed in Calculation.py found under \Co
 
 Requirements to run the code are given in requirements_win.txt
 
-## main.py
+## Functions and scripts
 
 main.py initiates the calculations, and generate and plots the figures from the accompagning paper by Andersen et al., using two broadband pings stored in json format, one for TS(f) calculation and one for Sv(f).
 
