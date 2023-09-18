@@ -15,7 +15,7 @@ tau: 0.002047999994829297 s
 Transducer: Simrad ES120-7C (120 kHz)
 Tranciever: Simrad EK80 WBT
 
-***********CRIMAC_SphereBeam.json***********
+***********CRIMAC_TSf.json***********
 Original EK80 raw file: IMR-D20211215-T143432-TSf.raw
 File location: https://zenodo.org/record/8318274
 PingNo.: 510

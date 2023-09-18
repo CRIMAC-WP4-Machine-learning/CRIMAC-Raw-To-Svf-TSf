@@ -7,10 +7,16 @@ from plots import *
 
 def preCalculations(data):
     """
-    XXX.
+    Reads echosounder data, single ping, from datafile (json), performs
+    pre-calculations.
     
     Parameters
     ----------
+    
+    Returns
+    -------
+    All input data for further calculations.
+    
     
     """
 
