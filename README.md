@@ -13,13 +13,13 @@ Requirements to run the code are given in requirements_win.txt
 
 main.py initiates the calculations, and generate and plots the figures from the accompagning paper by Andersen et al., using two broadband pings stored in json format, one for TS(f) calculation and one for Sv(f).
 
-TSf.py initiates calculations for TS(f), and generate and plots figures
+TSf.py initiates calculations for TS(f), and generate and plots figures.
 
-Svf.py initiates calculations for Sv(f), and generate and plots figures 
+Svf.py initiates calculations for Sv(f), and generate and plots figures.
 
-Tools\SvfEchogram.py - reads raw data (EK80) and reproduces the Sv echogram in the accompagning paper by Andersen et al. (if given the correct raw file, see Data\)
+Tools\SvfEchogram.py - reads raw data (EK80) and reproduces the Sv echogram in the accompagning paper by Andersen et al. (if given the correct raw file, see Data\).
 
-Tools\TSfEchogram.py - reads raw data (EK80) and reproduces the Sp echogram in the accompagning paper by Andersen et al. (if given the correct raw file, see Data\)
+Tools\TSfEchogram.py - reads raw data (EK80) and reproduces the Sp echogram in the accompagning paper by Andersen et al. (if given the correct raw file, see Data\).
 
 
 
