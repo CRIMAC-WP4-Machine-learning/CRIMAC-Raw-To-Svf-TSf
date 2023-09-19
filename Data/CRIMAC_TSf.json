@@ -10,6 +10,7 @@
     "Centre Frequency": 120000.0,
     "Channel Number": 2,
     "Pulse Duration": 2.048,
+    "Ramping / Slope": 0.0109,
     "Ping Number": 510
   },
   "XML0": {

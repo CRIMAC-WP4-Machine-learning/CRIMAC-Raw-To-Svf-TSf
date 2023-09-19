@@ -238,6 +238,7 @@ data = {
         "Centre Frequency": Frequency,
         "Channel Number": Channel+1,        
         "Pulse Duration": round(PulseDurationPing*10**3,4),
+        "Ramping / Slope": round(Slope,4),
         "Ping Number": PingNo+1,
     },
     "XML0": {
