@@ -179,7 +179,7 @@ The objective of this paper and associated code is to provide a benchmark for de
 \section{Signal flow and initial processing}
 
 \subsection{Accompanying code}
-The code  accompanying this paper is written in the Python programming language (v3.10) and is available through GitHub (see \ref{dataavstatement} for code and data availability) together with the data used in the examples. All single ping processing steps with respective figures in the paper can be reproduced by running the main script, \code{main.py}. Reproduction of Fig. \ref{fi:ts_theta_phi}a and Fig. \ref{fi:Fig_Sv_echogram}a requires downloading the original echosounder raw data separately and using the scripts (\code{TSfEchogram.py} and \code{SvfEchogram.py}). Without loss of generality, we use the \ek{} echosounder as an example since it is currently the most commonly used broadband system in the marine ecosystem acoustics field. The test data sets accompanying the code are representative for the data contained in Simrad EK80 raw files. In order to make the code echosounder independent simple json strings are used as input. Detailed information on settings used during data collection are available in the code and the data files on GitHub.
+The code  accompanying this paper is written in the Python programming language (v3.10) and is available through GitHub (see \ref{dataavstatement} for code and data availability) together with the data used in the examples. All single ping processing steps with respective figures in the paper can be reproduced by running the main script, \code{main.py}. Reproduction of Fig. \ref{fi:ts_theta_phi}a and Fig. \ref{fi:Fig_Sv_echogram}a requires downloading the original echosounder raw data separately and using the scripts (\code{TSfEchogram.py} and \code{SvfEchogram.py}). Without loss of generality, we use the \ek{} echosounder as an example since it is currently the most commonly used broadband system in the marine ecosystem acoustics field. The test data sets accompanying the code are representative for the data contained in Simrad EK80 raw files. In order to make the code echosounder independent simple json strings are used as input. Detailed information on settings used during data collection is available in the code and the data files on GitHub.
 
 Our presentation uses nomenclature and approaches that are commonly used for narrowband echosounder systems, which were derived from radar processing \citep{cook1967}. In particular, the expressions for target strength ($\ts$, dB re 1m${^2}$) and volume backscattering strength ($\sv$, dB re 1m$^{-1}$) \citep{MacLennan2002consistent} are presented in a similar manner for broadband signals as for narrowband signals.
 
@@ -297,7 +297,7 @@ y_{\textrm{pc,star}}(\samplesymt) & = & \frac{1}{2} \left( \ypc(\samplesymt,1)+\
 y_{\textrm{pc,port}}(\samplesymt) & = & \frac{1}{2} \left( \ypc(\samplesymt,2)+\ypc(\samplesymt,3) \right),
 \end{eqnarray}
 %
-where fore, aft, star(board), and port indicate the relevant transducer halves.
+where fore, aft, star(board), and port indicate the relevant transducer halves. In scientific echoshounder data fore-aft angles are often labelled  alongship angles and  port-starboard angles athwartship angles.
 
 \begin{figure}
 \includegraphics[width=16cm]{Fig_trd_quad_Impedances}

@@ -337,7 +337,7 @@ if __name__ == "__main__":
     )
     ap.add_argument(
         "--tfile",
-        default="./data/CRIMAC_SphereBeam.json",
+        default="./data/CRIMAC_TSf.json",
         help="File containing raw data for TS calculation",
     )
     ap.add_argument(

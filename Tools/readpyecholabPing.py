@@ -8,12 +8,21 @@ Requires that pyecholab is installed
 https://github.com/CI-CMG/pyEcholab
 
 Usage:
-python readpyecholabPing --channel 2 --pingNo 11 --inputFile E:/IMR-CRIMAC-EK80-FM-38kHz-WC22-WC381.raw --outputFile ..\Data\pyEcholabEK80data.json
+python readpyecholabPing --channel 2 --pingNo 11 --inputFile E:/IMR-D20210507-T074652-Svf.raw --outputFile ..\Data\pyEcholabEK80data.json
+
 or if you are within Spyder or similar:
+
 run readpyecholabPing --channel 2 --pingNo 11 --inputFile E:/IMR-CRIMAC-EK80-FM-38kHz-WC22-WC381.raw --outputFile ..\Data\pyEcholabEK80data.json
-Reads channel 2, in this case 38 kHz, and ping number 11 in the raw file
-run readpyecholabPing --channel 2 --pingNo 11 --inputFile C:/Users/a32685/Documents/Projects/2020_CRIMAC/CRIMACHackEx/cal-babak-D20201120-T080856.raw
-GP 01.06.2021
+
+Reads channel 2, in this case 38 kHz, and ping number 11 in the raw file.
+
+Numbering starts at 1 (channel and pingNo).
+
+The json files used in the code and paper were created with:
+run readpyecholabPing --channel 4 --pingNo 514 --inputFile ..\RawData\IMR-D20210507-T074652-Svf.raw --outputFile ..\Data\CRIMAC_Svf.json
+run readpyecholabPing --channel 2 --pingNo 510 --inputFile ..\RawData\IMR-D20211215-T143432-TSf.raw --outputFile ..\Data\CRIMAC_TSf.json
+
+GP 08.09.2023
 """
 
 import json
@@ -77,6 +86,10 @@ raw_data = raw_list[0]
 Type = raw_data.configuration[0]["transceiver_type"]
 Frequency = raw_data.configuration[0]["transducer_frequency"]
 filenameRaw = raw_data.configuration[0]["file_name"]
+transTrans = raw_data.configuration[0]["channel_id"]
+application = raw_data.configuration[0]["application_name"]
+applicationVersion = raw_data.configuration[0]["application_version"]
+fileFormatVersion = raw_data.configuration[0]["file_format_version"]
 
 # get calibration values
 calibration = raw_data.get_calibration()
@@ -131,7 +144,7 @@ FrequencyEnd = np.ndarray.tolist(np.array(raw_data.frequency_end[PingNo]))
 PulseDurationPing = np.ndarray.tolist(np.array(raw_data.pulse_duration[PingNo]))
 SampleInterval = np.ndarray.tolist(np.array(raw_data.sample_interval[PingNo]))
 Slope = np.ndarray.tolist(np.array(raw_data.slope[PingNo]))
-TransmitPower = np.int(raw_data.transmit_power[PingNo])
+TransmitPower = int(raw_data.transmit_power[PingNo])
 Temperature = np.ndarray.tolist(np.array(calibration.temperature))
 Salinity = np.ndarray.tolist(np.array(calibration.salinity))
 Alpha = np.ndarray.tolist(np.array(calibration.absorption_coefficient[PingNo]))
@@ -218,6 +231,14 @@ data = {
         "Free text": "See Readme.txt",
         "Raw file": args.inputFile,
         "json file": args.outputFile,
+        "Tranciever and Transducer": transTrans,
+        "Application": application,
+        "Application Version": applicationVersion,
+        "File Format Version": fileFormatVersion,
+        "Centre Frequency": Frequency,
+        "Channel Number": Channel+1,        
+        "Pulse Duration": round(PulseDurationPing*10**3,4),
+        "Ping Number": PingNo+1,
     },
     "XML0": {
         "Transceiver": {
@@ -298,11 +319,6 @@ data = {
             "Q3": {"real": Q3_real, "imag": Q3_imag},
             "Q4": {"real": Q4_real, "imag": Q4_imag},
         },
-        "yc": "NaN",
-        "Sv": "NaN",
-        "Svf": "NaN",
-        "TS": "NaN",
-        "TSf": "NaN",
     },
 }
 
