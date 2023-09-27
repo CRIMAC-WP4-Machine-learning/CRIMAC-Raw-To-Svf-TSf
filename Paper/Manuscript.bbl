@@ -1,4 +1,4 @@
-\begin{thebibliography}{50}
+\begin{thebibliography}{52}
 \def\enquote#1{``#1,''}
 \def\plainquote#1{``#1''}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
@@ -310,6 +310,16 @@
   classification}} \bibinfo{type}{ICES Cooperative Research Report}
   \bibinfo{number}{No. 344} , \dodoi{doi.org/10.17895/ices.pub.4567}.
 
+\bibitem[{Kubilius \emph{et~al.}(2023)Kubilius, Bergès, and
+  Macaulay}]{kubilius_remote_2023}
+\bibinfo{author}{Kubilius, R.}, \bibinfo{author}{Bergès, B.},  and
+  \bibinfo{author}{Macaulay, G.~J.} (\textbf{\bibinfo{year}{2023}}).
+  \enquote{\bibinfo{title}{Remote acoustic sizing of tethered fish using
+  broadband acoustics}} \bibinfo{journal}{Fisheries Research} \textbf{260},
+  \bibinfo{pages}{106585},
+  \dourl{https://www.sciencedirect.com/science/article/pii/S0165783622003629},
+  \dodoi{10.1016/j.fishres.2022.106585}.
+
 \bibitem[{Kubilius \emph{et~al.}(2020)Kubilius, Macaulay, and
   Ona}]{kubilius_remote_2020}
 \bibinfo{author}{Kubilius, R.}, \bibinfo{author}{Macaulay, G.~J.},  and
@@ -335,6 +345,18 @@
   and oceanic microstructure using a broadband echosounder}}
   \bibinfo{journal}{ICES Journal of Marine Science} \textbf{67}(2),
   \bibinfo{pages}{379--394}, \dodoi{10.1093/icesjms/fsp242}.
+
+\bibitem[{Loranger \emph{et~al.}(2022)Loranger, Jech, and
+  Lavery}]{loranger_broadband_2022}
+\bibinfo{author}{Loranger, S.}, \bibinfo{author}{Jech, M.~J.},  and
+  \bibinfo{author}{Lavery, A.~C.} (\textbf{\bibinfo{year}{2022}}).
+  \enquote{\bibinfo{title}{Broadband acoustic quantification of mixed
+  biological aggregations at the {New} {England} shelf break}}
+  \bibinfo{journal}{The Journal of the Acoustical Society of America}
+  \textbf{152}(4), \bibinfo{pages}{2319--2335},
+  \dourl{https://asa.scitation.org/doi/10.1121/10.0014910},
+  \dodoi{10.1121/10.0014910} \bibinfo{note}{publisher: Acoustical Society of
+  America}.
 
 \bibitem[{Lunde and Korneliussen(2016)}]{lunde2016}
 \bibinfo{author}{Lunde, P.},  and \bibinfo{author}{Korneliussen, R.~J.}
