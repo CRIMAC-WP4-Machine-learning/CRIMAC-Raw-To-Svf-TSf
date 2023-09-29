@@ -170,9 +170,11 @@ theta_n, phi_n = Calculation.calcAngles(y_pc_halves_n, gamma_theta_f_c, gamma_ph
 
 # Sv estimation parameters
 step = 1  # Step in samples for sliding window
-
+          # In our example (main.py and figures in the paper) we have used step = 1.
+          # Note that step > 1 is possible and that processing time for larget datasets
+          # will be high when step = 1, and that we have not implemented this option here yet.
+          
 # Volume backscattering strength compressed frequency band
-
 Sv_n = Calculation.calcSv(
     p_rx_e_n, r_n, lambda_f_c, p_tx_e, alpha_f_c, c, tau_eff, psi_f_c, g_0_f_c
 )
