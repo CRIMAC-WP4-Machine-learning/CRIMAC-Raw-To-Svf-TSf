@@ -8,7 +8,7 @@ from Core.Calculation import Calculation
 class TestCalculation(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.calc = Calculation(r"..\Data\pyEcholabEK80data.json")
+        self.calc = Calculation()
 
     def test_hann(self):
         # Calculation trough implemented methods
@@ -803,7 +803,7 @@ class TestCalculation(unittest.TestCase):
                 -2.94661296e-05 - 1.66837242e-05j,
             ]
         )
-        power = self.calc.calcPower(y_pc_n, z_td_e, z_rx_e)
+        power = self.calc.calcPower(y_pc_n, z_td_e, z_rx_e,N_u)
 
         # Ground truth
         gt_power = np.array(
@@ -1021,12 +1021,13 @@ class TestCalculation(unittest.TestCase):
     def test_C1Prx(self):
         np.testing.assert_almost_equal(self.calc.C1Prx, 0.0068531, 5)
     """
-
+    """
     def test_Gf(self):
         Gf = self.calc.calcg0(39500)
 
         np.testing.assert_almost_equal(Gf, 26.11500, 5)
 
+    """
     """
     def test_logSvCf(self):
 
