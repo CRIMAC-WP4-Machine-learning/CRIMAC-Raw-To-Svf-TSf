@@ -188,7 +188,7 @@ w_tilde_i, N_w, t_w, t_w_n = Calculation.defHanningWindow(c, tau, dr, f_s_dec)
 # TODO: Currently step=1. Consider changing overlap.
 # Normalized DFT of sliding window data
 Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range = Calculation.calcDFTforSv(
-    y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec, r_n, step
+    y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, f_m, f_s_dec, r_n, step
 )
 
 # Received power spectrum for sliding window
