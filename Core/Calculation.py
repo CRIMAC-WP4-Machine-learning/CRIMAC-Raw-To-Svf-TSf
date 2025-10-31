@@ -846,7 +846,7 @@ class Calculation(EK80DataContainer):
 
     @staticmethod
     def calcDFTforSv(
-        y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, n_f_points, f_m, f_s_dec, r_c_n, step
+        y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, f_m, f_s_dec, r_c_n, step
     ):
         """
         Calculate the normalized DFT of sliding window data.
