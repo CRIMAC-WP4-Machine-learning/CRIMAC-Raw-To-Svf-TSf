@@ -946,7 +946,7 @@ class TestCalculation(unittest.TestCase):
 
         yc_q = self.calc.calcPulseCompressedSignals(y_rx_nu, y_mf_n)
 
-        y_rx_nu_true = np.array(
+        yc_q_true = np.array(
             [
                 [
                     -2.59929093e-05 - 7.08515524e-05j,
@@ -1000,7 +1000,7 @@ class TestCalculation(unittest.TestCase):
         )
 
         np.testing.assert_allclose(
-            yc_q[0][0:4], y_rx_nu_true[0][0:4], rtol=0.01, atol=0.1
+            yc_q[0][0:4], yc_q_true[0][0:4], rtol=0.01, atol=0.1
         )
 
 
