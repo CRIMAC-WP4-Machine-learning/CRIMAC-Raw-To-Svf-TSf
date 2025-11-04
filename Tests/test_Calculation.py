@@ -104,7 +104,7 @@ class TestCalculation(unittest.TestCase):
         np.testing.assert_allclose(t, t_true, rtol=0, atol=0.0001)
         np.testing.assert_allclose(y_tx_n, y_tx_n_true, rtol=0, atol=0.0001)
 
-    def test_calcAvgSumQuad(self):
+    def test_calcAverageSignal(self):
         # Calculation trough implemented methods
         ycq = np.array(
             [
