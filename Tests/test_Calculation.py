@@ -1082,10 +1082,8 @@ class TestCalculation(unittest.TestCase):
         f_m = np.linspace(92000.0, 158000.0, 1000)
 
         # make input data
-        i = np.arange(9489)
         y_pc_s_n = (self.random_number_vector(9489,42) + 1j * self.random_number_vector(9489,12)) * 0.1
         w_tilde_i = np.hanning(N_w)
-        i = np.arange(707)
         y_mf_auto_n = (self.random_number_vector(707,52) + 1j * self.random_number_vector(707,72)) * 0.05
         r_n = np.linspace(100, 200, 9489)
         step = 1
