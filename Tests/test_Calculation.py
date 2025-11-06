@@ -1059,21 +1059,23 @@ class TestCalculation(unittest.TestCase):
 
     @staticmethod
     def random_number_vector(length, seed=42):
-        state = float(seed)
-        values = np.zeros(length)
-
+        """
+           Deterministic "random" vector using sin/cos based formula,
+           independent of previous state.
+           """
+        result = np.zeros(length, dtype=np.float64)
         for i in range(length):
-            # Update state deterministically using sine/cosine
-            state = np.sin(state * 12.9898 + np.cos(state * 78.233)) * 43758.5453
-            r1 = state - np.floor(state)
-
-            # Generate a pseudo-Gaussian using a pair of values
-            state = np.sin(state * 93.9898 + np.cos(state * 67.345)) * 12534.7658
-            r2 = state - np.floor(state)
-            values[i] = np.sqrt(-2.0 * np.log(r1 + 1e-12)) * np.cos(2 * np.pi * r2)
+            # Each number depends only on seed + index
+            x = np.sin(seed + i * 12.9898 + np.cos(seed + i * 78.233)) * 43758.5453
+            result[i] = x - np.floor(x)  # fractional part
+        return result
 
 
-        return values
+    def test_random_number_vector(self):
+
+        ans = self.random_number_vector(10, 52)
+        np.testing.assert_allclose(ans,np.array([0.53362664, 0.52771461, 0.93531468, 0.19739612, 0.37003485,0.90299266, 0.98242037, 0.3985912 , 0.08734239, 0.75696932]) , rtol=0.000001, atol=0.00001)
+
 
     def test_calcDFTforSv(self):
         # Synthetic test data
@@ -1092,24 +1094,22 @@ class TestCalculation(unittest.TestCase):
             y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, f_m, f_s_dec, r_n, step
         )
 
-        np.testing.assert_allclose(Y_pc_v_m_n[0][0][0:100:10], np.array([-2.48260207+1.64851858j, -1.03676803-0.40023495j,
-        1.31390468+0.77316443j, -0.77563939-2.8850642j ,
-       -4.350203  -2.75968653j,  1.03993144+0.06556984j,
-        0.99061154-2.80618984j, -3.40073114+1.72184036j,
-       -2.54655909-1.98239045j,  0.02763275+1.1651311j]),rtol=0.000001,atol=0.00001)
-        np.testing.assert_allclose(Y_mf_auto_m[0:100:10], np.array([-0.88206259-0.34248927j, -0.35560724-0.38907297j,
-        0.23814922-0.24703315j,  2.10694051+1.60242834j,
-        0.03735936+1.12715015j,  1.43699656+0.59775375j,
-       -0.94695969-0.11153897j, -1.07149722+1.23492013j,
-       -1.18001083-2.56744747j,  0.20508452-0.46826403j]), rtol=0.000001,atol=0.00001)
-        np.testing.assert_allclose(Y_tilde_pc_v_m_n[0][0][0:100:10], np.array([1.81520164-2.57374668j,  1.88746621-0.93959595j,
-        1.03539741+4.32057642j, -0.89301514-0.69013407j,
-       -2.57347012+3.77417314j,  0.63311413-0.21772948j,
-       -0.68751412+3.04434759j,  2.15859335+0.88087024j,
-        1.01383212-0.52590217j, -2.06604734+0.96387304j]), rtol=0.000001,atol=0.00001)
+        np.testing.assert_allclose(Y_pc_v_m_n[0][0][0:100:10], np.array([-0.12168746+1.13038784j, -0.98180328-0.14559981j,0.82563589-0.3356226j ,  0.4636982 +0.24771357j,-0.71785743+0.13329953j, -0.63353379+0.02306231j,0.56703466+0.18594451j, -1.15708174+0.13761092j,0.40568137+0.2350003j , -0.43732201-0.81307707j]),rtol=0.000001,atol=0.00001)
+
+        np.testing.assert_allclose(Y_mf_auto_m[0:100:10], np.array([0.18622349+0.46200824j,  0.27754929+0.2431292j ,
+       -1.16154962-0.37188152j, -0.24200602-0.19304776j,
+        0.10551282-0.23685904j, -0.98900308+0.50653641j,
+       -0.56478651+1.15598212j,  0.3845577 -0.36780238j,
+       -0.11596845-0.28298895j,  0.26807252-0.30360127j]), rtol=0.000001,atol=0.00001)
+        np.testing.assert_allclose(Y_tilde_pc_v_m_n[0][0][0:100:10], np.array([2.01340352+1.07493861j, -2.26154044+1.45648623j,
+       -0.56081272+0.46849353j, -1.6699472 +0.30852948j,
+       -1.59613452-2.31971213j,  0.51692358+0.24143333j,
+       -0.0636177 -0.45943985j, -1.75015076-1.31605398j,
+       -1.21401683+0.93605676j,  0.79017253-2.13815163j]), rtol=0.000001,atol=0.00001)
         np.testing.assert_allclose(svf_range[0:10], np.array([105.39629005, 105.40682968, 105.41736931, 105.42790894,
        105.43844857, 105.4489882 , 105.45952782, 105.47006745,
        105.48060708, 105.49114671]), rtol=0.000001,atol=0.00001)
+
 
     def test_calcPowerFreqSv(self):
         # Parameters
@@ -1127,10 +1127,9 @@ class TestCalculation(unittest.TestCase):
 
         P_rx_e_t_m_n = Calculation.calcPowerFreqSv(Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
 
-        np.testing.assert_allclose(P_rx_e_t_m_n[0][0][0:100:10], np.array([9.62596502e-05, 8.05039064e-05, 3.32545015e-04, 6.31091875e-05,
-       3.02524562e-04, 1.08888502e-04, 4.75089789e-04, 2.37079121e-04,
-       1.49371258e-04, 5.00163996e-04]), rtol=0.000001,atol=0.00001)
-
+        np.testing.assert_allclose(P_rx_e_t_m_n[0][0][0:100:10], np.array([5.24735515e-05, 1.56313884e-05, 2.39181412e-05, 3.65465221e-06,
+       3.94442733e-05, 5.77362547e-05, 1.15758555e-06, 7.40649163e-05,
+       2.40714036e-05, 7.29725720e-05]), rtol=0.000001,atol=0.00001)
 
     def test_calcSvf(self):
 
@@ -1160,9 +1159,9 @@ class TestCalculation(unittest.TestCase):
             P_rx_e_t_m_n, alpha_m, p_tx_e, lambda_m, t_w, psi_m, g_0_m, c, svf_range
         )
 
-        np.testing.assert_allclose(Sv_m_n[0][0:100:10], np.array([-21.07858272, -24.25887809, -19.62978215, -30.20408064,
-       -21.89138739, -39.09979258, -17.89956139, -21.95598452,
-       -21.02056206, -18.28100955]), rtol=0.000001,atol=0.00001)
+        np.testing.assert_allclose(Sv_m_n[0][0:100:10], np.array([-24.50566729, -25.06850361, -25.37353659, -32.6594943 ,
+       -34.56136439, -23.46479862, -32.36302006, -22.33936438,
+       -24.81615288, -22.21000334]), rtol=0.000001,atol=0.00001)
 
 
 if __name__ == "__main__":
