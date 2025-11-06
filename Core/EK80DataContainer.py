@@ -411,13 +411,28 @@ class EK80DataContainer:
     @staticmethod
     def calcRange(sampleInterval, sampleCount, c, offset):
         """
-        XXX.
+        Calculates the range vector
         
         Parameters
         ----------
-        
+        sampleInterval : double
+            Duration of the sampling for one sample
+
+        sampleCount : int
+            Number of samples ranges we want to calculate #
+
+        c : double
+            Speed of sound in the medium [m/s]
+
+        offset :
+            Offset in number of sample counts #
+
         Returns
         -------
+        r : np.array
+            Sample ranges   [m]
+        dr : double
+            Range distance covered by one [m]
         
         """
 

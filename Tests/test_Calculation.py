@@ -104,7 +104,7 @@ class TestCalculation(unittest.TestCase):
         np.testing.assert_allclose(t, t_true, rtol=0, atol=0.0001)
         np.testing.assert_allclose(y_tx_n, y_tx_n_true, rtol=0, atol=0.0001)
 
-    def test_calcAvgSumQuad(self):
+    def test_calcAverageSignal(self):
         # Calculation trough implemented methods
         ycq = np.array(
             [
@@ -873,20 +873,6 @@ class TestCalculation(unittest.TestCase):
 
         np.testing.assert_almost_equal(Sv, Sv_true, 5)
 
-    """
-    def test_calculateTVGdB(self):
-
-        # Calculation trough implemented methods
-        alpha = 0.010425962012642035
-        r = np.array([1, 50, 100, 500])
-        tvg = Calculation.calculateTVGdB(alpha, r)
-
-        # Ground truth
-        gt_tvg = np.array([2.08519240e-02, 3.50219963e+01, 4.20851924e+01, 6.44053621e+01])
-
-        # Test
-        np.testing.assert_allclose(tvg, gt_tvg, rtol=0, atol=1e-6)
-    """
 
     def test_pulseCompression(self):
         y_mf_n = np.array(
@@ -960,7 +946,7 @@ class TestCalculation(unittest.TestCase):
 
         yc_q = self.calc.calcPulseCompressedSignals(y_rx_nu, y_mf_n)
 
-        y_rx_nu_true = np.array(
+        yc_q_true = np.array(
             [
                 [
                     -2.59929093e-05 - 7.08515524e-05j,
@@ -1014,84 +1000,168 @@ class TestCalculation(unittest.TestCase):
         )
 
         np.testing.assert_allclose(
-            yc_q[0][0:4], y_rx_nu_true[0][0:4], rtol=0.01, atol=0.1
+            yc_q[0][0:4], yc_q_true[0][0:4], rtol=0.01, atol=0.1
         )
 
-    """
-    def test_C1Prx(self):
-        np.testing.assert_almost_equal(self.calc.C1Prx, 0.0068531, 5)
-    """
-    """
-    def test_Gf(self):
-        Gf = self.calc.calcg0(39500)
 
-        np.testing.assert_almost_equal(Gf, 26.11500, 5)
-
-    """
-    """
-    def test_logSvCf(self):
-
-        logSvCf = self.calc.calculateCSvfdB(39500)
-
-        np.testing.assert_almost_equal(logSvCf, 11.147621416454323,5)
-    """
-
-    """
     def test_range(self):
+        sampleinterval, samplecount, c,offset =  0.002047999994829297, 5, 1480, 2
+        range,dr = self.calc.calcRange(sampleinterval, samplecount, c,offset)
 
-        range,_ = self.calc.calcRange()
-        np.testing.assert_almost_equal(range[0:4], [0.03146669, 0.06293338, 0.09440007, 0.12586676],1)
-    """
+        np.testing.assert_almost_equal(range, [3.03103999, 4.54655999, 6.06207998, 7.57759998, 9.09311998], 1)
+        np.testing.assert_almost_equal(dr, 1.51552,1)
 
-    """
-    def test_taueff(self):
-        np.testing.assert_almost_equal(self.calc.tau_eff, 9.986813363835193e-05, 5)
 
-    """
-    """
-    def test_calcDFTforSv(self);    
-        y_pc_s_n=y_pc_s_n[::1000]
-        w_tilde_i= w_tilde_i[::130]
-        y_mf_auto_n=y_mf_auto_n[::200]
-        f_m=f_m[::100]
-        r_c_n=r_c_n[::1000]
-        N_w = 8
-    """
+    def test_calcTransducerHalves(self) :
+        y_pc_n = np.array([
+            [-40.87943751-53.56023789j, -39.33257016-50.42992658j,-40.88436812-52.99105036j, -41.60962348-54.21272465j],
+            [23.37598449-6.54879826j, 21.61628426-6.80618245j,23.18935648-6.92857364j, 23.85004951-6.7704374j],
+            [7.29291676-15.64401064j, 6.85556551-15.09969505j,7.27400238-15.56958588j, 7.31959559-15.89213106j],
+            [0.54338709-4.68851068j, 0.50735455-4.88550606j,0.70950509-4.67702728j, 0.68687963-4.69416762j]
+        ])
 
-    """
-    P_rx_e_t_m_n[0]=P_rx_e_t_m_n[0][0][::100]
-    P_rx_e_t_m_n[1]=P_rx_e_t_m_n[1][0][::100]
-    P_rx_e_t_m_n[2]=P_rx_e_t_m_n[2][0][::100]
-    P_rx_e_t_m_n[3]=P_rx_e_t_m_n[4][0][::100]
-    P_rx_e_t_m_n=P_rx_e_t_m_n[0:3]
-    alpha_m=alpha_m[::100]
-    lambda_m=lambda_m[::100]
-    psi_m=psi_m[::100]
-    g_0_m=g_0_m[::100]
-    svf_range=svf_range[0:3]
-    def test_Svf(self):
-        ycq = self.calc.calcPulseCompressedSignals(self.calc.y_rx_org)
-        yc = self.calc.calcAverageSignal(ycq)
-        Svf, svf_range, f = self.calc.calcSvf(yc,10,30)
+        y_pc_halves_n = self.calc.calcTransducerHalves(y_pc_n)
 
-        np.testing.assert_allclose(Svf[0,:][0:4], [-58.21107559, -58.23425062, -58.25742747, -58.28060613], rtol=0.0001, atol=0.001)
-        np.testing.assert_allclose(svf_range,[14.03414407, 18.06188048, 22.0896169 , 26.05441993], rtol=0.0001, atol=0.001)
-        np.testing.assert_allclose(f[0:4], [34000., 34011.01101101, 34022.02202202, 34033.03303303], rtol=0.0001,
-                                   atol=0.001)
-    """
+        np.testing.assert_allclose(y_pc_halves_n[0], [3.91815193-10.16626066j, 3.68146003 -9.99260055j, 3.99175373-10.12330658j, 4.00323761-10.29314934j] , rtol=0, atol=0.0001)
+        np.testing.assert_allclose(y_pc_halves_n[1],[-8.75172651-30.05451808j, -8.85814295-28.61805452j,-8.84750582-29.959812j  , -8.87978699-30.49158102j], rtol=0, atol=0.0001)
+        np.testing.assert_allclose(y_pc_halves_n[2],[-20.16802521-29.12437429j, -19.41260781-27.65771632j,-20.08743151-28.83403882j, -20.46137193-29.45344614j], rtol=0, atol=0.0001)
+        np.testing.assert_allclose(y_pc_halves_n[3], [15.33445063-11.09640445j, 14.23592488-10.95293875j,15.23167943-11.24907976j, 15.58482255-11.33128423j], rtol=0,
+                                   atol=0.0001)
 
-    """
-    f=f[::100]
-    self.frqp.frequencies=self.frqp.frequencies[::35]
-    self.frqp.angle_offset_alongship=self.frqp.angle_offset_alongship[::35]
-    self.frqp.angle_offset_athwartship=self.frqp.angle_offset_athwartship[::35]
-    self.frqp.beam_width_alongship=self.frqp.beam_width_alongship[::35]
-    self.frqp.beam_width_athwartship=self.frqp.beam_width_athwartship[::35]
-    self.frqp.gain=self.frqp.gain[::35]
-    
-    self.isCalibrated = False
-    
-    """
+
+
+    def test_calcAngles(self):
+        y_pc_halves_n = (
+            [-4.12469958e+01-5.36018875e+01j,  2.35197030e+01-6.84950552e+00j],
+            [-4.01060038e+01-5.19950822e+01j,  2.24961344e+01-6.67749035e+00j],
+            [-4.12445305e+01-5.38864813e+01j,  2.36130170e+01-6.65961783e+00j],
+            [-4.01084691e+01-5.17104885e+01j,  2.24028204e+01-6.86737805e+00j]
+        )
+        gamma_theta_f_c, gamma_phi_f_c = 23.958333333333336, 23.958333333333336
+
+        theta_n, phi_n = Calculation.calcAngles(y_pc_halves_n, gamma_theta_f_c, gamma_phi_f_c)
+
+        np.testing.assert_allclose(theta_n, np.array([0.00275509, 0.01233583]), 1)
+        np.testing.assert_allclose(phi_n, np.array([0.01536374, 0.05393978]), 1)
+
+    def test_calcAutoCorrelation(self):
+
+        y_mf_n = np.array([0.00000000e+00+0.00000000e+00j, -1.01494640e-08+3.70577279e-08j, -4.45257661e-06+6.16119379e-06j, -8.22623673e-05+2.41659296e-04j, -1.14883005e-03+2.77528002e-04j])
+        f_s_dec = 93750.0
+
+        y_mf_auto_n, tau_eff = Calculation.calcAutoCorrelation(y_mf_n, f_s_dec)
+
+        y_mf_auto_n_true = np.array([0.00000000e+00+0.00000000e+00j, 1.50093846e-05-2.71920233e-05j,4.67488670e-03-3.99645713e-03j, 1.11779660e-01-1.73882680e-01j,1.00000000e+00+0.00000000e+00j, 1.11779660e-01+1.73882680e-01j,4.67488670e-03+3.99645713e-03j, 1.50093846e-05+2.71920233e-05j,0.00000000e+00+0.00000000e+00j])
+
+        np.testing.assert_almost_equal(tau_eff,1.1579044393132378e-05)
+        np.testing.assert_almost_equal(y_mf_auto_n, y_mf_auto_n_true)
+
+
+    @staticmethod
+    def random_number_vector(length, seed=42):
+        """
+           Deterministic "random" vector using sin/cos based formula,
+           independent of previous state.
+           """
+        result = np.zeros(length, dtype=np.float64)
+        for i in range(length):
+            # Each number depends only on seed + index
+            x = np.sin(seed + i * 12.9898 + np.cos(seed + i * 78.233)) * 43758.5453
+            result[i] = x - np.floor(x)  # fractional part
+        return result
+
+
+    def test_random_number_vector(self):
+
+        ans = self.random_number_vector(10, 52)
+        np.testing.assert_allclose(ans,np.array([0.53362664, 0.52771461, 0.93531468, 0.19739612, 0.37003485,0.90299266, 0.98242037, 0.3985912 , 0.08734239, 0.75696932]) , rtol=0.000001, atol=0.00001)
+
+
+    def test_calcDFTforSv(self):
+        # Synthetic test data
+        N_w = 1024
+        f_s_dec = 375000  # decimated sample rate (Hz)
+        f_m = np.linspace(92000.0, 158000.0, 1000)
+
+        # make input data
+        y_pc_s_n = (self.random_number_vector(9489,42) + 1j * self.random_number_vector(9489,12)) * 0.1
+        w_tilde_i = np.hanning(N_w)
+        y_mf_auto_n = (self.random_number_vector(707,52) + 1j * self.random_number_vector(707,72)) * 0.05
+        r_n = np.linspace(100, 200, 9489)
+        step = 1
+        # Run function
+        Y_pc_v_m_n, Y_mf_auto_m, Y_tilde_pc_v_m_n, svf_range = Calculation.calcDFTforSv(
+            y_pc_s_n, w_tilde_i, y_mf_auto_n, N_w, f_m, f_s_dec, r_n, step
+        )
+
+        np.testing.assert_allclose(Y_pc_v_m_n[0][0][0:100:10], np.array([-0.12168746+1.13038784j, -0.98180328-0.14559981j,0.82563589-0.3356226j ,  0.4636982 +0.24771357j,-0.71785743+0.13329953j, -0.63353379+0.02306231j,0.56703466+0.18594451j, -1.15708174+0.13761092j,0.40568137+0.2350003j , -0.43732201-0.81307707j]),rtol=0.000001,atol=0.00001)
+
+        np.testing.assert_allclose(Y_mf_auto_m[0:100:10], np.array([0.18622349+0.46200824j,  0.27754929+0.2431292j ,
+       -1.16154962-0.37188152j, -0.24200602-0.19304776j,
+        0.10551282-0.23685904j, -0.98900308+0.50653641j,
+       -0.56478651+1.15598212j,  0.3845577 -0.36780238j,
+       -0.11596845-0.28298895j,  0.26807252-0.30360127j]), rtol=0.000001,atol=0.00001)
+        np.testing.assert_allclose(Y_tilde_pc_v_m_n[0][0][0:100:10], np.array([2.01340352+1.07493861j, -2.26154044+1.45648623j,
+       -0.56081272+0.46849353j, -1.6699472 +0.30852948j,
+       -1.59613452-2.31971213j,  0.51692358+0.24143333j,
+       -0.0636177 -0.45943985j, -1.75015076-1.31605398j,
+       -1.21401683+0.93605676j,  0.79017253-2.13815163j]), rtol=0.000001,atol=0.00001)
+        np.testing.assert_allclose(svf_range[0:10], np.array([105.39629005, 105.40682968, 105.41736931, 105.42790894,
+       105.43844857, 105.4489882 , 105.45952782, 105.47006745,
+       105.48060708, 105.49114671]), rtol=0.000001,atol=0.00001)
+
+
+    def test_calcPowerFreqSv(self):
+        # Parameters
+        np.random.seed(123)
+        N_bins = 30  # number of range bins
+        N_w = 1024  # FFT length
+        N_u = 4  # receiver channels
+        z_rx_e = 75  # receiver impedance [Ω]
+        z_td_e = 50  # transducer impedance [Ω]
+
+        Y_tilde_pc_v_m_n = [
+            (np.array([self.random_number_vector(N_w,52) + 1j * self.random_number_vector(N_w,42)])) * 0.05
+            for _ in range(N_bins)
+        ]
+
+        P_rx_e_t_m_n = Calculation.calcPowerFreqSv(Y_tilde_pc_v_m_n, N_u, z_rx_e, z_td_e)
+
+        np.testing.assert_allclose(P_rx_e_t_m_n[0][0][0:100:10], np.array([5.24735515e-05, 1.56313884e-05, 2.39181412e-05, 3.65465221e-06,
+       3.94442733e-05, 5.77362547e-05, 1.15758555e-06, 7.40649163e-05,
+       2.40714036e-05, 7.29725720e-05]), rtol=0.000001,atol=0.00001)
+
+    def test_calcSvf(self):
+
+        # Input sizes
+        N_ranges = 8465
+        N_freq = 1000
+
+        # Power input: list of (1,1000) arrays, positive
+        #P_rx_e_t_m_n = [np.abs(np.random.rand(1, N_freq)) * 1e-6 + 1e-9 for _ in range(N_ranges)]
+        P_rx_e_t_m_n = [np.abs([self.random_number_vector(N_freq,52)]) * 1e-6 + 1e-9 for _ in range(N_ranges)]
+        # Parameter arrays (length 1000)
+        alpha_m = np.linspace(0.0001, 0.001, N_freq)
+        lambda_m = np.linspace(0.014, 0.016, N_freq)
+        psi_m = np.linspace(0.009, 0.011, N_freq)
+        g_0_m = np.linspace(9.5, 10.5, N_freq)
+
+        # Scalars
+        p_tx_e = 100.0
+        t_w = 0.002
+        c = 1500.0
+
+        # Range vector
+        svf_range = np.linspace(50, 200, N_ranges)
+
+        # Call function
+        Sv_m_n = Calculation.calcSvf(
+            P_rx_e_t_m_n, alpha_m, p_tx_e, lambda_m, t_w, psi_m, g_0_m, c, svf_range
+        )
+
+        np.testing.assert_allclose(Sv_m_n[0][0:100:10], np.array([-24.50566729, -25.06850361, -25.37353659, -32.6594943 ,
+       -34.56136439, -23.46479862, -32.36302006, -22.33936438,
+       -24.81615288, -22.21000334]), rtol=0.000001,atol=0.00001)
 
 
 if __name__ == "__main__":
